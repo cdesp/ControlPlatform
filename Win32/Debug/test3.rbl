@@ -1,0 +1,49 @@
+object dspBlock__1: TDspBlock
+  Left = 281
+  Top = 98
+  Width = 168
+  Height = 40
+  Color = clGreen
+  CtrlAttachUp = False
+  CtrlAttachDn = False
+  CommandText = #904#957#945#961#958#951' '#960#961#959#947#961#940#956#956#945#964#959#962
+  NewlyCreated = False
+  CommndID = 1
+  Param1 = 0
+  Param2 = 0
+  topNose = False
+  botNose = True
+  LinkTo = frmRoboLang.dspBlock__2
+  TotalParams = 0
+  Id = 1
+  BorderColor = clAqua
+  CommandColor = clWhite
+  LinkToName = 'dspBlock__2'
+  prototype = False
+end
+object dspBlock__2: TDspBlock
+  Left = 281
+  Top = 129
+  Width = 207
+  Height = 40
+  Hint = #932#965#960#974#957#949#953' '#954#949#943#956#949#957#959' '#963#964#951#957' LCD'#13' [HELLO50]'
+  Color = clMaroon
+  CtrlAttachUp = False
+  CtrlAttachDn = False
+  CommandText = #932#973#960#969#963#949' '#963#964#951#957' LCD %pstr '
+  NewlyCreated = False
+  CommndID = 121
+  Param1 = 0
+  Param2 = 7
+  ParamStr = 'HELLO50'
+  topNose = True
+  botNose = True
+  LinkFrom = frmRoboLang.dspBlock__1
+  TotalParams = 2
+  Id = 2
+  BorderColor = clGreen
+  CommandColor = clWhite
+  LinkFromName = 'dspBlock__1'
+  MyHint = #932#965#960#974#957#949#953' '#954#949#943#956#949#957#959' '#963#964#951#957' LCD'
+  prototype = False
+end
