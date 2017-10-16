@@ -35,7 +35,6 @@ Type
     FMyhint: string;
     Fprototype: boolean;
     FDeviceOnlyCommandID: integer;
-    FParamD: String;
     procedure CalcArea;
     function InCircle(p, Cp: Tpoint): boolean;
     procedure MakeBorderDn;
@@ -73,6 +72,9 @@ Type
     procedure SetParamD(const Value: String);
     procedure SetComboBoxValue;
     procedure OnRefreshRequest(var Msg: TMessage); message WM_REFRESH_MSG;
+    procedure SetPDevice(const Value: Integer);
+    function getParamDControl(x, y: integer): integer;
+    procedure ComboChange(Sender: TObject);
   protected
     FCommandText:String;
     move:boolean;
@@ -137,10 +139,12 @@ Type
     procedure CMMouseLeave(var Message: TMessage); message CM_MOUSELEAVE;
     procedure SetNewWidth(nw: Integer);virtual;
   public
-    fCommndID:Integer;
-    fParam1:integer;
-    fParam2:integer;
-    FParamStr: string;
+    fCommndID:Integer;  //Command ID
+    fParam1:integer;    //1st Parameter
+    fParam2:integer;    //2nd Parameter
+    FParamStr: string;  //String Parameter
+    FParamD: String;    //Device Name
+    FPDevice: Integer;  //Device Pin formerly in param1 // or Device ID if we keep track on arduino
     FLinkToName: String;
     FLinkFromName: String;
     constructor Create(AOwner: TComponent); override;
@@ -171,6 +175,7 @@ Type
     property Param2:Integer read getParam2 write setfParam2;
     property ParamStr:string read FParamStr write SetParamStr;
     Property ParamD:String read FParamD write SetParamD;
+    property PDevice:Integer read FPDevice write SetPDevice;
     property topNose:boolean read FtopNose write SettopNose;
     property botNose:boolean read FbotNose write SetbotNose;
     property LinkTo:TDspBlock read getLinkTo write setLinkTo;
@@ -502,11 +507,6 @@ begin
     RecalcWidth;
   end;
   if assigned(ctrl1) then
-   if IsParamDev then
-   Begin
-    SetComboBoxValue;
-   End
-   else
     Tedit(ctrl1).Text:=inttostr(fparam1);
 
 end;
@@ -602,11 +602,24 @@ end;
 procedure TDspBlock.SetParamD(const Value: String);
 begin
   FParamD := Value;
+  if not (csLoading in componentstate) then
+  begin
+    RecalcWidth;
+    if assigned(ctrlS) then
+     FillComboBox;
+  end;
 end;
 
 procedure TDspBlock.SetParamStr(const Value: string);
 begin
   FParamStr := Value;
+  if not (csLoading in componentstate) then
+  begin
+    RecalcWidth;
+  end;
+  if assigned(ctrlS) then
+   Tedit(ctrlS).Text:=FParamStr;
+
 end;
 
 procedure TDspBlock.SetParent(AParent: TWinControl);
@@ -614,6 +627,19 @@ begin
   inherited;
   if IsParamDev and (AParent<>nil) then
     FillComboBox;
+end;
+
+procedure TDspBlock.SetPDevice(const Value: Integer);
+begin
+  FPDevice := Value;
+  if not (csLoading in componentstate) then
+  begin
+    RecalcWidth;
+  end;
+  if assigned(ctrlD) then
+  Begin
+   SetComboBoxValue;
+  End;
 end;
 
 procedure TDspBlock.Setprototype(const Value: boolean);
@@ -1039,7 +1065,7 @@ begin
   Begin
    if TCombobox(ctrlD).ItemIndex=-1 then
       TCombobox(ctrlD).ItemIndex:=0;
-    Fparam1:=Integer(TCombobox(ctrlD).items.objects[TCombobox(ctrlD).ItemIndex]);
+    FPDevice:=Integer(TCombobox(ctrlD).items.objects[TCombobox(ctrlD).ItemIndex]);
     TCombobox(ctrlD).Text:=TCombobox(ctrlD).items[TCombobox(ctrlD).ItemIndex];
     Invalidate;
   End
@@ -1083,8 +1109,8 @@ begin
    result:=stringReplace(result,'%p1',inttostr(param1),[]);
   if pos('%p2',result)>0 then
    result:=stringReplace(result,'%p2',inttostr(param2),[]);
-  if pos('%pstr',result)>0 then
-   result:=stringReplace(result,'%pstr',paramStr,[]);
+  if pos('%ps',result)>0 then
+   result:=stringReplace(result,'%ps',paramStr,[]);
   if pos('%pd',result)>0 then
    result:=stringReplace(result,'%pd',inttostr(param1),[]);
 
@@ -1130,11 +1156,14 @@ begin
 end;
 
 function TDspBlock.getParamStrControl(x, y: integer): integer;
+Var sv:TColor;
 begin
   if prototype then
   Begin
+    sv:=canvas.Font.Color;
     canvas.Font.Color:=clLime;
     canvas.TextOut(x,y ,paramStr);
+    canvas.Font.Color:=sv;
     result:=x+canvas.TextWidth(paramStr);
   End
   else
@@ -1158,11 +1187,11 @@ Begin
 End;
 
 
-procedure TDspBlock.SetComboBoxValue;
+procedure TDspBlock.SetComboBoxValue;      //Sets String value of device
 Var k:Integer;
 Begin
    if csLoading in ComponentState then exit;
-   
+
    if TComboBox(ctrld).Items.Count>0 then
     Begin
      k:=TComboBox(ctrld).Items.IndexOf(Paramd); //Text of Form dev caption
@@ -1172,7 +1201,6 @@ Begin
      End;
      if k=-1 then
         TComboBox(ctrld).text:='';
-
     End;
 End;
 
@@ -1202,17 +1230,18 @@ End;
 function TDspBlock.getParam1Control(x, y: integer): integer;
 Var sl:tstringlist;
     i,k:integer;
+    sv:tColor;
 begin
   if prototype then
   Begin
+    sv:=canvas.Font.Color;
     canvas.Font.Color:=clLime;
     canvas.TextOut(x,y ,inttostr(param1));
+    canvas.Font.Color:=sv;
     result:=x+canvas.TextWidth(inttostr(param1));
   End
   else
   Begin
-   if not IsParamDev then
-   Begin
     ctrl1.Visible:=true;
     updn1.Visible:=true;
     tedit(ctrl1).Color:=LightenColor(Color,30);
@@ -1223,22 +1252,34 @@ begin
     updn1.top:=y;
     TEdit(ctrl1).text:=inttostr(param1);
     result:=ctrl1.Left+ctrl1.Width+updn1.width;
-   End
-   else
-   Begin
-   // TComboBox(ctrld).Color:=LightenColor(Color,30);
-   // TComboBox(ctrld).font.Color:= clLime;
-    TComboBox(ctrld).Visible:=True;
-    ctrld.Left:=x;
-    ctrld.Top:=y-4;
-    //SetComboBoxValue;
-    result:=ctrld.Left+ctrld.Width;
-   End;
-
-
   End;
 
 end;
+
+function TDspBlock.getParamDControl(x, y: integer): integer;
+Var sl:tstringlist;
+    i,k:integer;
+    sv:TColor;
+begin
+  if prototype then
+  Begin
+    sv:=canvas.Font.Color;
+    canvas.Font.Color:=clLime;
+    canvas.TextOut(x,y ,ParamD);
+    canvas.Font.Color:=sv;
+    result:=x+canvas.TextWidth(ParamD);
+  End
+  else
+  Begin
+    TComboBox(ctrld).Visible:=True;
+    ctrld.Left:=x;
+    ctrld.Top:=y-4;
+    result:=ctrld.Left+ctrld.Width;
+  End;
+
+end;
+
+
 
 function TDspBlock.getParam2: Integer;
 begin
@@ -1246,11 +1287,14 @@ begin
 end;
 
 function TDspBlock.getParam2Control(x, y: integer): integer;
+var sv:TColor;
 begin
   if prototype then
   Begin
+    sv:=canvas.Font.Color;
     canvas.Font.Color:=clAqua;
     canvas.TextOut(x,y ,inttostr(param2));
+    canvas.Font.Color:=sv;
     result:=x+canvas.TextWidth(inttostr(param2));
   End
   else
@@ -1303,15 +1347,61 @@ Begin
 End;
 
 
+
+
 procedure TDspBlock.paintCmd;
 var cmds:String;
      txth,txtw:integer;
      w,h,x,y:integer;
-     s1pos,s2pos,s3pos:integer;
+     s1pos,s2pos,s3pos,s4pos:integer;
      str1:string;
      str2:string;
      str3:string;
      p:integer;
+     prm:array[0..3] of integer;
+     prmmax:integer;
+     i,cuti,newcut: Integer;
+     s,sp:String;
+
+     function GetPosbyId(prmid:Integer):Integer;
+     Begin
+       case prmid of
+         1:result := s1pos;
+         2:result := s2pos;
+         3:result := s3pos;
+         4:result := s4pos;
+       end;
+     End;
+
+     procedure SortTable;
+     Var i,t:Integer;
+         redo:Boolean;
+     Begin
+       if prmmax<=0 then Exit;
+
+       redo:=false;
+       for i := 1 to prmmax do
+       Begin
+        if GetPosbyId(prm[i])<GetPosbyId(prm[i-1]) then //swap
+        Begin
+          t:=prm[i-1];
+          prm[i-1]:=prm[i];
+          prm[i]:=t;
+          redo:=true;
+        End;
+       End;
+       if redo then SortTable;       
+     End;
+
+     function GetParamControlById(prmid,x,y:integer):Integer;
+     Begin
+       case prmid of
+         1:result :=getparam1control(x,y);   //1st param integer TSpinEdit
+         2:result :=getparam2control(x,y);   //2nd param Integer TSpinEdit
+         3:result :=getParamStrControl(x,y); //3rd param String  TEdit
+         4:result :=getParamDControl(x,y);   //4th param Device  TComboBox
+       end;
+     End;
 
 begin
     canvas.Brush.Style := bsClear;
@@ -1323,7 +1413,7 @@ begin
     if debugging then
      y:=y+10;
 
-    if totalparams=0 then
+    if (totalparams=0) and not IsParamDev then
     Begin
      canvas.TextOut(x,y ,CommandText);
      txtw:=canvas.TextWidth(CommandText)+8;
@@ -1331,86 +1421,56 @@ begin
      exit;
     End;
 
+
     s1pos:=pos('%p1',fCommandText);
-    if s1pos=0 then
-      s1pos:=pos('%pd',fCommandText);
     s2pos:=pos('%p2',fCommandText);
-    s3pos:=pos('%pstr',fCommandText);
+    s3pos:=pos('%ps',fCommandText);
+    s4pos:=pos('%pd',fCommandText);
     //if (s1pos=0) and (s2pos=0) then  TotalParams:=0;
-
-
-    if (TotalParams=1)  then
-    Begin
-      str1:=copy(fCommandText,0,s1pos-1);
-      if s1pos>0 then
-        str2:=copy(fCommandText,s1pos+3,999)
-      else str2:= fCommandText;
-      str3:='';
-    End;
-
-    if (TotalParams=2) then
-    if (s1pos<=s2pos) and (s1pos>0) then
-    Begin
-      str1:=copy(fCommandText,0,s1pos-1);
-      str2:=copy(fCommandText,s1pos+3,s2pos-s1pos-3);
-      str3:=copy(fCommandText,s2pos+3,999);
-    End
-    else if s2pos>0 then
-    Begin
-      str1:=copy(fCommandText,0,s2pos-1);
-      str2:=copy(fCommandText,s2pos+3,s1pos-s2pos-3);
-      str3:=copy(fCommandText,s1pos+3,999);
-    End;
-
+    prmmax:=-1;
     if s1pos>0 then
     Begin
-      canvas.TextOut(x,y ,str1);
-      txtw:=canvas.TextWidth(str1);
+     inc(prmmax);
+     prm[prmmax]:=1;
     End;
-
-
-    if (s1pos<s2pos) or (TotalParams=1) then
-     txtw:=getparam1control(x+txtw,y)-x
-    else if s1pos<>s2pos then
-     txtw:=getparam2control(x+txtw,y)-x;
-
-   if (s1pos=0) and (s2pos=0) then   //string
-   Begin
-     str2:=copy(fCommandText,1,s3pos-1);
-     str3:=copy(fCommandText,s3pos+5,maxint);
-   End;
-
-
-   canvas.Font.Color:=commandcolor;
-   canvas.TextOut(x+txtw,y ,str2);
-   txtw:=txtw+canvas.TextWidth(str2);
-
-   if TotalParams=2 then
-   Begin
-
-    if s1pos<s2pos then
-     txtw:=getparam2control(x+txtw,y)-x
-    else if s1pos<>s2pos then
-     txtw:=getparam1control(x+txtw,y)-x;
-
     if s2pos>0 then
     Begin
-      canvas.Font.Color:=commandcolor;
-      canvas.TextOut(x+txtw,y ,str3);
-      txtw:=txtw+canvas.TextWidth(str3);
+     inc(prmmax);
+     prm[prmmax]:=2;
     End;
-   End;
+    if s3pos>0 then
+    Begin
+     inc(prmmax);
+     prm[prmmax]:=3;
+    End;
+    if s4pos>0 then
+    Begin
+     inc(prmmax);
+     prm[prmmax]:=4;
+    End;
+    SortTable;
 
-   if s3pos>0 then//string
-   Begin
-      txtw:=getParamStrControl(x+txtw,y)-x;
-      canvas.Font.Color:=clBlue;//stringcolor;
-      canvas.TextOut(x+txtw,y ,str3);
-      txtw:=txtw+canvas.TextWidth(str3);
-   End;
 
-   SetNewWidth(x+txtw+8);
+    canvas.Font.Color:=commandcolor;
+    s:=fCommandText;
+    txtw:=0;cuti:=0;
+    for i := 0 to prmmax do
+    Begin
+      cuti:=GetPosbyId(prm[i])-cuti;
+      sp:=copy(s,1,cuti-1);//up to previous char
+      s:=copy(s,cuti+3,maxint);//skip 3 chars %p1
+      cuti:=GetPosbyId(prm[i])-1+3;
+      canvas.TextOut(x+txtw,y ,sp);
+      txtw:=txtw+canvas.TextWidth(sp);
+      txtw:=GetParamControlById(prm[i],x+txtw,y)-x;
+    End;
 
+    //Rest
+    canvas.TextOut(x+txtw,y ,s);
+    txtw:=txtw+canvas.TextWidth(s);
+
+
+    SetNewWidth(x+txtw+8);
 
 End;
 
@@ -1663,37 +1723,34 @@ begin
   TComboBox(ctrlD).Font.Style:=[fsbold];
   TComboBox(ctrlD).Visible:=false;
   TComboBox(ctrlD).Width:=80;
-  TComboBox(ctrlD).onchange:=edit1Change;
+  TComboBox(ctrlD).onchange:=ComboChange;
  // TComboBox(ctrlD).onCloseup:=edit1Change;
 //  TComboBox(ctrlD).BevelInner:=bvnone;
 //  TComboBox(ctrlD).Bevelkind:=bknone;
 //  TComboBox(ctrlD).BevelOuter:=bvnone;
 //  TComboBox(ctrlS).BorderStyle:=bsNone;
-  TComboBox(ctrlD).height:=16;
+  TComboBox(ctrlD).height:=14;
 end;
 
-
-procedure TDspBlock.edit1Change(Sender: TObject);
+procedure TDspBlock.ComboChange(Sender: TObject);
 Var sl:TStringlist;
-begin
-  if IsParamDev then
-  Begin
+Begin
    sl:=TStringlist(tComboBox(ctrld).Items);
    try
     if tComboBox(ctrld).ItemIndex>-1 then
     Begin
       Paramd:=sl[tComboBox(ctrld).ItemIndex];
-      fParam1:=Integer(sl.Objects[tComboBox(ctrld).ItemIndex]);
+      FPDevice:=Integer(sl.Objects[tComboBox(ctrld).ItemIndex]);
     End;
    except
     fParam1:=0;
    end;
-  End
-  else
-  Begin
-    fParam1:=strtoint(tedit(ctrl1).Text);
-    updn1.Position:=fParam1;
-  End;
+End;
+
+procedure TDspBlock.edit1Change(Sender: TObject);
+begin
+  fParam1:=strtoint(tedit(ctrl1).Text);
+  updn1.Position:=fParam1;
 end;
 
 procedure TDspBlock.edit2Change(Sender: TObject);

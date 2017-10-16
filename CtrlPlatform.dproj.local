@@ -13,15 +13,15 @@
     <Transaction>2015/07/12 12:18:03.000.728,G:\_Programming\RoboCtrl\Unit1.dfm=G:\_Programming\RoboCtrl\unAbout.dfm</Transaction>
     <Transaction>2015/07/12 12:18:03.000.728,G:\_Programming\RoboCtrl\Unit1.pas=G:\_Programming\RoboCtrl\unAbout.pas</Transaction>
     <Transaction>2015/10/04 15:25:39.000.687,=G:\_Programming\RoboCtrl\Unit1.pas</Transaction>
-    <Transaction>2015/10/04 15:26:04.000.058,G:\_Programming\RoboCtrl\unClients.pas=G:\_Programming\RoboCtrl\Unit1.pas</Transaction>
     <Transaction>2015/10/04 15:26:04.000.058,G:\_Programming\RoboCtrl\unClients.dfm=G:\_Programming\RoboCtrl\Unit1.dfm</Transaction>
+    <Transaction>2015/10/04 15:26:04.000.058,G:\_Programming\RoboCtrl\unClients.pas=G:\_Programming\RoboCtrl\Unit1.pas</Transaction>
     <Transaction>2017/10/10 14:53:45.000.614,G:\_Programming\ControlPlatform\CtrlPlatform.dproj=G:\_Programming\RoboCtrl\RoboLang.dproj</Transaction>
     <Transaction>2017/10/10 18:34:43.000.024,G:\_Programming\ControlPlatform\unClients.pas=</Transaction>
-    <Transaction>2017/10/12 17:51:53.000.463,G:\_Programming\ControlPlatform\unRoboMain.pas=G:\_Programming\ControlPlatform\unCtrlPlatMain.pas</Transaction>
     <Transaction>2017/10/12 17:51:53.000.463,G:\_Programming\ControlPlatform\unRoboMain.dfm=G:\_Programming\ControlPlatform\unCtrlPlatMain.dfm</Transaction>
+    <Transaction>2017/10/12 17:51:53.000.463,G:\_Programming\ControlPlatform\unRoboMain.pas=G:\_Programming\ControlPlatform\unCtrlPlatMain.pas</Transaction>
     <Transaction>2017/10/12 17:52:33.000.692,=G:\_Programming\ControlPlatform\Unit1.pas</Transaction>
-    <Transaction>2017/10/12 18:04:14.000.352,G:\_Programming\ControlPlatform\Unit1.pas=G:\_Programming\ControlPlatform\fserialLcd.pas</Transaction>
     <Transaction>2017/10/12 18:04:14.000.352,G:\_Programming\ControlPlatform\Unit1.dfm=G:\_Programming\ControlPlatform\fserialLcd.dfm</Transaction>
+    <Transaction>2017/10/12 18:04:14.000.352,G:\_Programming\ControlPlatform\Unit1.pas=G:\_Programming\ControlPlatform\fserialLcd.pas</Transaction>
     <Transaction>2017/10/12 18:39:04.000.314,=G:\_Programming\ControlPlatform\Unit1.pas</Transaction>
     <Transaction>2017/10/12 18:39:13.000.107,G:\_Programming\ControlPlatform\Unit1.pas=G:\_Programming\ControlPlatform\unDevices.pas</Transaction>
     <Transaction>2017/10/13 17:25:39.000.663,=G:\_Programming\ControlPlatform\Unit1.pas</Transaction>
@@ -31,5 +31,11 @@
     <Transaction>2017/10/13 17:44:24.000.563,G:\_Programming\ControlPlatform\unHelpForms.pas=G:\_Programming\ControlPlatform\Unit1.pas</Transaction>
     <Transaction>2017/10/14 17:23:10.000.202,=G:\_Programming\ControlPlatform\Unit1.pas</Transaction>
     <Transaction>2017/10/14 17:23:20.000.876,G:\_Programming\ControlPlatform\unUtils.pas=G:\_Programming\ControlPlatform\Unit1.pas</Transaction>
+    <Transaction>2017/10/16 17:02:28.707,=G:\_Programming\ControlPlatform\Unit1.pas</Transaction>
+    <Transaction>2017/10/16 17:03:58.908,G:\_Programming\ControlPlatform\fSound.pas=G:\_Programming\ControlPlatform\Unit1.pas</Transaction>
+    <Transaction>2017/10/16 17:03:58.908,G:\_Programming\ControlPlatform\fSound.dfm=G:\_Programming\ControlPlatform\Unit1.dfm</Transaction>
+    <Transaction>2017/10/16 17:55:15.556,=G:\_Programming\ControlPlatform\Unit1.pas</Transaction>
+    <Transaction>2017/10/16 17:55:26.415,G:\_Programming\ControlPlatform\fUSonic.dfm=G:\_Programming\ControlPlatform\Unit1.dfm</Transaction>
+    <Transaction>2017/10/16 17:55:26.415,G:\_Programming\ControlPlatform\fUSonic.pas=G:\_Programming\ControlPlatform\Unit1.pas</Transaction>
   </Transactions>
 </BorlandProject>

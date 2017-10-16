@@ -13,7 +13,9 @@ uses
   unDevices in 'unDevices.pas',
   fLaser in 'fLaser.pas' {frmLaser},
   unHelpForms in 'unHelpForms.pas',
-  unUtils in 'unUtils.pas';
+  unUtils in 'unUtils.pas',
+  fSound in 'fSound.pas' {frmSound},
+  fUSonic in 'fUSonic.pas' {frmUSonic};
 
 {$R *.res}
 
@@ -23,6 +25,6 @@ begin
   Application.Title := 'Κέντρο Ελέγχου Ρομποτικού Οχήματος';
   Application.CreateForm(TfrmRoboLang, frmRoboLang);
   Application.CreateForm(TfrmAbout, frmAbout);
-  Application.CreateForm(TfrmLaser, frmLaser);
+  Application.CreateForm(TfrmUSonic, frmUSonic);
   Application.Run;
 end.

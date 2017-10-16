@@ -451,6 +451,7 @@ end;
 function TDspControlBlock.getParam1Control(x,y:integer):integer;
 var  s:string;
     res:integer;
+    sv:TColor;
 Begin
     if param1=1 then
      s:=param1prompt else s:='';
@@ -465,8 +466,10 @@ Begin
     End
     else ctrl1.Visible:=false;
 
+    sv:=canvas.Font.Color;
     canvas.Font.Color:=clRed;
     canvas.TextOut(res,y ,s);
+    canvas.Font.Color:=sv;
     res:=res+canvas.TextWidth(s);
 
     result:=res;

@@ -5,7 +5,7 @@ uses Vcl.Forms,Vcl.ExtCtrls,Vcl.Buttons;
 
 Type
 
-  TDeviceTypes=(LCD,LASER);
+  TDeviceTypes=(LCD,LASER,SOUND,USONIC);
 
   TDevice=record
     DeviceName:String;

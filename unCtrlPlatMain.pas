@@ -7,10 +7,11 @@ uses  Vcl.Dialogs, CPort, System.Classes,
   System.Actions, Vcl.ActnList, System.ImageList, Vcl.ImgList, Vcl.Controls,
   Vcl.Menus, Vcl.ComCtrls, Vcl.Imaging.pngimage, Vcl.Forms, Vcl.StdCtrls,
   Vcl.Buttons,Winapi.Windows,unBlock,Winapi.Messages,System.SysUtils, System.Variants,
-  unContainerBlock,Vcl.Graphics, Vcl.TabNotBk, Vcl.ExtCtrls, Vcl.WinXCtrls;
+  unContainerBlock,Vcl.Graphics, Vcl.TabNotBk, Vcl.ExtCtrls, Vcl.WinXCtrls,
+  Vcl.Imaging.jpeg;
 
 
-Const Version='0.1 (Άλφα έκδοση 10/10/2017)  - ';
+Const Version='0.3 (Άλφα έκδοση 10/10/2017)  - ';
 Const Programmer='© 2017 Despoinidis Christos';
 Const Progname='Έλεγχος συσκευών Arduino';
 Const Onlybluetooth=FALSE;
@@ -21,12 +22,6 @@ type
 
 
 
-  TActiveDevices=record
-      DeviceType:integer;//id of arduinodevice table index
-      DeviceParams:array[0..3] of integer;   //up to four params
-    // in order to send more params we should send another DeviceCmdId+1 with other 2 params and so on
-
-  end;
 
 
   TRoboCmd=record
@@ -107,7 +102,18 @@ type
     ArduImage: TImage;
     ArduPinout: TImage;
     LaserPanel: TCategoryPanel;
-    ComboBox1: TComboBox;
+    SoundPanel: TCategoryPanel;
+    pnlSound: TPanel;
+    Image4: TImage;
+    Label3: TLabel;
+    lblSound: TLabel;
+    SoundAdd: TBitBtn;
+    pnlUSonic: TPanel;
+    Image5: TImage;
+    Label4: TLabel;
+    lblUSonic: TLabel;
+    USonicAdd: TBitBtn;
+    USonicPanel: TCategoryPanel;
     procedure FormCreate(Sender: TObject);
     procedure ListBox1DblClick(Sender: TObject);
     procedure Button1Click(Sender: TObject);
@@ -178,6 +184,9 @@ type
     procedure addDevClick(Sender: TObject);
     procedure DeviceChanged;
     procedure CreateLaserCommands;
+    procedure CreateSoundCommands;
+    procedure CreateUltraSonicCommands;
+    function GetActiveDeviceParam(DevNo, PrmNo: Integer): Integer;
     { Private declarations }
   public
     { Public declarations }
@@ -202,11 +211,12 @@ var
   ipAddr:String='';
   BTComList:TStringList;
   BTIndex:integer=-1;
-  ActiveDevices:array[0..30] of TActiveDevices;//up to 30 devices
 
 
 implementation
-uses Registry, unAbout, inifiles,setupapi,math, fserialLcd, unDevices, fLaser,unHelpForms,unUtils;
+uses Registry, unAbout, inifiles,setupapi,math,  unDevices, unHelpForms,unUtils,
+      fserialLcd,fLaser,fSound,fUSonic
+    ;
 
 
 {$R *.dfm}
@@ -1131,32 +1141,6 @@ Begin
     col:=StringToColor('$00008282');
     //p2 is the value to check, p1 is positive or negative control
 
-    blck:=TDspControlElseBlock.Create(Self);
-    blck.Parent:=ctrlPanel;
-    blck.Color:=col;
-    blck.CommandColor:=clWhite;
-    blck.CommndID:=80;
-    blck.Commandtext:='Εάν απόσταση μπροστά %p1 μεγαλύτερη των %p2 εκατοστών';
-    TDspControlBlock(blck).EndBlockText:='Τέλος Εάν';
-    blck.TotalParams:=2;
-    blck.MyHint:='Ελέγχει εάν υπάρχει αντικείμενο μπροστά σε απόσταση μεγαλύτερη από τον αριθμό σε εκατοστά';
-    blck.Top:=10;
-    blck.Left:=10;
-    blck.Prototype:=true;
-
-    blck:=TDspControlElseBlock.Create(Self);
-    blck.Parent:=ctrlPanel;
-    blck.Color:=col;
-    blck.CommandColor:=clWhite;
-    blck.CommndID:=81;
-    blck.Commandtext:='Εάν απόσταση μπροστά %p1 μικρότερη των %p2 εκατοστών';
-    TDspControlBlock(blck).EndBlockText:='Τέλος Εάν';
-    blck.TotalParams:=2;
-    blck.param2question:='Δώσε την απόσταση σε εκατοστά';
-    blck.param2prompt:='Απόσταση (εκ.)';
-    blck.Top:=60;
-    blck.Left:=10;
-    blck.Prototype:=true;
 
     blck:=TDspControlElseBlock.Create(Self);
     blck.Parent:=ctrlPanel;
@@ -1367,35 +1351,6 @@ Begin
     blck.Parent:=variousPanel;
     blck.Color:=col;
     blck.CommandColor:=clWhite;
-    blck.CommndID:=110;
-    blck.Commandtext:='Παίξε ήχο beep';
-    blck.TotalParams:=0;
-    blck.Top:=60;
-    blck.Left:=10;
-    blck.Prototype:=true;
-
-    blck:=TDspBlock.Create(Self);
-    blck.Parent:=variousPanel;
-    blck.Color:=col;
-    blck.CommandColor:=clWhite;
-    blck.CommndID:=111;
-    blck.Commandtext:='Παίξε ήχο με συχνότητα %p1 και διάρκεια %p2';
-    blck.TotalParams:=2;
-    blck.param1question:='Δώσε την συχνότητα σε hz (π.χ. 2000) ';
-    blck.param1prompt:='Τόνος';
-    blck.param2question:='Δώσε την διάρκεια σε χιλ. δευτερολέπτου ';
-    blck.param2prompt:='Διάρκεια';
-    blck.param1:=2500;
-    blck.param2:=1000;
-    blck.Top:=110;
-    blck.Left:=10;
-    blck.MyHint:='συχνότητα σε hz (π.χ. 2000), διάρκεια σε χιλ. δευτερολέπτου';
-    blck.Prototype:=true;
-
-    blck:=TDspBlock.Create(Self);
-    blck.Parent:=variousPanel;
-    blck.Color:=col;
-    blck.CommandColor:=clWhite;
     blck.CommndID:=200;
     blck.Commandtext:='Διαμόρφωσε το pin %p1 για έξοδο';
     blck.param1question:='Δώσε το pin του Arduino ';
@@ -1481,7 +1436,7 @@ Begin
     blck.Color:=col;
     blck.CommandColor:=clWhite;
     blck.CommndID:=121;  //LCDprint
-    blck.Commandtext:='Τύπωσε στην LCD %pstr ';
+    blck.Commandtext:='Τύπωσε στην LCD %ps ';
     blck.Param1:=0;
     blck.ParamStr:='Μήνυμα';//should make an inline editor fro this
     blck.Param2:=length(blck.ParamStr); //string length
@@ -1510,7 +1465,7 @@ Begin
     blck.Color:=col;
     blck.CommandColor:=clWhite;
     blck.CommndID:=123;
-    blck.Commandtext:='Θέσε τον δείκτη LCD [%p1,%p2]';
+    blck.Commandtext:='Θέσε τον δείκτη LCD [ %p1 , %p2 ]';
     blck.Param1:=0; //χ
     blck.Param2:=0; //ψ
     blck.TotalParams:=2;
@@ -1537,7 +1492,7 @@ Begin
     blck.Color:=col;
     blck.CommandColor:=clWhite;
     blck.CommndID:=131;  //Laser On
-    blck.Commandtext:='Ενεργοποίησε το Laser %pd ';
+    blck.Commandtext:='%pd -> Ενεργοποίησε το Laser ';
     blck.Param1:=0;
     blck.Param2:=0;
     blck.TotalParams:=1;
@@ -1553,7 +1508,7 @@ Begin
     blck.Color:=col;
     blck.CommandColor:=clWhite;
     blck.CommndID:=132;  //Laser Off
-    blck.Commandtext:='Απενεργοποίησε το Laser %pd ';
+    blck.Commandtext:='%pd -> Απενεργοποίησε το Laser ';
     blck.Param1:=0;
     blck.Param2:=0;
     blck.TotalParams:=1;
@@ -1567,6 +1522,100 @@ Begin
     Laserpanel.Height:=blck.Top+blck.Height+40;
 
 End;
+
+
+procedure TfrmRoboLang.CreateSoundCommands;
+Var col:Tcolor;
+    tp:integer;
+    pnl:TCategoryPanel;
+Begin
+    col:=TColor( $0000BFFF );
+    pnl:=SoundPanel;
+    pnl.color:=LightenColor(col,30);
+    tp:=-40;
+
+
+    //Command 110 just sets pin for output
+
+    blck:=TDspBlock.Create(Self);
+    blck.Parent:=pnl;
+    blck.Color:=col;
+    blck.CommandColor:=clWhite;
+    blck.CommndID:=111;
+    blck.Commandtext:='%pd -> Παίξε ήχο beep';
+    blck.TotalParams:=0;
+    inc(tp,50);blck.Top:=tp;
+    blck.Left:=10;
+    blck.Prototype:=true;
+    blck.DeviceOnlyCommandID:=Ord(SOUND);
+
+    blck:=TDspBlock.Create(Self);
+    blck.Parent:=pnl;
+    blck.Color:=col;
+    blck.CommandColor:=clWhite;
+    blck.CommndID:=112;
+    blck.Commandtext:='%pd -> Παίξε ήχο με συχνότητα %p1 και διάρκεια %p2';
+    blck.TotalParams:=2;
+//    blck.param1question:='Δώσε την συχνότητα σε hz (π.χ. 2000) ';
+//    blck.param1prompt:='Τόνος';
+//    blck.param2question:='Δώσε την διάρκεια σε χιλ. δευτερολέπτου ';
+//    blck.param2prompt:='Διάρκεια';
+    blck.param1:=2500;
+    blck.param2:=1000;
+    inc(tp,50);blck.Top:=tp;
+    blck.Left:=10;
+    blck.MyHint:='συχνότητα σε hz (π.χ. 2000), διάρκεια σε χιλ. δευτερολέπτου';
+    blck.Prototype:=true;
+    blck.DeviceOnlyCommandID:=Ord(SOUND);
+
+    pnl.Height:=blck.Top+blck.Height+40;
+End;
+
+procedure TfrmRoboLang.CreateUltraSonicCommands;
+Var col:Tcolor;
+    tp:integer;
+    pnl:TCategoryPanel;
+Begin
+    col:=TColor( $0000BFFF );
+    pnl:=USonicPanel;
+    pnl.color:=LightenColor(col,30);
+    tp:=-40;
+
+   //Command 140  sets 2 pins needed for ultrasonic (trig,Echo)
+
+    blck:=TDspControlElseBlock.Create(Self);
+    blck.Parent:=pnl;
+    blck.Color:=col;
+    blck.CommandColor:=clWhite;
+    blck.CommndID:=141;
+    blck.Commandtext:='%pd -> Εάν απόσταση %p1 μεγαλύτερη των %p2 εκατοστών';
+    TDspControlBlock(blck).EndBlockText:='Τέλος Εάν';
+    blck.TotalParams:=2;
+    blck.MyHint:='Ελέγχει εάν υπάρχει αντικείμενο μπροστά σε απόσταση μεγαλύτερη από τον αριθμό σε εκατοστά';
+    inc(tp,50);blck.Top:=tp;
+    blck.Left:=10;
+    blck.Prototype:=true;
+    blck.DeviceOnlyCommandID:=Ord(USONIC);
+
+    blck:=TDspControlElseBlock.Create(Self);
+    blck.Parent:=pnl;
+    blck.Color:=col;
+    blck.CommandColor:=clWhite;
+    blck.CommndID:=142;
+    blck.Commandtext:='%pd ->  Εάν απόσταση %p1 μικρότερη των %p2 εκατοστών';
+    TDspControlBlock(blck).EndBlockText:='Τέλος Εάν';
+    blck.TotalParams:=2;
+    blck.param2question:='Δώσε την απόσταση σε εκατοστά';
+    blck.param2prompt:='Απόσταση (εκ.)';
+    inc(tp,50);blck.Top:=tp;
+    blck.Left:=10;
+    blck.Prototype:=true;
+    blck.DeviceOnlyCommandID:=Ord(USONIC);
+
+
+    pnl.Height:=blck.Top+blck.Height+40;
+End;
+
 
 
 procedure TfrmRoboLang.Edit1Exit(Sender: TObject);
@@ -1622,6 +1671,8 @@ Begin
     CreateVariousCommands;
     CreateLCDCommands;
     CreateLaserCommands;
+    CreateSoundCommands;
+    CreateUltraSonicCommands;
 End;
 
 Function TfrmRoboLang.getFullCaption:String;
@@ -1988,6 +2039,23 @@ begin
   ArduinoDevices[i].DeviceMax:=10;
   i:=i+1;
 
+  ArduinoDevices[i].DeviceName:='Sound';
+  ArduinoDevices[i].DeviceFormClass:=TfrmSound;
+  ArduinoDevices[i].DevicePanel:=pnlSound;
+  ArduinoDevices[i].DeviceCmdId:=110;
+  ArduinoDevices[i].DeviceParamCount:=1;
+  ArduinoDevices[i].DeviceMax:=10;
+  i:=i+1;
+
+  ArduinoDevices[i].DeviceName:='UltraSonic';
+  ArduinoDevices[i].DeviceFormClass:=TfrmUSonic;
+  ArduinoDevices[i].DevicePanel:=pnlUSonic;
+  ArduinoDevices[i].DeviceCmdId:=140;
+  ArduinoDevices[i].DeviceParamCount:=2;
+  ArduinoDevices[i].DeviceMax:=10;
+  i:=i+1;
+
+
    m:=i;
   //Set panel tag to device number
   for i := 0 to m-1 do
@@ -2042,7 +2110,7 @@ begin
    DeviceChanged;
 end;
 
-//Create a tstringlist with all the Device names and Pins for a certain type  i.e. Laser1=5
+//Create a tstringlist with all the Device names and DevNo for a certain type  i.e. Laser1=5
 //should be freed by the function user
 Function  TfrmRoboLang.GetActiveDevicePins(DevTp:integer=-1):TStrings;
 Var i:integer;
@@ -2054,13 +2122,18 @@ Begin
   try
      for i := 0 to ActDevsCount do
       if  (Devtp=-1) or (ActDevs[i].DeviceTypeID=Devtp) then
-        sl.AddObject(ActDevs[i].ActDevForm.Caption,TObject(ActDevs[i].ActDevParams[0]));
+        sl.AddObject(ActDevs[i].ActDevForm.Caption,TObject(i));//Device Number
 //        sl.Values[ActDevs[i].ActDevForm.Caption]:=inttostr(ActDevs[i].ActDevParams[0]);
     Result:=sl;
   Finally
 //    sl.Free;
   end;
 
+End;
+
+Function  TfrmRoboLang.GetActiveDeviceParam(DevNo:Integer;PrmNo:Integer):Integer;
+Begin
+   result:=ActDevs[Devno].ActDevParams[PrmNo];
 End;
 
 initialization
