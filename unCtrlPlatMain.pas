@@ -581,11 +581,13 @@ Begin
   NxtBlock:=blck;
   while Assigned(nxtblock) do
   Begin
-    Adddebug('Sending '+inttostr(NxtBlock.CommndID)
-     +' '+inttostr(NxtBlock.Param1)
-     +' '+inttostr(NxtBlock.Param2)
+    Adddebug('Sending CMD='+inttostr(NxtBlock.CommndID)
+     +'Dev= '+inttostr(NxtBlock.FpDevice)
+     +'p_1='+inttostr(NxtBlock.Param1)
+     +'P_2='+inttostr(NxtBlock.Param2)
     );
     BTSendInteger( NxtBlock.CommndID);
+    BTSendInteger( NxtBlock.PDevice);//device id -1 for no device
     BTSendInteger( NxtBlock.Param1);
     if NxtBlock.paramstr<>'' then
     Begin
@@ -669,7 +671,7 @@ begin
   BTPutChar(char(cnt));     //commands size
 
   ChkByte:=0;
-  //14/10/2017 Send setup commands
+  //14/10/2017 Send SETUP Device commands
   for I := 0 to ActDevsCount do
   Begin
     k:=0;
@@ -677,7 +679,14 @@ begin
      CommndID:=ArduinoDevices[ActDevs[i].DeviceTypeID].DeviceCmdId;
      Param1:=ActDevs[i].ActDevParams[k];
      Param2:=ActDevs[i].ActDevParams[k+1];
+//     adddebug('------------------------');
+//     adddebug('Setup Cmd:'+inttostr(CommndID));
+//     adddebug('Device ID:'+inttostr(i));
+//     adddebug('Param 1  :'+inttostr(Param1));
+//     adddebug('Param 2  :'+inttostr(Param2));
+//     adddebug('------------------------');
      BTSendInteger(CommndID);
+     BTSendInteger(i); //device id
      BTSendInteger(Param1);
      BTSendInteger(Param2);
      k:=k+2;

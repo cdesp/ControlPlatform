@@ -2,7 +2,7 @@ object frmRoboLang: TfrmRoboLang
   Left = 0
   Top = 0
   Caption = #904#955#949#947#967#959#962' '#963#965#963#954#949#965#974#957' Arduino'
-  ClientHeight = 586
+  ClientHeight = 566
   ClientWidth = 944
   Color = clBtnFace
   DoubleBuffered = True
@@ -25,7 +25,7 @@ object frmRoboLang: TfrmRoboLang
   TextHeight = 13
   object Splitter1: TSplitter
     Left = 0
-    Top = 501
+    Top = 481
     Width = 944
     Height = 6
     Cursor = crVSplit
@@ -35,7 +35,7 @@ object frmRoboLang: TfrmRoboLang
   end
   object ListBox1: TListBox
     Left = 0
-    Top = 507
+    Top = 487
     Width = 944
     Height = 60
     Align = alBottom
@@ -141,7 +141,7 @@ object frmRoboLang: TfrmRoboLang
   end
   object SBar: TStatusBar
     Left = 0
-    Top = 567
+    Top = 547
     Width = 944
     Height = 19
     Color = clLime
@@ -166,7 +166,7 @@ object frmRoboLang: TfrmRoboLang
     Left = 0
     Top = 37
     Width = 944
-    Height = 464
+    Height = 444
     ParentCustomHint = False
     Align = alClient
     TabFont.Charset = DEFAULT_CHARSET
@@ -182,7 +182,7 @@ object frmRoboLang: TfrmRoboLang
       object Splitter2: TSplitter
         Left = 321
         Top = 0
-        Height = 436
+        Height = 416
         ExplicitLeft = 8
         ExplicitHeight = 648
       end
@@ -191,7 +191,7 @@ object frmRoboLang: TfrmRoboLang
         Left = 324
         Top = 0
         Width = 612
-        Height = 436
+        Height = 416
         HorzScrollBar.Smooth = True
         HorzScrollBar.Style = ssHotTrack
         VertScrollBar.Smooth = True
@@ -1145,8 +1145,7 @@ object frmRoboLang: TfrmRoboLang
         Left = 0
         Top = 0
         Width = 321
-        Height = 436
-        VertScrollBar.Position = 1366
+        Height = 416
         VertScrollBar.Smooth = True
         VertScrollBar.Style = ssHotTrack
         VertScrollBar.Tracking = True
@@ -1171,28 +1170,28 @@ object frmRoboLang: TfrmRoboLang
         OnMouseEnter = CategoryPanelGroup1MouseEnter
         OnMouseWheel = CategoryPanelGroup1MouseWheel
         object USonicPanel: TCategoryPanel
-          Top = 234
+          Top = 1600
           Caption = 'UltraSonic Sensor'
           TabOrder = 0
         end
         object SoundPanel: TCategoryPanel
-          Top = 34
+          Top = 1400
           Caption = 'Sound'
           TabOrder = 1
         end
         object LaserPanel: TCategoryPanel
-          Top = -166
+          Top = 1200
           Caption = 'Laser'
           Color = clRed
           TabOrder = 2
         end
         object LCDpanel: TCategoryPanel
-          Top = -366
+          Top = 1000
           Caption = 'LCD '#927#952#972#957#951' 16x2'
           TabOrder = 3
         end
         object MovPanel: TCategoryPanel
-          Top = -566
+          Top = 800
           Caption = #922#943#957#951#963#951
           Color = 16744448
           DoubleBuffered = True
@@ -1207,7 +1206,7 @@ object frmRoboLang: TfrmRoboLang
           OnMouseEnter = CategoryPanelGroup1MouseEnter
         end
         object variousPanel: TCategoryPanel
-          Top = -766
+          Top = 600
           Caption = #916#953#940#966#959#961#945
           Color = 13395456
           Font.Charset = DEFAULT_CHARSET
@@ -1220,21 +1219,21 @@ object frmRoboLang: TfrmRoboLang
           OnMouseEnter = CategoryPanelGroup1MouseEnter
         end
         object CtrlPanel: TCategoryPanel
-          Top = -966
+          Top = 400
           Caption = #904#955#949#947#967#959#953
           Color = clYellow
           TabOrder = 6
           OnMouseEnter = CategoryPanelGroup1MouseEnter
         end
         object LoopPanel: TCategoryPanel
-          Top = -1166
+          Top = 200
           Caption = #914#961#972#967#959#953
           Color = 4210816
           TabOrder = 7
           OnMouseEnter = CategoryPanelGroup1MouseEnter
         end
         object strtPanel: TCategoryPanel
-          Top = -1366
+          Top = 0
           Caption = #904#957#945#961#958#951' - '#923#942#958#951
           Color = 8453888
           Ctl3D = False
@@ -1258,7 +1257,7 @@ object frmRoboLang: TfrmRoboLang
         Left = 0
         Top = 0
         Width = 303
-        Height = 436
+        Height = 416
         HorzScrollBar.Visible = False
         VertScrollBar.Position = 283
         Align = alLeft
@@ -19604,7 +19603,7 @@ object frmRoboLang: TfrmRoboLang
         Left = 303
         Top = 0
         Width = 633
-        Height = 436
+        Height = 416
         Align = alClient
         TabFont.Charset = DEFAULT_CHARSET
         TabFont.Color = clBtnText
@@ -19621,7 +19620,7 @@ object frmRoboLang: TfrmRoboLang
             Left = 0
             Top = 0
             Width = 209
-            Height = 408
+            Height = 388
             Align = alLeft
             Caption = #917#960#943#955#949#958#949' '#924#959#957#964#941#955#959
             ItemIndex = 0
@@ -19636,7 +19635,7 @@ object frmRoboLang: TfrmRoboLang
             Left = 209
             Top = 0
             Width = 416
-            Height = 408
+            Height = 388
             Align = alClient
             Caption = 'Panel1'
             TabOrder = 1
@@ -19703,7 +19702,7 @@ object frmRoboLang: TfrmRoboLang
     Left = 785
     Top = 104
     Bitmap = {
-      494C01010B002400480110001000FFFFFFFFFF10FFFFFFFFFFFFFFFF424D3600
+      494C01010B0024004C0110001000FFFFFFFFFF10FFFFFFFFFFFFFFFF424D3600
       0000000000003600000028000000400000003000000001002000000000000030
       0000000000000000000000000000000000000000000000000000000000000303
       03044B4A4A7A6D6C6CB36E6E6EB37F7E7ECB7F7E7ECB6E6D6DB36D6C6CB34B4A

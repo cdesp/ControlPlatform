@@ -72,6 +72,7 @@ Type
     procedure SetParamD(const Value: String);
     procedure SetComboBoxValue;
     procedure OnRefreshRequest(var Msg: TMessage); message WM_REFRESH_MSG;
+    procedure CMColorChanged(var Message: TMessage); message CM_COLORCHANGED;
     procedure SetPDevice(const Value: Integer);
     function getParamDControl(x, y: integer): integer;
     procedure ComboChange(Sender: TObject);
@@ -294,6 +295,7 @@ begin
   BorderColor:=clRed;
   FCommandText:='Command';
   CommndID:=-1;
+  FPDevice:=-1;//default Device none
   fParam1:=0;
   fParam2:=0;
   TotalParams:=0;
@@ -457,6 +459,8 @@ end;
 procedure TDspBlock.SetCommandColor(const Value: TColor);
 begin
   FCommandColor := Value;
+  if assigned(ctrld) then
+    TComboBox(ctrlD).font.Color:=Value;
 end;
 
 procedure TDspBlock.setCommandText(cmdtxt: String);
@@ -1725,9 +1729,13 @@ begin
   TComboBox(ctrlD).Width:=80;
   TComboBox(ctrlD).onchange:=ComboChange;
  // TComboBox(ctrlD).onCloseup:=edit1Change;
-//  TComboBox(ctrlD).BevelInner:=bvnone;
-//  TComboBox(ctrlD).Bevelkind:=bknone;
-//  TComboBox(ctrlD).BevelOuter:=bvnone;
+  TComboBox(ctrlD).BevelInner:=bvnone;
+  TComboBox(ctrlD).Bevelkind:=bkFlat;
+  TComboBox(ctrlD).BevelOuter:=bvSpace;
+  TComboBox(ctrlD).StyleElements:=[];
+  TComboBox(ctrlD).AutoComplete:=true;
+  TComboBox(ctrlD).AutoCompleteDelay:=1000;
+
 //  TComboBox(ctrlS).BorderStyle:=bsNone;
   TComboBox(ctrlD).height:=14;
 end;
@@ -1813,6 +1821,13 @@ Begin
   borderDn[k] := point(X,Y+H-nosh);
 
 End;
+
+procedure TDspBlock.CMColorChanged(var Message: TMessage);
+begin
+ inherited;
+ if assigned(ctrlD) then
+   TComboBox(ctrlD).Color:=LightenColor(Color,30);
+end;
 
 procedure TDspBlock.CMMouseEnter(var Message: TMessage);
 begin
