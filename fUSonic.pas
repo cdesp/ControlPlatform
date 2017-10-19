@@ -52,12 +52,12 @@ end;
 
 procedure TfrmUSonic.SpinEdit1Change(Sender: TObject);
 begin
-  SetParam(0,TSpinEdit(Sender));
+  SetParam(1,TSpinEdit(Sender));
 end;
 
 procedure TfrmUSonic.SpinEdit2Change(Sender: TObject);
 begin
-  SetParam(1,TSpinEdit(Sender));
+  SetParam(2,TSpinEdit(Sender));
 end;
 
 end.

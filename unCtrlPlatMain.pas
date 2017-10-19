@@ -11,7 +11,7 @@ uses  Vcl.Dialogs, CPort, System.Classes,
   Vcl.Imaging.jpeg;
 
 
-Const Version='0.3 (Άλφα έκδοση 10/10/2017)  - ';
+Const Version='0.4 (Άλφα έκδοση 10/10/2017)  - ';
 Const Programmer='© 2017 Despoinidis Christos';
 Const Progname='Έλεγχος συσκευών Arduino';
 Const Onlybluetooth=FALSE;
@@ -970,58 +970,56 @@ end;
 
 procedure TfrmRoboLang.CreateStartCommands;
 Var col:Tcolor;
+ tp:integer;
+    pnl:TCategoryPanel;
 Begin
     col:=clGreen;
+    pnl:=strtPanel;
+    tp:=-40;
+
+    pnl.color:=LightenColor(col,30);
 
     blck:=TDspBlock.Create(Self);
     blck.topNose:=false;
-    blck.Parent:=strtPanel;
+    blck.Parent:=pnl;
     blck.Color:=col;
     blck.BorderColor:=clAqua;
     blck.CommandColor:=clWhite;
     blck.CommndID:=1;
     blck.Commandtext:='Έναρξη προγράμματος';
-    blck.Top:=10;
+    inc(tp,50);blck.Top:=tp;
     blck.Left:=10;
 
 
 
     blck:=TDspBlock.Create(Self);
     blck.botNose:=false;
-    blck.Parent:=strtPanel;
+    blck.Parent:=pnl;
     blck.Color:=col;
     blck.BorderColor:=clAqua;
     blck.CommandColor:=clWhite;
     blck.CommndID:=2;
     blck.Commandtext:='Τερματισμός προγράμματος';
-    blck.Top:=60;
+    inc(tp,50);blck.Top:=tp;
     blck.Left:=10;
 
-    {blck:=TDspControlElseBlock.Create(Self);
-    blck.Parent:=strtPanel;
-    blck.Color:=col;
-    blck.BorderColor:=clAqua;
-    blck.CommandColor:=clWhite;
-    blck.Commandtext:='Εάν %p1 απόσταση μεγαλύτερη του %p2';
-    TDspControlBlock(blck).EndBlockText:='Τέλος Εάν';
-    blck.TotalParams:=2;
-    blck.CommndID:=80;
-    blck.Top:=110;
-    blck.Left:=10; }
 
-
-    strtPanel.Height:=blck.Top+blck.Height+40;
+    pnl.Height:=blck.Top+blck.Height+40;
 End;
 
 procedure TfrmRoboLang.CreateMoveCommands;
 Var col:Tcolor;
     tp:integer;
+    pnl:TCategoryPanel;
 Begin
     col:=clBlue;
+    pnl:=Movpanel;
     tp:=-40;
 
+    pnl.color:=LightenColor(col,30);
+
     blck:=TDspBlock.Create(Self);
-    blck.Parent:=Movpanel;
+    blck.Parent:=pnl;
     blck.Color:=col;
     blck.BorderColor:=clGreen;
     blck.CommandColor:=clWhite;
@@ -1036,7 +1034,7 @@ Begin
 
 
     blck:=TDspBlock.Create(Self);
-    blck.Parent:=Movpanel;
+    blck.Parent:=pnl;
     blck.Color:=col;
     blck.BorderColor:=clGreen;
     blck.CommandColor:=clWhite;
@@ -1049,7 +1047,7 @@ Begin
 
 
     blck:=TDspBlock.Create(Self);
-    blck.Parent:=Movpanel;
+    blck.Parent:=pnl;
     blck.Color:=col;
     blck.BorderColor:=clGreen;
     blck.CommandColor:=clWhite;
@@ -1062,7 +1060,7 @@ Begin
 
 
     blck:=TDspBlock.Create(Self);
-    blck.Parent:=Movpanel;
+    blck.Parent:=pnl;
     blck.Color:=col;
     blck.BorderColor:=clGreen;
     blck.CommandColor:=clWhite;
@@ -1077,7 +1075,7 @@ Begin
 
 
     blck:=TDspBlock.Create(Self);
-    blck.Parent:=Movpanel;
+    blck.Parent:=pnl;
     blck.Color:=col;
     blck.BorderColor:=clGreen;
     blck.CommandColor:=clWhite;
@@ -1091,7 +1089,7 @@ Begin
     blck.Prototype:=true;
 
     blck:=TDspBlock.Create(Self);
-    blck.Parent:=Movpanel;
+    blck.Parent:=pnl;
     blck.Color:=col;
     blck.BorderColor:=clGreen;
     blck.CommandColor:=clWhite;
@@ -1103,17 +1101,23 @@ Begin
     blck.Prototype:=true;
 
 
-    Movpanel.Height:=blck.Top+blck.Height+40;
+    pnl.Height:=blck.Top+blck.Height+40;
 
 End;
 
 procedure TfrmRoboLang.CreateLoopCommands;
 Var col:Tcolor;
+    tp:integer;
+    pnl:TCategoryPanel;
 Begin
     col:=clMaroon;
+    pnl:=looppanel;
+    tp:=-40;
+
+    pnl.color:=LightenColor(col,30);
 
     blck:=TDspLoopBlock.Create(Self);
-    blck.Parent:=looppanel;
+    blck.Parent:=pnl;
     blck.Color:=col;
     blck.CommandColor:=clWhite;
     blck.CommndID:=70;
@@ -1122,12 +1126,12 @@ Begin
     blck.TotalParams:=1;
     blck.MyHint:='Επαναλαμβάνει τις εντολές που περιέχονται όσες φορές θέλουμε';
     blck.Param1:=5;
-    blck.Top:=10;
+    inc(tp,50);blck.Top:=tp;
     blck.Left:=10;
     blck.Prototype:=true;
 
     blck:=TDspLoopBlock.Create(Self);
-    blck.Parent:=looppanel;
+    blck.Parent:=pnl;
     blck.Color:=col;
     blck.CommandColor:=clWhite;
     blck.CommndID:=72;
@@ -1136,155 +1140,25 @@ Begin
     blck.TotalParams:=0;
     blck.MyHint:='Επαναλαμβάνει τις εντολές που περιέχονται για πάντα';
     blck.Param1:=0;
-    blck.Top:=60;
+    inc(tp,50);blck.Top:=tp;
     blck.Left:=10;
     blck.Prototype:=true;
 
-    looppanel.Height:=blck.Top+blck.Height+40;
+    pnl.Height:=blck.Top+blck.Height+40;
 
 End;
 
 procedure TfrmRoboLang.CreateControlCommands;
 Var col:Tcolor;
+    tp:integer;
+    pnl:TCategoryPanel;
 Begin
     col:=StringToColor('$00008282');
+    pnl:=ctrlPanel;
+    tp:=-40;
+
+    pnl.color:=LightenColor(col,30);
     //p2 is the value to check, p1 is positive or negative control
-
-
-    blck:=TDspControlElseBlock.Create(Self);
-    blck.Parent:=ctrlPanel;
-    blck.Color:=col;
-    blck.CommandColor:=clWhite;
-    blck.CommndID:=82;
-    blck.Commandtext:='Εάν απόσταση δεξιά %p1 μεγαλύτερη των %p2 εκατοστών';
-    TDspControlBlock(blck).EndBlockText:='Τέλος Εάν';
-    blck.TotalParams:=2;
-    blck.param2question:='Δώσε την απόσταση σε εκατοστά';
-    blck.param2prompt:='Απόσταση (εκ.)';
-    blck.Top:=110;
-    blck.Left:=10;
-    blck.Prototype:=true;
-
-    blck:=TDspControlElseBlock.Create(Self);
-    blck.Parent:=ctrlPanel;
-    blck.Color:=col;
-    blck.CommandColor:=clWhite;
-    blck.CommndID:=83;
-    blck.Commandtext:='Εάν απόσταση δεξιά %p1 μικρότερη των %p2 εκατοστών';
-    TDspControlBlock(blck).EndBlockText:='Τέλος Εάν';
-    blck.TotalParams:=2;
-    blck.param1question:='Δώσε την απόσταση σε εκατοστά';
-    blck.param1prompt:='Απόσταση (εκ.)';
-    blck.Top:=160;
-    blck.Left:=10;
-    blck.Prototype:=true;
-
-    blck:=TDspControlElseBlock.Create(Self);
-    blck.Parent:=ctrlPanel;
-    blck.Color:=col;
-    blck.CommandColor:=clWhite;
-    blck.CommndID:=84;
-    blck.Commandtext:='Εάν απόσταση αριστερά %p1 μεγαλύτερη των %p2 εκατοστών';
-    TDspControlBlock(blck).EndBlockText:='Τέλος Εάν';
-    blck.TotalParams:=2;
-    blck.param2question:='Δώσε την απόσταση σε εκατοστά';
-    blck.param2prompt:='Απόσταση (εκ.)';
-    blck.Top:=210;
-    blck.Left:=10;
-    blck.Prototype:=true;
-
-    blck:=TDspControlElseBlock.Create(Self);
-    blck.Parent:=ctrlPanel;
-    blck.Color:=col;
-    blck.CommandColor:=clWhite;
-    blck.CommndID:=85;
-    blck.Commandtext:='Εάν απόσταση αριστερά %p1 μικρότερη των %p2 εκατοστών';
-    TDspControlBlock(blck).EndBlockText:='Τέλος Εάν';
-    blck.TotalParams:=2;
-    blck.param2question:='Δώσε την απόσταση σε εκατοστά';
-    blck.param2prompt:='Απόσταση (εκ.)';
-    blck.Top:=260;
-    blck.Left:=10;
-    blck.Prototype:=true;
-
-    blck:=TDspControlElseBlock.Create(Self);
-    blck.Parent:=ctrlPanel;
-    blck.Color:=col;
-    blck.CommandColor:=clWhite;
-    blck.CommndID:=86;
-    blck.Commandtext:='Εάν %p1 ήχος αριστερά';
-    TDspControlBlock(blck).EndBlockText:='Τέλος Εάν';
-    blck.Top:=310;
-    blck.Left:=10;
-    blck.enabled:=false;
-    blck.Prototype:=true;
-
-    blck:=TDspControlElseBlock.Create(Self);
-    blck.Parent:=ctrlPanel;
-    blck.Color:=col;
-    blck.CommandColor:=clWhite;
-    blck.CommndID:=87;
-    blck.Commandtext:='Εάν %p1 ήχος δεξιά';
-    TDspControlBlock(blck).EndBlockText:='Τέλος Εάν';
-    blck.Top:=360;
-    blck.Left:=10;
-    blck.enabled:=false;
-    blck.Prototype:=true;
-
-    blck:=TDspControlElseBlock.Create(Self);
-    blck.Parent:=ctrlPanel;
-    blck.Color:=col;
-    blck.CommandColor:=clWhite;
-    blck.CommndID:=88;
-    blck.Commandtext:='Εάν %p1 Μαύρο αριστερά';
-    TDspControlBlock(blck).EndBlockText:='Τέλος Εάν';
-    blck.Top:=410;
-    blck.Left:=10;
-    blck.Prototype:=true;
-
-    blck:=TDspControlElseBlock.Create(Self);
-    blck.Parent:=ctrlPanel;
-    blck.Color:=col;
-    blck.CommandColor:=clWhite;
-    blck.CommndID:=89;
-    blck.Commandtext:='Εάν %p1 Μαύρο δεξιά';
-    TDspControlBlock(blck).EndBlockText:='Τέλος Εάν';
-    blck.Top:=460;
-    blck.Left:=10;
-    blck.Prototype:=true;
-
-    blck:=TDspControlElseBlock.Create(Self);
-    blck.Parent:=ctrlPanel;
-    blck.Color:=col;
-    blck.CommandColor:=clWhite;
-    blck.CommndID:=90;
-    blck.Commandtext:='Εάν %p1 Μαύρο τέρμα αριστερά';
-    TDspControlBlock(blck).EndBlockText:='Τέλος Εάν';
-    blck.Top:=510;
-    blck.Left:=10;
-    blck.Prototype:=true;
-
-    blck:=TDspControlElseBlock.Create(Self);
-    blck.Parent:=ctrlPanel;
-    blck.Color:=col;
-    blck.CommandColor:=clWhite;
-    blck.CommndID:=91;
-    blck.Commandtext:='Εάν %p1 Μαύρο τέρμα δεξιά';
-    TDspControlBlock(blck).EndBlockText:='Τέλος Εάν';
-    blck.Top:=560;
-    blck.Left:=10;
-    blck.Prototype:=true;
-
-    blck:=TDspControlElseBlock.Create(Self);
-    blck.Parent:=ctrlPanel;
-    blck.Color:=col;
-    blck.CommandColor:=clWhite;
-    blck.CommndID:=92;
-    blck.Commandtext:='Εάν %p1 Μαύρο στην μέση';
-    TDspControlBlock(blck).EndBlockText:='Τέλος Εάν';
-    blck.Top:=610;
-    blck.Left:=10;
-    blck.Prototype:=true;
 
     blck:=TDspControlElseBlock.Create(Self);
     blck.Parent:=ctrlPanel;
@@ -1293,7 +1167,7 @@ Begin
     blck.CommndID:=93;
     blck.Commandtext:='Εάν %p1 επαφή προφυλακτήρα';
     TDspControlBlock(blck).EndBlockText:='Τέλος Εάν';
-    blck.Top:=660;
+    inc(tp,50);blck.Top:=tp;
     blck.Left:=10;
     blck.Prototype:=true;
 
@@ -1309,9 +1183,9 @@ Begin
     blck.param1prompt:='δεν';
     blck.TotalParams:=2;
     blck.param1:=55;
-    blck.Top:=710;
+    inc(tp,50);blck.Top:=tp;
     blck.Left:=10;
-    blck.MyHint:='A0=pin54 A1=pin55 ... A15=pin69';
+    blck.MyHint:='for MEGA:A0=pin54 A1=pin55 ... A15=pin69';
     blck.Prototype:=true;
 
     blck:=TDspControlElseBlock.Create(Self);
@@ -1326,24 +1200,29 @@ Begin
     blck.param1prompt:='δεν';
     blck.TotalParams:=2;
     blck.param1:=55;
-    blck.Top:=760;
+    inc(tp,50);blck.Top:=tp;
     blck.Left:=10;
-    blck.MyHint:='A0=pin54 A1=pin55 ... A15=pin69';
+    blck.MyHint:='for MEGA:A0=pin54 A1=pin55 ... A15=pin69';
     blck.Prototype:=true;
 
 
-    ctrlPanel.Height:=blck.Top+blck.Height+40;
+    pnl.Height:=blck.Top+blck.Height+40;
 
 End;
 
 procedure TfrmRoboLang.CreateVariousCommands;
 Var col:Tcolor;
+    tp:integer;
+    pnl:TCategoryPanel;
 Begin
     col:=TColor($00FF0080);
+    pnl:=variousPanel;
+    tp:=-40;
 
+    pnl.color:=LightenColor(col,30);
 
     blck:=TDspBlock.Create(Self);
-    blck.Parent:=variousPanel;
+    blck.Parent:=pnl;
     blck.Color:=col;
     blck.CommandColor:=clWhite;
     blck.CommndID:=250;
@@ -1352,12 +1231,12 @@ Begin
     blck.param1prompt:='Χιλιοστά';
     blck.TotalParams:=1;
     blck.param1:=1000;
-    blck.Top:=10;
+    inc(tp,50);blck.Top:=tp;
     blck.Left:=10;
     blck.Prototype:=true;
 
     blck:=TDspBlock.Create(Self);
-    blck.Parent:=variousPanel;
+    blck.Parent:=pnl;
     blck.Color:=col;
     blck.CommandColor:=clWhite;
     blck.CommndID:=200;
@@ -1366,13 +1245,13 @@ Begin
     blck.param1prompt:='pin';
     blck.TotalParams:=1;
     blck.param1:=2;
-    blck.Top:=160;
+    inc(tp,50);blck.Top:=tp;
     blck.Left:=10;
     blck.MyHint:='A0=pin54 A1=pin55 ... A15=pin69';
     blck.Prototype:=true;
 
     blck:=TDspBlock.Create(Self);
-    blck.Parent:=variousPanel;
+    blck.Parent:=pnl;
     blck.Color:=col;
     blck.CommandColor:=clWhite;
     blck.CommndID:=201;
@@ -1381,13 +1260,13 @@ Begin
     blck.param1prompt:='pin';
     blck.TotalParams:=1;
     blck.param1:=2;
-    blck.Top:=210;
+    inc(tp,50);blck.Top:=tp;
     blck.Left:=10;
     blck.MyHint:='A0=pin54 A1=pin55 ... A15=pin69';
     blck.Prototype:=true;
 
     blck:=TDspBlock.Create(Self);
-    blck.Parent:=variousPanel;
+    blck.Parent:=pnl;
     blck.Color:=col;
     blck.CommandColor:=clWhite;
     blck.CommndID:=202;
@@ -1396,13 +1275,13 @@ Begin
     blck.param1prompt:='pin';
     blck.TotalParams:=1;
     blck.param1:=2;
-    blck.Top:=260;
+    inc(tp,50);blck.Top:=tp;
     blck.Left:=10;
     blck.MyHint:='A0=pin54 A1=pin55 ... A15=pin69';
     blck.Prototype:=true;
 
     blck:=TDspBlock.Create(Self);
-    blck.Parent:=variousPanel;
+    blck.Parent:=pnl;
     blck.Color:=col;
     blck.CommandColor:=clWhite;
     blck.CommndID:=203;
@@ -1411,22 +1290,25 @@ Begin
     blck.param1prompt:='pin';
     blck.TotalParams:=1;
     blck.param1:=2;
-    blck.Top:=310;
+    inc(tp,50);blck.Top:=tp;
     blck.Left:=10;
     blck.MyHint:='A0=pin54 A1=pin55 ... A15=pin69';
     blck.Prototype:=true;
 
-    variousPanel.Height:=blck.Top+blck.Height+40;
+    pnl.Height:=blck.Top+blck.Height+40;
 
 End;
 
 procedure TfrmRoboLang.CreateLCDCommands;
 Var col:Tcolor;
     tp:integer;
+    pnl:TCategoryPanel;
 Begin
     col:=TColor( $00CC6600 );
-    LCDpanel.color:=LightenColor(col,30);
+    pnl:=LCDpanel;
     tp:=-40;
+
+    pnl.color:=LightenColor(col,30);
 
 //    blck:=TDspBlock.Create(Self);//to be deleted
 //    blck.Parent:=LCDpanel;
@@ -1484,20 +1366,23 @@ Begin
     blck.Prototype:=true;
     blck.DeviceOnlyCommandID:=Ord(LCD);
 
-    LCDpanel.Height:=blck.Top+blck.Height+40;
+    pnl.Height:=blck.Top+blck.Height+40;
 
 End;
 
 procedure TfrmRoboLang.CreateLaserCommands;
 Var col:Tcolor;
     tp:integer;
+    pnl:TCategoryPanel;
 Begin
     col:=TColor($007500CC);
-    Laserpanel.color:=LightenColor(col,30);
+    pnl:=Laserpanel;
     tp:=-40;
 
+    pnl.color:=LightenColor(col,30);
+
     blck:=TDspBlock.Create(Self);
-    blck.Parent:=Laserpanel;
+    blck.Parent:=pnl;
     blck.Color:=col;
     blck.CommandColor:=clWhite;
     blck.CommndID:=131;  //Laser On
@@ -1513,7 +1398,7 @@ Begin
 
 
     blck:=TDspBlock.Create(Self);
-    blck.Parent:=Laserpanel;
+    blck.Parent:=pnl;
     blck.Color:=col;
     blck.CommandColor:=clWhite;
     blck.CommndID:=132;  //Laser Off
@@ -1528,7 +1413,7 @@ Begin
     blck.DeviceOnlyCommandID:=Ord(LASER); //Device id 1
 
 
-    Laserpanel.Height:=blck.Top+blck.Height+40;
+    pnl.Height:=blck.Top+blck.Height+40;
 
 End;
 
@@ -1540,9 +1425,9 @@ Var col:Tcolor;
 Begin
     col:=TColor( $0000BFFF );
     pnl:=SoundPanel;
-    pnl.color:=LightenColor(col,30);
     tp:=-40;
 
+    pnl.color:=LightenColor(col,30);
 
     //Command 110 just sets pin for output
 
@@ -1587,8 +1472,10 @@ Var col:Tcolor;
 Begin
     col:=TColor( $0000BFFF );
     pnl:=USonicPanel;
-    pnl.color:=LightenColor(col,30);
     tp:=-40;
+
+    pnl.color:=LightenColor(col,30);
+
 
    //Command 140  sets 2 pins needed for ultrasonic (trig,Echo)
 

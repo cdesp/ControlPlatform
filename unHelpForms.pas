@@ -66,10 +66,10 @@ end;
 procedure TDefDevForm.DoShow;
 begin
   inherited;
-  SetSEfromParam(0,Param1SE);
-  SetSEfromParam(0,Param2SE);
-  SetSEfromParam(0,Param3SE);
-  SetSEfromParam(0,Param4SE);
+  SetSEfromParam(1,Param1SE);
+  SetSEfromParam(2,Param2SE);
+  SetSEfromParam(3,Param3SE);
+  SetSEfromParam(4,Param4SE);
   RefreshBlockControls;
 end;
 
@@ -129,14 +129,14 @@ end;
 
 procedure TDefDevForm.SetParam(Pno: integer; SE: TSpinedit);
 begin
-  ActDevs[ActiveDeviceId].ActDevParams[Pno]:=Se.Value;
+  ActDevs[ActiveDeviceId].ActDevParams[Pno-1]:=Se.Value;
   RefreshBlockControls;
 end;
 
 procedure TDefDevForm.SetSEfromParam(Pno: integer; SE: TSpinedit);
 Begin
    if assigned(SE) then
-     Se.Value:=ActDevs[ActiveDeviceId].ActDevParams[Pno];
+     Se.Value:=ActDevs[ActiveDeviceId].ActDevParams[Pno-1];
 End;
 
 end.

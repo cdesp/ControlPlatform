@@ -46,7 +46,7 @@ end;
 
 procedure TfrmSound.SpinEdit1Change(Sender: TObject);
 begin
- SetParam(0,TSpinEdit(Sender));
+ SetParam(1,TSpinEdit(Sender));
 end;
 
 
