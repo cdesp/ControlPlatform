@@ -16,7 +16,6 @@ type
     GroupBox1: TGroupBox;
     Label1: TLabel;
     SpinEdit1: TSpinEdit;
-    procedure FormCloseQuery(Sender: TObject; var CanClose: Boolean);
     procedure FormShow(Sender: TObject);
     procedure SpinEdit1Change(Sender: TObject);
   private
@@ -32,12 +31,6 @@ implementation
 uses unDevices;
 
 {$R *.dfm}
-procedure TfrmSound.FormCloseQuery(Sender: TObject; var CanClose: Boolean);
-begin
-   KillDevice;
-
-end;
-
 procedure TfrmSound.FormShow(Sender: TObject);
 begin
   Param1SE:=SpinEdit1;

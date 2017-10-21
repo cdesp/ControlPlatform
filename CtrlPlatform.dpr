@@ -15,7 +15,8 @@ uses
   unHelpForms in 'unHelpForms.pas',
   unUtils in 'unUtils.pas',
   fSound in 'fSound.pas' {frmSound},
-  fUSonic in 'fUSonic.pas' {frmUSonic};
+  fUSonic in 'fUSonic.pas' {frmUSonic},
+  fServo in 'fServo.pas' {frmServo};
 
 {$R *.res}
 
@@ -26,5 +27,6 @@ begin
   Application.CreateForm(TfrmRoboLang, frmRoboLang);
   Application.CreateForm(TfrmAbout, frmAbout);
   Application.CreateForm(TfrmUSonic, frmUSonic);
+  Application.CreateForm(TfrmServo, frmServo);
   Application.Run;
 end.

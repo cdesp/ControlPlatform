@@ -9,6 +9,7 @@ Type
   private
     procedure SetSEfromParam(Pno: integer; SE: TSpinedit);
     class constructor Create;
+    procedure FormCloseQuery(Sender: TObject; var CanClose: Boolean);
 
 
   protected
@@ -38,6 +39,13 @@ uses unCtrlPlatMain,Messages;
 
 { TDefDevForm }
 
+procedure TDefDevForm.FormCloseQuery(Sender: TObject; var CanClose: Boolean);
+begin
+   KillDevice;
+
+end;
+
+
 function TDefDevForm.ActDev: TActiveDevice;
 begin
    Result:=ActDevs[ActiveDeviceId];
@@ -57,6 +65,7 @@ end;
 procedure TDefDevForm.DoCreate;
 begin
   inherited;
+  OnCloseQuery:=FormCloseQuery;
   Param1SE:=nil;
   Param2SE:=nil;
   Param3SE:=nil;

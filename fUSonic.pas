@@ -18,7 +18,6 @@ type
     SpinEdit1: TSpinEdit;
     Label3: TLabel;
     SpinEdit2: TSpinEdit;
-    procedure FormCloseQuery(Sender: TObject; var CanClose: Boolean);
     procedure FormShow(Sender: TObject);
     procedure SpinEdit1Change(Sender: TObject);
     procedure SpinEdit2Change(Sender: TObject);
@@ -35,12 +34,6 @@ implementation
 uses unDevices;
 
 {$R *.dfm}
-
-procedure TfrmUSonic.FormCloseQuery(Sender: TObject; var CanClose: Boolean);
-begin
-   KillDevice;
-
-end;
 
 procedure TfrmUSonic.FormShow(Sender: TObject);
 begin

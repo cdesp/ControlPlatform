@@ -21,9 +21,6 @@ const WM_REFRESH_MSG = WM_USER + 1;
 type
 
 
-
-
-
   TRoboCmd=record
     ComndID:Integer;
     Param1:Integer;
@@ -114,6 +111,12 @@ type
     lblUSonic: TLabel;
     USonicAdd: TBitBtn;
     USonicPanel: TCategoryPanel;
+    ServoPanel: TCategoryPanel;
+    pnlServo: TPanel;
+    Image6: TImage;
+    Label5: TLabel;
+    lblServo: TLabel;
+    ServoAdd: TBitBtn;
     procedure FormCreate(Sender: TObject);
     procedure ListBox1DblClick(Sender: TObject);
     procedure Button1Click(Sender: TObject);
@@ -148,6 +151,7 @@ type
     procedure DevBookChange(Sender: TObject; NewTab: Integer;
       var AllowChange: Boolean);
     procedure RadioGroup1Click(Sender: TObject);
+    procedure FormCloseQuery(Sender: TObject; var CanClose: Boolean);
   private
     ComIdle:boolean;
     ChkByte:Byte;
@@ -187,6 +191,8 @@ type
     procedure CreateSoundCommands;
     procedure CreateUltraSonicCommands;
     function GetActiveDeviceParam(DevNo, PrmNo: Integer): Integer;
+    procedure CreateServoCommands;
+    procedure ResetArduino;
     { Private declarations }
   public
     { Public declarations }
@@ -215,7 +221,7 @@ var
 
 implementation
 uses Registry, unAbout, inifiles,setupapi,math,  unDevices, unHelpForms,unUtils,
-      fserialLcd,fLaser,fSound,fUSonic
+      fserialLcd,fLaser,fSound,fUSonic,fServo
     ;
 
 
@@ -620,6 +626,17 @@ Begin
 
 End;
 
+procedure TfrmRoboLang.ResetArduino;
+Begin
+ if comport1.connected then //reset arduino to clear memory
+ begin
+   comport1.SetDTR(true);
+   comport1.SetDTR(false);
+   sleep(2000);
+ end;
+
+End;
+
 procedure TfrmRoboLang.acConnectExecute(Sender: TObject);
 Var strt:TDspBlock;
     t:cardinal;
@@ -630,6 +647,7 @@ Var strt:TDspBlock;
     CommndID,param1,param2:integer;
 begin
 
+  ResetArduino;
   strt:=GetStartBlock;
   if strt=nil then
   Begin
@@ -654,7 +672,7 @@ begin
   until RoboReady or ((gettickcount-t)>5000); //2 secs
   if not roboready then
   Begin
-    ShowMEssage('Το Robot δεν ανταποκρίνετε!!!. Ξαναδοκιμάστε.');
+    ShowMEssage('Το Arduino δεν ανταποκρίνετε!!!. Ξαναδοκιμάστε.');
     comport1.Connected:=false;
     Exit;
 
@@ -954,6 +972,8 @@ end;
 
 procedure TfrmRoboLang.acStopExecute(Sender: TObject);
 begin
+ //comport1.connected:=false;
+
   BTPutChar('0');
 end;
 
@@ -966,6 +986,11 @@ begin
   end;
   emptycomps;
 
+end;
+
+procedure TfrmRoboLang.FormCloseQuery(Sender: TObject; var CanClose: Boolean);
+begin
+   ResetArduino;
 end;
 
 procedure TfrmRoboLang.CreateStartCommands;
@@ -1513,6 +1538,84 @@ Begin
 End;
 
 
+procedure TfrmRoboLang.CreateServoCommands;
+Var col:Tcolor;
+    tp:integer;
+    pnl:TCategoryPanel;
+Begin
+    col:=TColor($00003333);//     #333300
+    pnl:=Servopanel;
+    tp:=-40;
+
+    pnl.color:=LightenColor(col,30);
+
+    blck:=TDspBlock.Create(Self);
+    blck.Parent:=pnl;
+    blck.Color:=col;
+    blck.CommandColor:=clWhite;
+    blck.CommndID:=151;
+    blck.Commandtext:='%pd -> Μετακίνησε ΣΕ %p1 μοίρες (0-90) Αριστερά';
+    blck.Param1:=0;
+    blck.Param2:=0;
+    blck.TotalParams:=1;
+    blck.MyHint:='Μετακινεί το Servo στις μοίρες που θέλουμε';
+    inc(tp,50);blck.Top:=tp;
+    blck.Left:=10;
+    blck.Prototype:=true;
+    blck.DeviceOnlyCommandID:=Ord(SERVO); //Device id 1
+
+
+    blck:=TDspBlock.Create(Self);
+    blck.Parent:=pnl;
+    blck.Color:=col;
+    blck.CommandColor:=clWhite;
+    blck.CommndID:=152;
+    blck.Commandtext:='%pd -> Μετακίνησε ΣΕ %p1 μοίρες (0-90) Δεξιά';
+    blck.Param1:=0;
+    blck.Param2:=0;
+    blck.TotalParams:=1;
+    blck.MyHint:='Μετακινεί το Servo στις μοίρες που θέλουμε';
+    inc(tp,50);blck.Top:=tp;
+    blck.Left:=10;
+    blck.Prototype:=true;
+    blck.DeviceOnlyCommandID:=Ord(SERVO); //Device id 1
+
+    blck:=TDspBlock.Create(Self);
+    blck.Parent:=pnl;
+    blck.Color:=col;
+    blck.CommandColor:=clWhite;
+    blck.CommndID:=153;
+    blck.Commandtext:='%pd -> Μετακίνησε %p1 μοίρες Αριστερά';
+    blck.Param1:=0;
+    blck.Param2:=0;
+    blck.TotalParams:=1;
+    blck.MyHint:='Μετακινεί το Servo τόσες μοίρες επιπλέον στα αριστερά';
+    inc(tp,50);blck.Top:=tp;
+    blck.Left:=10;
+    blck.Prototype:=true;
+    blck.DeviceOnlyCommandID:=Ord(SERVO); //Device id 1
+
+    blck:=TDspBlock.Create(Self);
+    blck.Parent:=pnl;
+    blck.Color:=col;
+    blck.CommandColor:=clWhite;
+    blck.CommndID:=154;
+    blck.Commandtext:='%pd -> Μετακίνησε %p1 μοίρες Δεξιά';
+    blck.Param1:=0;
+    blck.Param2:=0;
+    blck.TotalParams:=1;
+    blck.MyHint:='Μετακινεί το Servo τόσες μοίρες επιπλέον στα δεξιά';
+    inc(tp,50);blck.Top:=tp;
+    blck.Left:=10;
+    blck.Prototype:=true;
+    blck.DeviceOnlyCommandID:=Ord(SERVO); //Device id 1
+
+
+    pnl.Height:=blck.Top+blck.Height+40;
+
+End;
+
+
 
 procedure TfrmRoboLang.Edit1Exit(Sender: TObject);
 begin
@@ -1569,6 +1672,7 @@ Begin
     CreateLaserCommands;
     CreateSoundCommands;
     CreateUltraSonicCommands;
+    CreateServoCommands;
 End;
 
 Function TfrmRoboLang.getFullCaption:String;
@@ -1948,7 +2052,15 @@ begin
   ArduinoDevices[i].DevicePanel:=pnlUSonic;
   ArduinoDevices[i].DeviceCmdId:=140;
   ArduinoDevices[i].DeviceParamCount:=2;
-  ArduinoDevices[i].DeviceMax:=10;
+  ArduinoDevices[i].DeviceMax:=4;
+  i:=i+1;
+
+  ArduinoDevices[i].DeviceName:='Servo';
+  ArduinoDevices[i].DeviceFormClass:=TfrmServo;
+  ArduinoDevices[i].DevicePanel:=pnlServo;
+  ArduinoDevices[i].DeviceCmdId:=150;
+  ArduinoDevices[i].DeviceParamCount:=1;
+  ArduinoDevices[i].DeviceMax:=4;
   i:=i+1;
 
 

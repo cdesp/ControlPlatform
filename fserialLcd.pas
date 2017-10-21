@@ -13,7 +13,6 @@ type
     Image1: TImage;
     Label1: TLabel;
     RichEdit1: TRichEdit;
-    procedure FormCloseQuery(Sender: TObject; var CanClose: Boolean);
   private
     { Private declarations }
   public
@@ -28,9 +27,5 @@ implementation
 
 {$R *.dfm}
 
-procedure TfrmSerialLcd.FormCloseQuery(Sender: TObject; var CanClose: Boolean);
-begin
-  KillDevice;
-end;
 
 end.

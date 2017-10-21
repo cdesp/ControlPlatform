@@ -15,7 +15,6 @@ object frmSerialLcd: TfrmSerialLcd
   Font.Style = []
   OldCreateOrder = False
   StyleElements = [seFont, seClient]
-  OnCloseQuery = FormCloseQuery
   PixelsPerInch = 96
   TextHeight = 13
   object pnlLCD: TPanel
