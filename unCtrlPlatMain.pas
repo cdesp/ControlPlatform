@@ -1,4 +1,4 @@
-unit unCtrlPlatMain;
+ο»Ώunit unCtrlPlatMain;
 
 
 interface
@@ -8,14 +8,16 @@ uses  Vcl.Dialogs, CPort, System.Classes,
   Vcl.Menus, Vcl.ComCtrls, Vcl.Imaging.pngimage, Vcl.Forms, Vcl.StdCtrls,
   Vcl.Buttons,Winapi.Windows,unBlock,Winapi.Messages,System.SysUtils, System.Variants,
   unContainerBlock,Vcl.Graphics, Vcl.TabNotBk, Vcl.ExtCtrls, Vcl.WinXCtrls,
-  Vcl.Imaging.jpeg;
+  Vcl.Imaging.jpeg, VCLTee.TeCanvas, Vcl.ToolWin;
 
 
-Const Version='0.4 (Άλφα έκδοση 10/10/2017)  - ';
-Const Programmer='© 2017 Despoinidis Christos';
-Const Progname='Έλεγχος συσκευών Arduino';
+Const Version='0.4 (Ξ†Ξ»Ο†Ξ± Ξ­ΞΊΞ΄ΞΏΟƒΞ· 10/10/2017)  - ';
+Const Programmer='Β© 2017 Despoinidis Christos';
+Const Progname='ΞΞ»ΞµΞ³Ο‡ΞΏΟ‚ ΟƒΟ…ΟƒΞΊΞµΟ…ΟΞ½ Arduino';
 Const Onlybluetooth=FALSE;
 const WM_REFRESH_MSG = WM_USER + 1;
+const WM_REFVARS_MSG = WM_USER + 252;
+
 
 
 type
@@ -68,17 +70,10 @@ type
     SpeedButton8: TSpeedButton;
     N10: TMenuItem;
     acSetServer: TAction;
-    SetServer1: TMenuItem;
     Timer1: TTimer;
     TNBook: TTabbedNotebook;
     ScrollBox1: TScrollBox;
     Image2: TImage;
-    CategoryPanelGroup1: TCategoryPanelGroup;
-    variousPanel: TCategoryPanel;
-    CtrlPanel: TCategoryPanel;
-    LoopPanel: TCategoryPanel;
-    MovPanel: TCategoryPanel;
-    strtPanel: TCategoryPanel;
     Splitter2: TSplitter;
     ScrollBox2: TScrollBox;
     pnlLCD: TPanel;
@@ -86,7 +81,6 @@ type
     Label1: TLabel;
     LCDadd: TBitBtn;
     lblLCD: TLabel;
-    LCDpanel: TCategoryPanel;
     BalloonHint1: TBalloonHint;
     pnlLaser: TPanel;
     Image3: TImage;
@@ -98,8 +92,6 @@ type
     Panel1: TPanel;
     ArduImage: TImage;
     ArduPinout: TImage;
-    LaserPanel: TCategoryPanel;
-    SoundPanel: TCategoryPanel;
     pnlSound: TPanel;
     Image4: TImage;
     Label3: TLabel;
@@ -110,13 +102,44 @@ type
     Label4: TLabel;
     lblUSonic: TLabel;
     USonicAdd: TBitBtn;
-    USonicPanel: TCategoryPanel;
-    ServoPanel: TCategoryPanel;
     pnlServo: TPanel;
     Image6: TImage;
     Label5: TLabel;
     lblServo: TLabel;
     ServoAdd: TBitBtn;
+    pnlSwitch: TPanel;
+    Image7: TImage;
+    Label6: TLabel;
+    lblSwitch: TLabel;
+    SwitchAdd: TBitBtn;
+    pnlTemp: TPanel;
+    Image8: TImage;
+    Label7: TLabel;
+    lblTemp: TLabel;
+    TempAdd: TBitBtn;
+    CategoryPanelGroup1: TCategoryPanelGroup;
+    MovPanel: TCategoryPanel;
+    variousPanel: TCategoryPanel;
+    CtrlPanel: TCategoryPanel;
+    LoopPanel: TCategoryPanel;
+    strtPanel: TCategoryPanel;
+    PageControl1: TPageControl;
+    TabSheet1: TTabSheet;
+    TabSheet2: TTabSheet;
+    CategoryPanelGroup2: TCategoryPanelGroup;
+    LCDpanel: TCategoryPanel;
+    LaserPanel: TCategoryPanel;
+    SoundPanel: TCategoryPanel;
+    USonicPanel: TCategoryPanel;
+    ServoPanel: TCategoryPanel;
+    SwitchPanel: TCategoryPanel;
+    TempPanel: TCategoryPanel;
+    TabSheet3: TTabSheet;
+    CategoryPanelGroup3: TCategoryPanelGroup;
+    VarPanel: TCategoryPanel;
+    ToolBar1: TToolBar;
+    ToolButton1: TToolButton;
+    ToolButton2: TToolButton;
     procedure FormCreate(Sender: TObject);
     procedure ListBox1DblClick(Sender: TObject);
     procedure Button1Click(Sender: TObject);
@@ -133,8 +156,6 @@ type
     procedure acsaveExecute(Sender: TObject);
     procedure acopenExecute(Sender: TObject);
     procedure acsaveasExecute(Sender: TObject);
-    procedure acSndLeftExecute(Sender: TObject);
-    procedure acSndRightExecute(Sender: TObject);
     procedure BitBtn1Click(Sender: TObject);
     procedure Edit1Exit(Sender: TObject);
     procedure CategoryPanelGroup1MouseEnter(Sender: TObject);
@@ -152,11 +173,15 @@ type
       var AllowChange: Boolean);
     procedure RadioGroup1Click(Sender: TObject);
     procedure FormCloseQuery(Sender: TObject; var CanClose: Boolean);
+    procedure ToolButton1Click(Sender: TObject);
+    procedure ToolButton2Click(Sender: TObject);
   private
+    NewVarName:String;
     ComIdle:boolean;
     ChkByte:Byte;
     srvCodeRec:boolean;
     frmLoadPos:Boolean;
+    procedure OnRefVarRequest(var Msg: TMessage); message WM_REFVARS_MSG;
     function GetStartBlock: TDspBlock;
     function BTgetChar: Char;
     procedure BTPutChar(c: Char;dochk:boolean=true);
@@ -193,6 +218,10 @@ type
     function GetActiveDeviceParam(DevNo, PrmNo: Integer): Integer;
     procedure CreateServoCommands;
     procedure ResetArduino;
+    procedure CreateSwitchCommands;
+    procedure CreateTempCommands;
+    procedure CreateBlocksFromVars;
+    procedure CreateVarCommands;
     { Private declarations }
   public
     { Public declarations }
@@ -220,8 +249,8 @@ var
 
 
 implementation
-uses Registry, unAbout, inifiles,setupapi,math,  unDevices, unHelpForms,unUtils,
-      fserialLcd,fLaser,fSound,fUSonic,fServo
+uses Registry, unAbout, inifiles,setupapi,math,  unDevices, unHelpForms,unUtils,unVariables,unBlockVar,
+      fserialLcd,fLaser,fSound,fUSonic,fServo,fSwitch,fTemp
     ;
 
 
@@ -232,6 +261,7 @@ var
   buffer: array[0..MAX_COMPUTERNAME_LENGTH + 1] of Char;
   Size: Cardinal;
 begin
+
   Size := MAX_COMPUTERNAME_LENGTH + 1;
   Winapi.Windows.GetComputerName(buffer, Size);
   Result := StrPas(buffer);
@@ -365,7 +395,7 @@ Begin
 End;
 
 
-function   GetBlutoothComPort(BTComList:TStrings): String;
+function GetBlutoothComPort(BTComList:TStrings): String;
 var        S, S1: String;
            Item,Item2: Integer;
            Reg: TRegistry;
@@ -571,6 +601,107 @@ begin
 end;
 
 
+procedure TfrmRoboLang.ToolButton1Click(Sender: TObject);
+var t:TDspVarBlock;
+    varcolor:TColor;
+    cmdName:String;
+    avar:TArduVar;
+
+    function getLastBlockBottom:Integer;
+    var i,mx:integer;
+        wc:TWinControl;
+    Begin
+      mx:=40;
+      wc:=TWinControl(VarPanel.Controls[0]);
+      for i := 0 to wc.controlCount-1 do
+       if wc.Controls[i] is TDspBlock then
+        mx:=Max(mx,TDspBlock(wc.Controls[i]).Top+TDspBlock(wc.Controls[i]).Height);
+
+      Result:=mx+10;
+
+    End;
+
+begin
+
+ // VarColor:=StringtoColor('$008A4B08');
+ VarColor:=HTMLtoColor('#084B8A');
+//Create new Variable
+
+  t:= TDspVarBlock.create(Self);
+  t.Visible:=false;
+  t.parent:=VarPanel;
+  t.Color:=varcolor;
+  if assigned(sender) then
+    cmdName:=InputBox('Ξ”ΟΟƒΞµ ΟΞ½ΞΏΞΌΞ± ΞΌΞµΟ„Ξ±Ξ²Ξ»Ξ·Ο„Ξ®Ο‚','ΞΞ½ΞΏΞΌΞ±','ΞΞµΟ„Ξ±Ξ²Ξ»Ξ·Ο„Ξ®')
+  else
+    cmdName:=NewVarName;
+  t.CommandText:=cmdName;
+  t.param1question:=cmdName;
+  if assigned(sender) then
+    avar:=ArduVars.Newvar(cmdName)
+  else
+    avar:=ArduVars.GetVarByName(cmdName);
+  t.CommndID:=avar.VarID;
+  t.CommandColor:=clWhite;
+  t.TotalParams:=1;
+  t.Left:=10;
+  t.Top:=getLastBlockBottom;
+  t.Visible:=True;
+end;
+
+procedure TfrmRoboLang.ToolButton2Click(Sender: TObject);
+ //Ξ”ΞΉΞ±Ξ³ΟΞ±Ο†Ξ® ΞΞµΟ„Ξ±Ξ²Ξ»Ξ·Ο„Ξ®Ο‚
+var i:integer;
+    wc:TWinControl;
+    bpos:Integer;
+
+    procedure repositionBlocks;
+    var i:integer;
+    Begin
+       for I := 0 to wc.controlCount-1 do
+         if wc.Controls[i] is TDspVarBlock then
+            if TDspVarBlock(wc.Controls[i]).Top> bpos then
+             TDspVarBlock(wc.Controls[i]).Top:=TDspVarBlock(wc.Controls[i]).Top-TDspVarBlock(wc.Controls[i]).Height-10;
+
+    End;
+
+    procedure KillCloneVarByName(nm:String);
+    Var i:Integer;
+        Container:TWinControl;
+        tb:TDspBlock;
+    Begin
+       Container:=Scrollbox1;
+       for I := Container.ControlCount-1 downto 0 do
+         if Container.Controls[i] is TDspVarBlock then
+         Begin
+          if sametext(nm,TDspVarBlock(Container.Controls[i]).param1question) then
+           TDspVarBlock(Container.Controls[i]).Free;// destroy only this
+         End
+         else if Container.Controls[i] is TDspblock Then
+          if assigned(TDspblock(Container.Controls[i]).VarParam1) and  sametext(nm,TDspblock(Container.Controls[i]).VarParam1.param1question)  then
+          Begin
+            tb:=TDspblock(Container.Controls[i]).VarParam1;
+            TDspblock(Container.Controls[i]).VarParam1:=nil;
+            tb.Free;
+          End;
+
+    End;
+Begin
+      wc:=TWinControl(VarPanel.Controls[0]);
+      for i := wc.controlCount-1 downto  0 do
+       if wc.Controls[i] is TDspVarBlock then
+         if TDspVarBlock(wc.Controls[i]).ToDelete then
+           Begin
+             ArduVars.DeleteVar(TDspVarBlock(wc.Controls[i]).param1question);
+             bpos:=TDspVarBlock(wc.Controls[i]).Top;
+             KillCloneVarByName(TDspVarBlock(wc.Controls[i]).param1question);
+             TDspVarBlock(wc.Controls[i]).Free;
+             RepositionBlocks;
+
+           End;
+
+end;
+
 procedure TfrmRoboLang.BTSendInteger(k:integer);
 var b1,b2:char;
 Begin
@@ -651,14 +782,14 @@ begin
   strt:=GetStartBlock;
   if strt=nil then
   Begin
-    ShowMessage('Δεν βρέθηκε το block "Έναρξη Προγράμματος" !!!');
+    ShowMessage('Ξ”ΞµΞ½ Ξ²ΟΞ­ΞΈΞ·ΞΊΞµ Ο„ΞΏ block "ΞΞ½Ξ±ΟΞΎΞ· Ξ ΟΞΏΞ³ΟΞ¬ΞΌΞΌΞ±Ο„ΞΏΟ‚" !!!');
     exit;
   End;
 
   Speedbutton3.Repaint;
   if not BTOpen then
   Begin
-    Showmessage('Σφάλμα Σύνδεσης με Bluetooth Port: '+comport1.Port+#13'Πατήστε διπλό κλικ στο όνομα της πόρτας κάτω αριστερά για επιλογή άλλης και ξαναπροσπαθήστε.');
+    Showmessage('Ξ£Ο†Ξ¬Ξ»ΞΌΞ± Ξ£ΟΞ½Ξ΄ΞµΟƒΞ·Ο‚ ΞΌΞµ Bluetooth Port: '+comport1.Port+#13'Ξ Ξ±Ο„Ξ®ΟƒΟ„Ξµ Ξ΄ΞΉΟ€Ξ»Ο ΞΊΞ»ΞΉΞΊ ΟƒΟ„ΞΏ ΟΞ½ΞΏΞΌΞ± Ο„Ξ·Ο‚ Ο€ΟΟΟ„Ξ±Ο‚ ΞΊΞ¬Ο„Ο‰ Ξ±ΟΞΉΟƒΟ„ΞµΟΞ¬ Ξ³ΞΉΞ± ΞµΟ€ΞΉΞ»ΞΏΞ³Ξ® Ξ¬Ξ»Ξ»Ξ·Ο‚ ΞΊΞ±ΞΉ ΞΎΞ±Ξ½Ξ±Ο€ΟΞΏΟƒΟ€Ξ±ΞΈΞ®ΟƒΟ„Ξµ.');
     exit;
   End;
 
@@ -672,7 +803,7 @@ begin
   until RoboReady or ((gettickcount-t)>5000); //2 secs
   if not roboready then
   Begin
-    ShowMEssage('Το Arduino δεν ανταποκρίνετε!!!. Ξαναδοκιμάστε.');
+    ShowMEssage('Ξ¤ΞΏ Arduino Ξ΄ΞµΞ½ Ξ±Ξ½Ο„Ξ±Ο€ΞΏΞΊΟΞ―Ξ½ΞµΟ„Ξµ!!!. ΞΞ±Ξ½Ξ±Ξ΄ΞΏΞΊΞΉΞΌΞ¬ΟƒΟ„Ξµ.');
     comport1.Connected:=false;
     Exit;
 
@@ -697,12 +828,12 @@ begin
      CommndID:=ArduinoDevices[ActDevs[i].DeviceTypeID].DeviceCmdId;
      Param1:=ActDevs[i].ActDevParams[k];
      Param2:=ActDevs[i].ActDevParams[k+1];
-//     adddebug('------------------------');
-//     adddebug('Setup Cmd:'+inttostr(CommndID));
-//     adddebug('Device ID:'+inttostr(i));
-//     adddebug('Param 1  :'+inttostr(Param1));
-//     adddebug('Param 2  :'+inttostr(Param2));
-//     adddebug('------------------------');
+     adddebug('------------------------');
+     adddebug('Setup Cmd:'+inttostr(CommndID));
+     adddebug('Device ID:'+inttostr(i));
+     adddebug('Param 1  :'+inttostr(Param1));
+     adddebug('Param 2  :'+inttostr(Param2));
+     adddebug('------------------------');
      BTSendInteger(CommndID);
      BTSendInteger(i); //device id
      BTSendInteger(Param1);
@@ -777,7 +908,7 @@ End;
 procedure TfrmRoboLang.acNewExecute(Sender: TObject);
 begin
 
-    if hasblocks and (MessageDlg('Επιβεβαίωση', mtConfirmation, [mbYes, mbNo], 0) = mrYes)  then
+    if hasblocks and (MessageDlg('Ξ•Ο€ΞΉΞ²ΞµΞ²Ξ±Ξ―Ο‰ΟƒΞ·', mtConfirmation, [mbYes, mbNo], 0) = mrYes)  then
     Begin
       DoNewDoc;
       SaveDialog1.FileName:='';
@@ -893,6 +1024,7 @@ begin
         Begin
             TDspBlock(owner.Components[i]).LinkToName:=TDspBlock(owner.Components[i]).fLinkToName;
             TDspBlock(owner.Components[i]).LinkFromName:=TDspBlock(owner.Components[i]).fLinkFromName;
+            TDspBlock(owner.Components[i]).VarParam1Name:=TDspBlock(owner.Components[i]).fVarParam1Name;
         End;
         if owner.Components[i] is TDspContainerBlockEnd then
             TDspContainerBlockEnd(owner.Components[i]).FContainerBlock.EndBlock:=TDspContainerBlockEnd(owner.Components[i]);
@@ -904,11 +1036,28 @@ begin
 end;
 
 
+procedure TfrmRoboLang.CreateBlocksFromVars;
+Var i:integer;
+    av:TArduvar;
+Begin
+  for i := 0 to arduvars.Count-1 do
+  Begin
+    av:=arduvars.GetArduVar(i);
+    if assigned(av) then
+    Begin
+      NewVarName:=av.VarName;
+      ToolButton1Click(nil);
+    End;
+  End;
+End;
+
 procedure TfrmRoboLang.acopenExecute(Sender: TObject);
 begin
 
   if opendialog1.Execute then
   Begin
+    ArduVars.LoadVars(opendialog1.FileName);
+    CreateBlocksFromVars;
     LoadActiveDevices(opendialog1.FileName);
     LoadComponentFromFile(Scrollbox1,opendialog1.FileName);
     SaveDialog1.FileName:=opendialog1.FileName;
@@ -952,29 +1101,21 @@ begin
 
    end;
    SaveActiveDevices(fname);
+   ArduVars.SaveVars(fname);
    OpenDialog1.FileName:=Savedialog1.FileName;
    sbar.Panels[1].Text:=    opendialog1.FileName;
 
 
 end;
 
-procedure TfrmRoboLang.acSndLeftExecute(Sender: TObject);
-begin
-  BTOpen;
-  BTPutChar('o');
-end;
-
-procedure TfrmRoboLang.acSndRightExecute(Sender: TObject);
-begin
-  BTOpen;
-  BTPutChar('p');
-end;
-
 procedure TfrmRoboLang.acStopExecute(Sender: TObject);
 begin
  //comport1.connected:=false;
-
+ try
   BTPutChar('0');
+ except
+
+ end;
 end;
 
 procedure TfrmRoboLang.FormClose(Sender: TObject; var Action: TCloseAction);
@@ -1011,7 +1152,7 @@ Begin
     blck.BorderColor:=clAqua;
     blck.CommandColor:=clWhite;
     blck.CommndID:=1;
-    blck.Commandtext:='Έναρξη προγράμματος';
+    blck.Commandtext:='ΞΞ½Ξ±ΟΞΎΞ· Ο€ΟΞΏΞ³ΟΞ¬ΞΌΞΌΞ±Ο„ΞΏΟ‚';
     inc(tp,50);blck.Top:=tp;
     blck.Left:=10;
 
@@ -1024,7 +1165,7 @@ Begin
     blck.BorderColor:=clAqua;
     blck.CommandColor:=clWhite;
     blck.CommndID:=2;
-    blck.Commandtext:='Τερματισμός προγράμματος';
+    blck.Commandtext:='Ξ¤ΞµΟΞΌΞ±Ο„ΞΉΟƒΞΌΟΟ‚ Ο€ΟΞΏΞ³ΟΞ¬ΞΌΞΌΞ±Ο„ΞΏΟ‚';
     inc(tp,50);blck.Top:=tp;
     blck.Left:=10;
 
@@ -1049,10 +1190,10 @@ Begin
     blck.BorderColor:=clGreen;
     blck.CommandColor:=clWhite;
     blck.CommndID:=5;
-    blck.Commandtext:='Όρισε βήμα σε %p1 εκατοστά';
+    blck.Commandtext:='ΞΟΞΉΟƒΞµ Ξ²Ξ®ΞΌΞ± ΟƒΞµ %p1 ΞµΞΊΞ±Ο„ΞΏΟƒΟ„Ξ¬';
     blck.Param1:=10;
     blck.TotalParams:=1;
-    blck.MyHint:='Η απόσταση μετακίνησης σε εκατοστά (>10 και <100)';
+    blck.MyHint:='Ξ— Ξ±Ο€ΟΟƒΟ„Ξ±ΟƒΞ· ΞΌΞµΟ„Ξ±ΞΊΞ―Ξ½Ξ·ΟƒΞ·Ο‚ ΟƒΞµ ΞµΞΊΞ±Ο„ΞΏΟƒΟ„Ξ¬ (>10 ΞΊΞ±ΞΉ <100)';
     inc(tp,50);blck.Top:=tp;
     blck.Left:=10;
     blck.Prototype:=true;
@@ -1064,8 +1205,8 @@ Begin
     blck.BorderColor:=clGreen;
     blck.CommandColor:=clWhite;
     blck.CommndID:=10;
-    blck.Commandtext:='Μπροστά 1 βήμα';
-    blck.MyHint:='Μετακίνηση προς τα εμπρός 1 βήματος (περίπου 10 εκατοστά)';
+    blck.Commandtext:='ΞΟ€ΟΞΏΟƒΟ„Ξ¬ 1 Ξ²Ξ®ΞΌΞ±';
+    blck.MyHint:='ΞΞµΟ„Ξ±ΞΊΞ―Ξ½Ξ·ΟƒΞ· Ο€ΟΞΏΟ‚ Ο„Ξ± ΞµΞΌΟ€ΟΟΟ‚ 1 Ξ²Ξ®ΞΌΞ±Ο„ΞΏΟ‚ (Ο€ΞµΟΞ―Ο€ΞΏΟ… 10 ΞµΞΊΞ±Ο„ΞΏΟƒΟ„Ξ¬)';
     inc(tp,50);blck.Top:=tp;
     blck.Left:=10;
     blck.Prototype:=true;
@@ -1077,8 +1218,8 @@ Begin
     blck.BorderColor:=clGreen;
     blck.CommandColor:=clWhite;
     blck.CommndID:=20;
-    blck.Commandtext:='Πίσω 1 βήμα';
-    blck.MyHint:='Μετακίνηση προς τα πίσω 1 βήματος (περίπου 10 εκατοστά)';
+    blck.Commandtext:='Ξ Ξ―ΟƒΟ‰ 1 Ξ²Ξ®ΞΌΞ±';
+    blck.MyHint:='ΞΞµΟ„Ξ±ΞΊΞ―Ξ½Ξ·ΟƒΞ· Ο€ΟΞΏΟ‚ Ο„Ξ± Ο€Ξ―ΟƒΟ‰ 1 Ξ²Ξ®ΞΌΞ±Ο„ΞΏΟ‚ (Ο€ΞµΟΞ―Ο€ΞΏΟ… 10 ΞµΞΊΞ±Ο„ΞΏΟƒΟ„Ξ¬)';
     inc(tp,50);blck.Top:=tp;
     blck.Left:=10;
     blck.Prototype:=true;
@@ -1090,9 +1231,9 @@ Begin
     blck.BorderColor:=clGreen;
     blck.CommandColor:=clWhite;
     blck.CommndID:=30;
-    blck.Commandtext:='Στρίψε Δεξιά %p1 μοίρες';
+    blck.Commandtext:='Ξ£Ο„ΟΞ―ΟΞµ Ξ”ΞµΞΎΞΉΞ¬ %p1 ΞΌΞΏΞ―ΟΞµΟ‚';
     blck.TotalParams:=1;
-    blck.MyHint:='Στροφή προς τα δεξιά (σε μοίρες)';
+    blck.MyHint:='Ξ£Ο„ΟΞΏΟ†Ξ® Ο€ΟΞΏΟ‚ Ο„Ξ± Ξ΄ΞµΞΎΞΉΞ¬ (ΟƒΞµ ΞΌΞΏΞ―ΟΞµΟ‚)';
     blck.Param1:=90;
     inc(tp,50);blck.Top:=tp;
     blck.Left:=10;
@@ -1105,9 +1246,9 @@ Begin
     blck.BorderColor:=clGreen;
     blck.CommandColor:=clWhite;
     blck.CommndID:=40;
-    blck.Commandtext:='Στρίψε Αριστερά %p1 μοίρες';
+    blck.Commandtext:='Ξ£Ο„ΟΞ―ΟΞµ Ξ‘ΟΞΉΟƒΟ„ΞµΟΞ¬ %p1 ΞΌΞΏΞ―ΟΞµΟ‚';
     blck.TotalParams:=1;
-    blck.MyHint:='Στροφή προς τα αριστερά (σε μοίρες)';
+    blck.MyHint:='Ξ£Ο„ΟΞΏΟ†Ξ® Ο€ΟΞΏΟ‚ Ο„Ξ± Ξ±ΟΞΉΟƒΟ„ΞµΟΞ¬ (ΟƒΞµ ΞΌΞΏΞ―ΟΞµΟ‚)';
     blck.Param1:=90;
     inc(tp,50);blck.Top:=tp;
     blck.Left:=10;
@@ -1119,8 +1260,8 @@ Begin
     blck.BorderColor:=clGreen;
     blck.CommandColor:=clWhite;
     blck.CommndID:=50;
-    blck.Commandtext:='Σταμάτησε';
-    blck.MyHint:='Σταματάει το ρομπότ';
+    blck.Commandtext:='Ξ£Ο„Ξ±ΞΌΞ¬Ο„Ξ·ΟƒΞµ';
+    blck.MyHint:='Ξ£Ο„Ξ±ΞΌΞ±Ο„Ξ¬ΞµΞΉ Ο„ΞΏ ΟΞΏΞΌΟ€ΟΟ„';
     inc(tp,50);blck.Top:=tp;
     blck.Left:=10;
     blck.Prototype:=true;
@@ -1146,10 +1287,10 @@ Begin
     blck.Color:=col;
     blck.CommandColor:=clWhite;
     blck.CommndID:=70;
-    blck.Commandtext:='Επανάλαβε %p1 φορές';
-    TDspLoopBlock(blck).EndBlockText:='Τέλος Επανάληψης';
+    blck.Commandtext:='Ξ•Ο€Ξ±Ξ½Ξ¬Ξ»Ξ±Ξ²Ξµ %p1 Ο†ΞΏΟΞ­Ο‚';
+    TDspLoopBlock(blck).EndBlockText:='Ξ¤Ξ­Ξ»ΞΏΟ‚ Ξ•Ο€Ξ±Ξ½Ξ¬Ξ»Ξ·ΟΞ·Ο‚';
     blck.TotalParams:=1;
-    blck.MyHint:='Επαναλαμβάνει τις εντολές που περιέχονται όσες φορές θέλουμε';
+    blck.MyHint:='Ξ•Ο€Ξ±Ξ½Ξ±Ξ»Ξ±ΞΌΞ²Ξ¬Ξ½ΞµΞΉ Ο„ΞΉΟ‚ ΞµΞ½Ο„ΞΏΞ»Ξ­Ο‚ Ο€ΞΏΟ… Ο€ΞµΟΞΉΞ­Ο‡ΞΏΞ½Ο„Ξ±ΞΉ ΟΟƒΞµΟ‚ Ο†ΞΏΟΞ­Ο‚ ΞΈΞ­Ξ»ΞΏΟ…ΞΌΞµ';
     blck.Param1:=5;
     inc(tp,50);blck.Top:=tp;
     blck.Left:=10;
@@ -1160,10 +1301,10 @@ Begin
     blck.Color:=col;
     blck.CommandColor:=clWhite;
     blck.CommndID:=72;
-    blck.Commandtext:='Επανάλαβε συνεχώς';
-    TDspLoopBlock(blck).EndBlockText:='Τέλος Επανάληψης';
+    blck.Commandtext:='Ξ•Ο€Ξ±Ξ½Ξ¬Ξ»Ξ±Ξ²Ξµ ΟƒΟ…Ξ½ΞµΟ‡ΟΟ‚';
+    TDspLoopBlock(blck).EndBlockText:='Ξ¤Ξ­Ξ»ΞΏΟ‚ Ξ•Ο€Ξ±Ξ½Ξ¬Ξ»Ξ·ΟΞ·Ο‚';
     blck.TotalParams:=0;
-    blck.MyHint:='Επαναλαμβάνει τις εντολές που περιέχονται για πάντα';
+    blck.MyHint:='Ξ•Ο€Ξ±Ξ½Ξ±Ξ»Ξ±ΞΌΞ²Ξ¬Ξ½ΞµΞΉ Ο„ΞΉΟ‚ ΞµΞ½Ο„ΞΏΞ»Ξ­Ο‚ Ο€ΞΏΟ… Ο€ΞµΟΞΉΞ­Ο‡ΞΏΞ½Ο„Ξ±ΞΉ Ξ³ΞΉΞ± Ο€Ξ¬Ξ½Ο„Ξ±';
     blck.Param1:=0;
     inc(tp,50);blck.Top:=tp;
     blck.Left:=10;
@@ -1190,8 +1331,8 @@ Begin
     blck.Color:=col;
     blck.CommandColor:=clWhite;
     blck.CommndID:=93;
-    blck.Commandtext:='Εάν %p1 επαφή προφυλακτήρα';
-    TDspControlBlock(blck).EndBlockText:='Τέλος Εάν';
+    blck.Commandtext:='Ξ•Ξ¬Ξ½ %p1 ΞµΟ€Ξ±Ο†Ξ® Ο€ΟΞΏΟ†Ο…Ξ»Ξ±ΞΊΟ„Ξ®ΟΞ±';
+    TDspControlBlock(blck).EndBlockText:='Ξ¤Ξ­Ξ»ΞΏΟ‚ Ξ•Ξ¬Ξ½';
     inc(tp,50);blck.Top:=tp;
     blck.Left:=10;
     blck.Prototype:=true;
@@ -1201,11 +1342,11 @@ Begin
     blck.Color:=col;
     blck.CommandColor:=clWhite;
     blck.CommndID:=94;
-    blck.Commandtext:='Εάν το pin %p2 %p1 είναι 1 (high=5 Volt)';
-    TDspControlBlock(blck).EndBlockText:='Τέλος Εάν';
-    blck.param2question:='Δώσε το pin του Arduino ';
+    blck.Commandtext:='Ξ•Ξ¬Ξ½ Ο„ΞΏ pin %p2 %p1 ΞµΞ―Ξ½Ξ±ΞΉ 1 (high=5 Volt)';
+    TDspControlBlock(blck).EndBlockText:='Ξ¤Ξ­Ξ»ΞΏΟ‚ Ξ•Ξ¬Ξ½';
+    blck.param2question:='Ξ”ΟΟƒΞµ Ο„ΞΏ pin Ο„ΞΏΟ… Arduino ';
     blck.param2prompt:='pin';
-    blck.param1prompt:='δεν';
+    blck.param1prompt:='Ξ΄ΞµΞ½';
     blck.TotalParams:=2;
     blck.param1:=55;
     inc(tp,50);blck.Top:=tp;
@@ -1218,11 +1359,11 @@ Begin
     blck.Color:=col;
     blck.CommandColor:=clWhite;
     blck.CommndID:=95;
-    blck.Commandtext:='Εάν το pin %p2 %p1 είναι 0 (low=0 Volt)';
-    TDspControlBlock(blck).EndBlockText:='Τέλος Εάν';
-    blck.param2question:='Δώσε το pin του Arduino ';
+    blck.Commandtext:='Ξ•Ξ¬Ξ½ Ο„ΞΏ pin %p2 %p1 ΞµΞ―Ξ½Ξ±ΞΉ 0 (low=0 Volt)';
+    TDspControlBlock(blck).EndBlockText:='Ξ¤Ξ­Ξ»ΞΏΟ‚ Ξ•Ξ¬Ξ½';
+    blck.param2question:='Ξ”ΟΟƒΞµ Ο„ΞΏ pin Ο„ΞΏΟ… Arduino ';
     blck.param2prompt:='pin';
-    blck.param1prompt:='δεν';
+    blck.param1prompt:='Ξ΄ΞµΞ½';
     blck.TotalParams:=2;
     blck.param1:=55;
     inc(tp,50);blck.Top:=tp;
@@ -1251,9 +1392,9 @@ Begin
     blck.Color:=col;
     blck.CommandColor:=clWhite;
     blck.CommndID:=250;
-    blck.Commandtext:='Περίμενε %p1 χιλιοστά δευτερολέπτου';
-    blck.param1question:='Δώσε τα χιλιοστά δευτερολέπτου (1000=1 δευτ) ';
-    blck.param1prompt:='Χιλιοστά';
+    blck.Commandtext:='Ξ ΞµΟΞ―ΞΌΞµΞ½Ξµ %p1 Ο‡ΞΉΞ»ΞΉΞΏΟƒΟ„Ξ¬ Ξ΄ΞµΟ…Ο„ΞµΟΞΏΞ»Ξ­Ο€Ο„ΞΏΟ…';
+    blck.param1question:='Ξ”ΟΟƒΞµ Ο„Ξ± Ο‡ΞΉΞ»ΞΉΞΏΟƒΟ„Ξ¬ Ξ΄ΞµΟ…Ο„ΞµΟΞΏΞ»Ξ­Ο€Ο„ΞΏΟ… (1000=1 Ξ΄ΞµΟ…Ο„) ';
+    blck.param1prompt:='Ξ§ΞΉΞ»ΞΉΞΏΟƒΟ„Ξ¬';
     blck.TotalParams:=1;
     blck.param1:=1000;
     inc(tp,50);blck.Top:=tp;
@@ -1265,8 +1406,8 @@ Begin
     blck.Color:=col;
     blck.CommandColor:=clWhite;
     blck.CommndID:=200;
-    blck.Commandtext:='Διαμόρφωσε το pin %p1 για έξοδο';
-    blck.param1question:='Δώσε το pin του Arduino ';
+    blck.Commandtext:='Ξ”ΞΉΞ±ΞΌΟΟΟ†Ο‰ΟƒΞµ Ο„ΞΏ pin %p1 Ξ³ΞΉΞ± Ξ­ΞΎΞΏΞ΄ΞΏ';
+    blck.param1question:='Ξ”ΟΟƒΞµ Ο„ΞΏ pin Ο„ΞΏΟ… Arduino ';
     blck.param1prompt:='pin';
     blck.TotalParams:=1;
     blck.param1:=2;
@@ -1280,8 +1421,8 @@ Begin
     blck.Color:=col;
     blck.CommandColor:=clWhite;
     blck.CommndID:=201;
-    blck.Commandtext:='Διαμόρφωσε το pin %p1 για είσοδο';
-    blck.param1question:='Δώσε το pin του Arduino ';
+    blck.Commandtext:='Ξ”ΞΉΞ±ΞΌΟΟΟ†Ο‰ΟƒΞµ Ο„ΞΏ pin %p1 Ξ³ΞΉΞ± ΞµΞ―ΟƒΞΏΞ΄ΞΏ';
+    blck.param1question:='Ξ”ΟΟƒΞµ Ο„ΞΏ pin Ο„ΞΏΟ… Arduino ';
     blck.param1prompt:='pin';
     blck.TotalParams:=1;
     blck.param1:=2;
@@ -1295,8 +1436,8 @@ Begin
     blck.Color:=col;
     blck.CommandColor:=clWhite;
     blck.CommndID:=202;
-    blck.Commandtext:='Θέσε το pin %p1 σε 1 (high=5 Volt)';
-    blck.param1question:='Δώσε το pin του Arduino ';
+    blck.Commandtext:='ΞΞ­ΟƒΞµ Ο„ΞΏ pin %p1 ΟƒΞµ 1 (high=5 Volt)';
+    blck.param1question:='Ξ”ΟΟƒΞµ Ο„ΞΏ pin Ο„ΞΏΟ… Arduino ';
     blck.param1prompt:='pin';
     blck.TotalParams:=1;
     blck.param1:=2;
@@ -1310,8 +1451,8 @@ Begin
     blck.Color:=col;
     blck.CommandColor:=clWhite;
     blck.CommndID:=203;
-    blck.Commandtext:='Θέσε το pin %p1 σε 0 (low=0 Volt)';
-    blck.param1question:='Δώσε το pin του Arduino ';
+    blck.Commandtext:='ΞΞ­ΟƒΞµ Ο„ΞΏ pin %p1 ΟƒΞµ 0 (low=0 Volt)';
+    blck.param1question:='Ξ”ΟΟƒΞµ Ο„ΞΏ pin Ο„ΞΏΟ… Arduino ';
     blck.param1prompt:='pin';
     blck.TotalParams:=1;
     blck.param1:=2;
@@ -1352,12 +1493,12 @@ Begin
     blck.Color:=col;
     blck.CommandColor:=clWhite;
     blck.CommndID:=121;  //LCDprint
-    blck.Commandtext:='Τύπωσε στην LCD %ps ';
+    blck.Commandtext:='Ξ¤ΟΟ€Ο‰ΟƒΞµ ΟƒΟ„Ξ·Ξ½ LCD %ps ';
     blck.Param1:=0;
-    blck.ParamStr:='Μήνυμα';//should make an inline editor fro this
+    blck.ParamStr:='ΞΞ®Ξ½Ο…ΞΌΞ±';//should make an inline editor fro this
     blck.Param2:=length(blck.ParamStr); //string length
     blck.TotalParams:=2;
-    blck.MyHint:='Τυπώνει κείμενο στην LCD';
+    blck.MyHint:='Ξ¤Ο…Ο€ΟΞ½ΞµΞΉ ΞΊΞµΞ―ΞΌΞµΞ½ΞΏ ΟƒΟ„Ξ·Ξ½ LCD';
     inc(tp,50);blck.Top:=tp;
     blck.Left:=10;
     blck.Prototype:=true;
@@ -1369,8 +1510,8 @@ Begin
     blck.Color:=col;
     blck.CommandColor:=clWhite;
     blck.CommndID:=122;
-    blck.Commandtext:='Καθάρίσε την LCD';
-    blck.MyHint:='Καθαρίζει την LCD';
+    blck.Commandtext:='ΞΞ±ΞΈΞ¬ΟΞ―ΟƒΞµ Ο„Ξ·Ξ½ LCD';
+    blck.MyHint:='ΞΞ±ΞΈΞ±ΟΞ―Ξ¶ΞµΞΉ Ο„Ξ·Ξ½ LCD';
     inc(tp,50);blck.Top:=tp;
     blck.Left:=10;
     blck.Prototype:=true;
@@ -1381,11 +1522,11 @@ Begin
     blck.Color:=col;
     blck.CommandColor:=clWhite;
     blck.CommndID:=123;
-    blck.Commandtext:='Θέσε τον δείκτη LCD [ %p1 , %p2 ]';
-    blck.Param1:=0; //χ
-    blck.Param2:=0; //ψ
+    blck.Commandtext:='ΞΞ­ΟƒΞµ Ο„ΞΏΞ½ Ξ΄ΞµΞ―ΞΊΟ„Ξ· LCD [ %p1 , %p2 ]';
+    blck.Param1:=0; //Ο‡
+    blck.Param2:=0; //Ο
     blck.TotalParams:=2;
-    blck.MyHint:='Θέτει τον δείκτη της LCD στην θέση (χ,ψ)';
+    blck.MyHint:='ΞΞ­Ο„ΞµΞΉ Ο„ΞΏΞ½ Ξ΄ΞµΞ―ΞΊΟ„Ξ· Ο„Ξ·Ο‚ LCD ΟƒΟ„Ξ·Ξ½ ΞΈΞ­ΟƒΞ· (Ο‡,Ο)';
     inc(tp,50);blck.Top:=tp;
     blck.Left:=10;
     blck.Prototype:=true;
@@ -1411,11 +1552,11 @@ Begin
     blck.Color:=col;
     blck.CommandColor:=clWhite;
     blck.CommndID:=131;  //Laser On
-    blck.Commandtext:='%pd -> Ενεργοποίησε το Laser ';
+    blck.Commandtext:='%pd -> Ξ•Ξ½ΞµΟΞ³ΞΏΟ€ΞΏΞ―Ξ·ΟƒΞµ Ο„ΞΏ Laser ';
     blck.Param1:=0;
     blck.Param2:=0;
     blck.TotalParams:=1;
-    blck.MyHint:='Ενεργοποιεί το Laser';
+    blck.MyHint:='Ξ•Ξ½ΞµΟΞ³ΞΏΟ€ΞΏΞΉΞµΞ― Ο„ΞΏ Laser';
     inc(tp,50);blck.Top:=tp;
     blck.Left:=10;
     blck.Prototype:=true;
@@ -1427,11 +1568,11 @@ Begin
     blck.Color:=col;
     blck.CommandColor:=clWhite;
     blck.CommndID:=132;  //Laser Off
-    blck.Commandtext:='%pd -> Απενεργοποίησε το Laser ';
+    blck.Commandtext:='%pd -> Ξ‘Ο€ΞµΞ½ΞµΟΞ³ΞΏΟ€ΞΏΞ―Ξ·ΟƒΞµ Ο„ΞΏ Laser ';
     blck.Param1:=0;
     blck.Param2:=0;
     blck.TotalParams:=1;
-    blck.MyHint:='Απενεργοποιεί το Laser';
+    blck.MyHint:='Ξ‘Ο€ΞµΞ½ΞµΟΞ³ΞΏΟ€ΞΏΞΉΞµΞ― Ο„ΞΏ Laser';
     inc(tp,50);blck.Top:=tp;
     blck.Left:=10;
     blck.Prototype:=true;
@@ -1461,7 +1602,7 @@ Begin
     blck.Color:=col;
     blck.CommandColor:=clWhite;
     blck.CommndID:=111;
-    blck.Commandtext:='%pd -> Παίξε ήχο beep';
+    blck.Commandtext:='%pd β†’ Ξ Ξ±Ξ―ΞΎΞµ Ξ®Ο‡ΞΏ beep';
     blck.TotalParams:=0;
     inc(tp,50);blck.Top:=tp;
     blck.Left:=10;
@@ -1473,17 +1614,17 @@ Begin
     blck.Color:=col;
     blck.CommandColor:=clWhite;
     blck.CommndID:=112;
-    blck.Commandtext:='%pd -> Παίξε ήχο με συχνότητα %p1 και διάρκεια %p2';
+    blck.Commandtext:='%pd β†’ Ξ Ξ±Ξ―ΞΎΞµ Ξ®Ο‡ΞΏ ΞΌΞµ ΟƒΟ…Ο‡Ξ½ΟΟ„Ξ·Ο„Ξ± %p1 ΞΊΞ±ΞΉ Ξ΄ΞΉΞ¬ΟΞΊΞµΞΉΞ± %p2';
     blck.TotalParams:=2;
-//    blck.param1question:='Δώσε την συχνότητα σε hz (π.χ. 2000) ';
-//    blck.param1prompt:='Τόνος';
-//    blck.param2question:='Δώσε την διάρκεια σε χιλ. δευτερολέπτου ';
-//    blck.param2prompt:='Διάρκεια';
+//    blck.param1question:='Ξ”ΟΟƒΞµ Ο„Ξ·Ξ½ ΟƒΟ…Ο‡Ξ½ΟΟ„Ξ·Ο„Ξ± ΟƒΞµ hz (Ο€.Ο‡. 2000) ';
+//    blck.param1prompt:='Ξ¤ΟΞ½ΞΏΟ‚';
+//    blck.param2question:='Ξ”ΟΟƒΞµ Ο„Ξ·Ξ½ Ξ΄ΞΉΞ¬ΟΞΊΞµΞΉΞ± ΟƒΞµ Ο‡ΞΉΞ». Ξ΄ΞµΟ…Ο„ΞµΟΞΏΞ»Ξ­Ο€Ο„ΞΏΟ… ';
+//    blck.param2prompt:='Ξ”ΞΉΞ¬ΟΞΊΞµΞΉΞ±';
     blck.param1:=2500;
     blck.param2:=1000;
     inc(tp,50);blck.Top:=tp;
     blck.Left:=10;
-    blck.MyHint:='συχνότητα σε hz (π.χ. 2000), διάρκεια σε χιλ. δευτερολέπτου';
+    blck.MyHint:='ΟƒΟ…Ο‡Ξ½ΟΟ„Ξ·Ο„Ξ± ΟƒΞµ hz (Ο€.Ο‡. 2000), Ξ΄ΞΉΞ¬ΟΞΊΞµΞΉΞ± ΟƒΞµ Ο‡ΞΉΞ». Ξ΄ΞµΟ…Ο„ΞµΟΞΏΞ»Ξ­Ο€Ο„ΞΏΟ…';
     blck.Prototype:=true;
     blck.DeviceOnlyCommandID:=Ord(SOUND);
 
@@ -1509,10 +1650,10 @@ Begin
     blck.Color:=col;
     blck.CommandColor:=clWhite;
     blck.CommndID:=141;
-    blck.Commandtext:='%pd -> Εάν απόσταση %p1 μεγαλύτερη των %p2 εκατοστών';
-    TDspControlBlock(blck).EndBlockText:='Τέλος Εάν';
+    blck.Commandtext:='%pd β†’ Ξ•Ξ¬Ξ½ Ξ±Ο€ΟΟƒΟ„Ξ±ΟƒΞ· %p1 ΞΌΞµΞ³Ξ±Ξ»ΟΟ„ΞµΟΞ· Ο„Ο‰Ξ½ %p2 ΞµΞΊΞ±Ο„ΞΏΟƒΟ„ΟΞ½';
+    TDspControlBlock(blck).EndBlockText:='Ξ¤Ξ­Ξ»ΞΏΟ‚ Ξ•Ξ¬Ξ½';
     blck.TotalParams:=2;
-    blck.MyHint:='Ελέγχει εάν υπάρχει αντικείμενο μπροστά σε απόσταση μεγαλύτερη από τον αριθμό σε εκατοστά';
+    blck.MyHint:='Ξ•Ξ»Ξ­Ξ³Ο‡ΞµΞΉ ΞµΞ¬Ξ½ Ο…Ο€Ξ¬ΟΟ‡ΞµΞΉ Ξ±Ξ½Ο„ΞΉΞΊΞµΞ―ΞΌΞµΞ½ΞΏ ΞΌΟ€ΟΞΏΟƒΟ„Ξ¬ ΟƒΞµ Ξ±Ο€ΟΟƒΟ„Ξ±ΟƒΞ· ΞΌΞµΞ³Ξ±Ξ»ΟΟ„ΞµΟΞ· Ξ±Ο€Ο Ο„ΞΏΞ½ Ξ±ΟΞΉΞΈΞΌΟ ΟƒΞµ ΞµΞΊΞ±Ο„ΞΏΟƒΟ„Ξ¬';
     inc(tp,50);blck.Top:=tp;
     blck.Left:=10;
     blck.Prototype:=true;
@@ -1523,11 +1664,11 @@ Begin
     blck.Color:=col;
     blck.CommandColor:=clWhite;
     blck.CommndID:=142;
-    blck.Commandtext:='%pd ->  Εάν απόσταση %p1 μικρότερη των %p2 εκατοστών';
-    TDspControlBlock(blck).EndBlockText:='Τέλος Εάν';
+    blck.Commandtext:='%pd β†’  Ξ•Ξ¬Ξ½ Ξ±Ο€ΟΟƒΟ„Ξ±ΟƒΞ· %p1 ΞΌΞΉΞΊΟΟΟ„ΞµΟΞ· Ο„Ο‰Ξ½ %p2 ΞµΞΊΞ±Ο„ΞΏΟƒΟ„ΟΞ½';
+    TDspControlBlock(blck).EndBlockText:='Ξ¤Ξ­Ξ»ΞΏΟ‚ Ξ•Ξ¬Ξ½';
     blck.TotalParams:=2;
-    blck.param2question:='Δώσε την απόσταση σε εκατοστά';
-    blck.param2prompt:='Απόσταση (εκ.)';
+    blck.param2question:='Ξ”ΟΟƒΞµ Ο„Ξ·Ξ½ Ξ±Ο€ΟΟƒΟ„Ξ±ΟƒΞ· ΟƒΞµ ΞµΞΊΞ±Ο„ΞΏΟƒΟ„Ξ¬';
+    blck.param2prompt:='Ξ‘Ο€ΟΟƒΟ„Ξ±ΟƒΞ· (ΞµΞΊ.)';
     inc(tp,50);blck.Top:=tp;
     blck.Left:=10;
     blck.Prototype:=true;
@@ -1554,11 +1695,11 @@ Begin
     blck.Color:=col;
     blck.CommandColor:=clWhite;
     blck.CommndID:=151;
-    blck.Commandtext:='%pd -> Μετακίνησε ΣΕ %p1 μοίρες (0-90) Αριστερά';
+    blck.Commandtext:='%pd β†’ ΞΞµΟ„Ξ±ΞΊΞ―Ξ½Ξ·ΟƒΞµ Ξ£Ξ• %p1 ΞΌΞΏΞ―ΟΞµΟ‚ (0-90) Ξ‘ΟΞΉΟƒΟ„ΞµΟΞ¬';
     blck.Param1:=0;
     blck.Param2:=0;
     blck.TotalParams:=1;
-    blck.MyHint:='Μετακινεί το Servo στις μοίρες που θέλουμε';
+    blck.MyHint:='ΞΞµΟ„Ξ±ΞΊΞΉΞ½ΞµΞ― Ο„ΞΏ Servo ΟƒΟ„ΞΉΟ‚ ΞΌΞΏΞ―ΟΞµΟ‚ Ο€ΞΏΟ… ΞΈΞ­Ξ»ΞΏΟ…ΞΌΞµ';
     inc(tp,50);blck.Top:=tp;
     blck.Left:=10;
     blck.Prototype:=true;
@@ -1570,11 +1711,11 @@ Begin
     blck.Color:=col;
     blck.CommandColor:=clWhite;
     blck.CommndID:=152;
-    blck.Commandtext:='%pd -> Μετακίνησε ΣΕ %p1 μοίρες (0-90) Δεξιά';
+    blck.Commandtext:='%pd β†’ ΞΞµΟ„Ξ±ΞΊΞ―Ξ½Ξ·ΟƒΞµ Ξ£Ξ• %p1 ΞΌΞΏΞ―ΟΞµΟ‚ (0-90) Ξ”ΞµΞΎΞΉΞ¬';
     blck.Param1:=0;
     blck.Param2:=0;
     blck.TotalParams:=1;
-    blck.MyHint:='Μετακινεί το Servo στις μοίρες που θέλουμε';
+    blck.MyHint:='ΞΞµΟ„Ξ±ΞΊΞΉΞ½ΞµΞ― Ο„ΞΏ Servo ΟƒΟ„ΞΉΟ‚ ΞΌΞΏΞ―ΟΞµΟ‚ Ο€ΞΏΟ… ΞΈΞ­Ξ»ΞΏΟ…ΞΌΞµ';
     inc(tp,50);blck.Top:=tp;
     blck.Left:=10;
     blck.Prototype:=true;
@@ -1585,11 +1726,11 @@ Begin
     blck.Color:=col;
     blck.CommandColor:=clWhite;
     blck.CommndID:=153;
-    blck.Commandtext:='%pd -> Μετακίνησε %p1 μοίρες Αριστερά';
+    blck.Commandtext:='%pd β†’ ΞΞµΟ„Ξ±ΞΊΞ―Ξ½Ξ·ΟƒΞµ %p1 ΞΌΞΏΞ―ΟΞµΟ‚ Ξ‘ΟΞΉΟƒΟ„ΞµΟΞ¬';
     blck.Param1:=0;
     blck.Param2:=0;
     blck.TotalParams:=1;
-    blck.MyHint:='Μετακινεί το Servo τόσες μοίρες επιπλέον στα αριστερά';
+    blck.MyHint:='ΞΞµΟ„Ξ±ΞΊΞΉΞ½ΞµΞ― Ο„ΞΏ Servo Ο„ΟΟƒΞµΟ‚ ΞΌΞΏΞ―ΟΞµΟ‚ ΞµΟ€ΞΉΟ€Ξ»Ξ­ΞΏΞ½ ΟƒΟ„Ξ± Ξ±ΟΞΉΟƒΟ„ΞµΟΞ¬';
     inc(tp,50);blck.Top:=tp;
     blck.Left:=10;
     blck.Prototype:=true;
@@ -1600,11 +1741,11 @@ Begin
     blck.Color:=col;
     blck.CommandColor:=clWhite;
     blck.CommndID:=154;
-    blck.Commandtext:='%pd -> Μετακίνησε %p1 μοίρες Δεξιά';
+    blck.Commandtext:='%pd β†’ ΞΞµΟ„Ξ±ΞΊΞ―Ξ½Ξ·ΟƒΞµ %p1 ΞΌΞΏΞ―ΟΞµΟ‚ Ξ”ΞµΞΎΞΉΞ¬';
     blck.Param1:=0;
     blck.Param2:=0;
     blck.TotalParams:=1;
-    blck.MyHint:='Μετακινεί το Servo τόσες μοίρες επιπλέον στα δεξιά';
+    blck.MyHint:='ΞΞµΟ„Ξ±ΞΊΞΉΞ½ΞµΞ― Ο„ΞΏ Servo Ο„ΟΟƒΞµΟ‚ ΞΌΞΏΞ―ΟΞµΟ‚ ΞµΟ€ΞΉΟ€Ξ»Ξ­ΞΏΞ½ ΟƒΟ„Ξ± Ξ΄ΞµΞΎΞΉΞ¬';
     inc(tp,50);blck.Top:=tp;
     blck.Left:=10;
     blck.Prototype:=true;
@@ -1616,6 +1757,231 @@ Begin
 End;
 
 
+procedure TfrmRoboLang.CreateSwitchCommands;
+Var col:Tcolor;
+    tp:integer;
+    pnl:TCategoryPanel;
+Begin
+    col:=TColor($00003333);//     #333300
+    pnl:=Switchpanel;
+    tp:=-40;
+
+    pnl.color:=LightenColor(col,30);
+
+    blck:=TDspControlElseBlock.Create(Self);
+    blck.Parent:=pnl;
+    blck.Color:=col;
+    blck.CommandColor:=clWhite;
+    blck.CommndID:=146;
+    blck.Commandtext:='%pd β†’ Ξ•Ξ¬Ξ½ %p1 Ο€Ξ±Ο„Ξ®ΞΈΞ·ΞΊΞµ ΞΏ Ξ΄ΞΉΞ±ΞΊΟΟ€Ο„Ξ·Ο‚';
+    blck.param1prompt:='Ξ΄ΞµΞ½';
+    TDspControlBlock(blck).EndBlockText:='Ξ¤Ξ­Ξ»ΞΏΟ‚ Ξ•Ξ¬Ξ½';
+    blck.TotalParams:=2;
+    blck.MyHint:='Ξ•Ξ»Ξ­Ξ³Ο‡ΞµΞΉ ΞµΞ¬Ξ½ Ο€Ξ±Ο„Ξ®ΞΈΞ·ΞΊΞµ/ΞµΞ½ΞµΟΞ³ΞΏΟ€ΞΏΞΉΞ®ΞΈΞ·ΞΊΞµ ΞΏ Ξ΄ΞΉΞ±ΞΊΟΟ€Ο„Ξ·Ο‚';
+    inc(tp,50);blck.Top:=tp;
+    blck.Left:=10;
+    blck.Prototype:=true;
+    blck.DeviceOnlyCommandID:=Ord(SWITCH);
+
+
+
+    pnl.Height:=blck.Top+blck.Height+40;
+
+End;
+
+procedure TfrmRoboLang.CreateTempCommands;
+Var col:Tcolor;
+    tp:integer;
+    pnl:TCategoryPanel;
+Begin
+    col:=TColor($00003333);//     #333300
+    pnl:=Temppanel;
+    tp:=-40;
+
+    pnl.color:=LightenColor(col,30);
+
+    blck:=TDspControlElseBlock.Create(Self);
+    blck.Parent:=pnl;
+    blck.Color:=col;
+    blck.CommandColor:=clWhite;
+    blck.CommndID:=171;
+    blck.Commandtext:='%pd β†’ Ξ•Ξ¬Ξ½ ΞΞµΟΞΌΞΏΞΊΟΞ±ΟƒΞ―Ξ± %p1 ΞΌΞµΞ³Ξ±Ξ»ΟΟ„ΞµΟΞ· Ξ±Ο€Ο %p2 (Β°C)';
+    blck.param1prompt:='Ξ΄ΞµΞ½';
+    TDspControlBlock(blck).EndBlockText:='Ξ¤Ξ­Ξ»ΞΏΟ‚ Ξ•Ξ¬Ξ½';
+    blck.TotalParams:=2;
+    blck.MyHint:='Ξ•Ξ»Ξ­Ξ³Ο‡ΞµΞΉ ΞµΞ¬Ξ½ Ξ· ΞΈΞµΟΞΌΞΏΞΊΟΞ±ΟƒΞ―Ξ± ΞΎΞµΟ€Ξ­ΟΞ±ΟƒΞµ Ο„ΞΏΟ…Ο‚ Ξ²Ξ±ΞΈΞΌΞΏΟΟ‚ Β°ΞΞµΞ»ΟƒΞ―ΞΏΟ…';
+    inc(tp,50);blck.Top:=tp;
+    blck.Left:=10;
+    blck.Prototype:=true;
+    blck.DeviceOnlyCommandID:=Ord(TEMP);
+
+    blck:=TDspControlElseBlock.Create(Self);
+    blck.Parent:=pnl;
+    blck.Color:=col;
+    blck.CommandColor:=clWhite;
+    blck.CommndID:=172;
+    blck.Commandtext:='%pd β†’ Ξ•Ξ¬Ξ½ ΞΞµΟΞΌΞΏΞΊΟΞ±ΟƒΞ―Ξ± %p1 ΞΌΞΉΞΊΟΟΟ„ΞµΟΞ· Ξ±Ο€Ο %p2 (Β°C)';
+    blck.param1prompt:='Ξ΄ΞµΞ½';
+    TDspControlBlock(blck).EndBlockText:='Ξ¤Ξ­Ξ»ΞΏΟ‚ Ξ•Ξ¬Ξ½';
+    blck.TotalParams:=2;
+    blck.MyHint:='Ξ•Ξ»Ξ­Ξ³Ο‡ΞµΞΉ ΞµΞ¬Ξ½ Ξ· ΞΈΞµΟΞΌΞΏΞΊΟΞ±ΟƒΞ―Ξ± ΞµΞ―Ξ½Ξ±ΞΉ Ο‡Ξ±ΞΌΞ·Ξ»ΟΟ„ΞµΟΞ· Ξ±Ο€Ο Ο„ΞΏΟ…Ο‚ Ξ²Ξ±ΞΈΞΌΞΏΟΟ‚ Β°ΞΞµΞ»ΟƒΞ―ΞΏΟ…';
+    inc(tp,50);blck.Top:=tp;
+    blck.Left:=10;
+    blck.Prototype:=true;
+    blck.DeviceOnlyCommandID:=Ord(TEMP);
+
+    blck:=TDspControlElseBlock.Create(Self);
+    blck.Parent:=pnl;
+    blck.Color:=col;
+    blck.CommandColor:=clWhite;
+    blck.CommndID:=173;
+    blck.Commandtext:='%pd β†’ Ξ•Ξ¬Ξ½ Ο…Ξ³ΟΞ±ΟƒΞ―Ξ± %p1 ΞΌΞµΞ³Ξ±Ξ»ΟΟ„ΞµΟΞ· Ξ±Ο€Ο %p2 %';
+    blck.param1prompt:='Ξ΄ΞµΞ½';
+    TDspControlBlock(blck).EndBlockText:='Ξ¤Ξ­Ξ»ΞΏΟ‚ Ξ•Ξ¬Ξ½';
+    blck.TotalParams:=2;
+    blck.MyHint:='Ξ•Ξ»Ξ­Ξ³Ο‡ΞµΞΉ ΞµΞ¬Ξ½ Ξ· Ο…Ξ³ΟΞ±ΟƒΞ―Ξ± ΞµΞ―Ξ½Ξ±ΞΉ ΞΌΞµΞ³Ξ±Ξ»ΟΟ„ΞµΟΞ· Ξ±Ο€Ο Ο„ΞΏΞ½ Ξ±ΟΞΉΞΈΞΌΟ Ο„ΞΏΞΉΟ‚ ΞµΞΊΞ±Ο„Ο (%)';
+    inc(tp,50);blck.Top:=tp;
+    blck.Left:=10;
+    blck.Prototype:=true;
+    blck.DeviceOnlyCommandID:=Ord(TEMP);
+
+    blck:=TDspControlElseBlock.Create(Self);
+    blck.Parent:=pnl;
+    blck.Color:=col;
+    blck.CommandColor:=clWhite;
+    blck.CommndID:=174;
+    blck.Commandtext:='%pd β†’ Ξ•Ξ¬Ξ½ Ο…Ξ³ΟΞ±ΟƒΞ―Ξ± %p1 ΞΌΞΉΞΊΟΟΟ„ΞµΟΞ· Ξ±Ο€Ο %p2 %';
+    blck.param1prompt:='Ξ΄ΞµΞ½';
+    TDspControlBlock(blck).EndBlockText:='Ξ¤Ξ­Ξ»ΞΏΟ‚ Ξ•Ξ¬Ξ½';
+    blck.TotalParams:=2;
+    blck.MyHint:='Ξ•Ξ»Ξ­Ξ³Ο‡ΞµΞΉ ΞµΞ¬Ξ½ Ξ· Ο…Ξ³ΟΞ±ΟƒΞ―Ξ± ΞµΞ―Ξ½Ξ±ΞΉ ΞΌΞΉΞΊΟΟΟ„ΞµΟΞ· Ξ±Ο€Ο Ο„ΞΏΞ½ Ξ±ΟΞΉΞΈΞΌΟ Ο„ΞΏΞΉΟ‚ ΞµΞΊΞ±Ο„Ο (%)';
+    inc(tp,50);blck.Top:=tp;
+    blck.Left:=10;
+    blck.Prototype:=true;
+    blck.DeviceOnlyCommandID:=Ord(TEMP);
+
+
+    pnl.Height:=blck.Top+blck.Height+40;
+
+End;
+
+procedure TfrmRoboLang.CreateVarCommands;
+Var col:Tcolor;
+    tp:integer;
+    pnl:TCategoryPanel;
+Begin
+    col:=StringToColor('$004C0B5F');//     #333300
+    pnl:=VarPanel;
+    tp:=-10;
+
+    pnl.color:=LightenColor(col,30);
+
+    blck:=TDspCommandVarBlock.Create(Self);
+    blck.Parent:=pnl;
+    blck.Color:=col;
+    blck.CommandColor:=clWhite;
+    blck.CommndID:=230;
+    blck.Commandtext:='Ξ’Ξ¬Ξ»Ξµ Ο„ΞΉΞΌΞ® %p1 ΟƒΟ„Ξ·Ξ½ ΞΞµΟ„Ξ±Ξ²Ξ»Ξ·Ο„Ξ® %p2';
+    blck.TotalParams:=2;
+    blck.MyHint:='ΞΞ­Ο„ΞµΞΉ ΞΌΞΉΞ± Ο„ΞΉΞΌΞ® Ξ® ΞΌΞµΟ„Ξ±Ξ²Ξ»Ξ·Ο„Ξ® ΟƒΟ„Ξ·Ξ½ ΞΌΞµΟ„Ξ±Ξ²Ξ»Ξ·Ο„Ξ® Ο€ΞΏΟ… ΞµΟ€ΞΉΞ»Ξ­Ξ³ΞΏΟ…ΞΌΞµ';
+    inc(tp,50);blck.Top:=tp;
+    blck.Left:=10;
+    blck.Prototype:=true;
+
+    pnl.Align:=alClient;
+   // pnl.Height:=blck.Top+blck.Height+40;
+
+End;
+
+
+
+procedure TfrmRoboLang.CreateCommands;
+Begin
+    CreateStartCommands;
+    CreateMoveCommands;
+    CreateLoopCommands;
+    CreateControlCommands;
+    CreateVariousCommands;
+    CreateLCDCommands;
+    CreateLaserCommands;
+    CreateSoundCommands;
+    CreateUltraSonicCommands;
+    CreateServoCommands;
+    CreateSwitchCommands;
+    CreateTempCommands;
+    CreateVarCommands;
+End;
+
+
+procedure TfrmRoboLang.addDevices;
+Var i,m:Integer;
+begin
+  //set counter label tag to -1 for only one device
+
+  i:=0;
+  ArduinoDevices[i].DeviceName:='LCD Serial';
+  ArduinoDevices[i].DeviceFormClass:=TfrmSerialLcd;
+  ArduinoDevices[i].DevicePanel:=pnlLCD;
+  ArduinoDevices[i].DeviceCmdId:=120;
+  ArduinoDevices[i].DeviceParamCount:=0;
+  ArduinoDevices[i].DeviceMax:=1;//only one of these
+  i:=i+1;
+
+  ArduinoDevices[i].DeviceName:='Laser';
+  ArduinoDevices[i].DeviceFormClass:=TfrmLaser;
+  ArduinoDevices[i].DevicePanel:=pnlLaser;
+  ArduinoDevices[i].DeviceCmdId:=130;
+  ArduinoDevices[i].DeviceParamCount:=1;
+  ArduinoDevices[i].DeviceMax:=10;
+  i:=i+1;
+
+  ArduinoDevices[i].DeviceName:='Sound';
+  ArduinoDevices[i].DeviceFormClass:=TfrmSound;
+  ArduinoDevices[i].DevicePanel:=pnlSound;
+  ArduinoDevices[i].DeviceCmdId:=110;
+  ArduinoDevices[i].DeviceParamCount:=1;
+  ArduinoDevices[i].DeviceMax:=10;
+  i:=i+1;
+
+  ArduinoDevices[i].DeviceName:='UltraSonic';
+  ArduinoDevices[i].DeviceFormClass:=TfrmUSonic;
+  ArduinoDevices[i].DevicePanel:=pnlUSonic;
+  ArduinoDevices[i].DeviceCmdId:=140;
+  ArduinoDevices[i].DeviceParamCount:=2;
+  ArduinoDevices[i].DeviceMax:=4;
+  i:=i+1;
+
+  ArduinoDevices[i].DeviceName:='Servo';
+  ArduinoDevices[i].DeviceFormClass:=TfrmServo;
+  ArduinoDevices[i].DevicePanel:=pnlServo;
+  ArduinoDevices[i].DeviceCmdId:=150;
+  ArduinoDevices[i].DeviceParamCount:=1;
+  ArduinoDevices[i].DeviceMax:=4;
+  i:=i+1;
+
+  ArduinoDevices[i].DeviceName:='Switch';
+  ArduinoDevices[i].DeviceFormClass:=TfrmSwitch;
+  ArduinoDevices[i].DevicePanel:=pnlSwitch;
+  ArduinoDevices[i].DeviceCmdId:=145;
+  ArduinoDevices[i].DeviceParamCount:=1;
+  ArduinoDevices[i].DeviceMax:=4;
+  i:=i+1;
+
+  ArduinoDevices[i].DeviceName:='Temp';
+  ArduinoDevices[i].DeviceFormClass:=TfrmTemp;
+  ArduinoDevices[i].DevicePanel:=pnlTemp;
+  ArduinoDevices[i].DeviceCmdId:=170;
+  ArduinoDevices[i].DeviceParamCount:=2;
+  ArduinoDevices[i].DeviceMax:=4;
+  i:=i+1;
+
+
+   m:=i;
+  //Set panel tag to device number
+  for i := 0 to m-1 do
+   if ArduinoDevices[i].DeviceName<>'' then
+       ArduinoDevices[i].DevicePanel.Tag:=i;
+end;
 
 procedure TfrmRoboLang.Edit1Exit(Sender: TObject);
 begin
@@ -1651,37 +2017,29 @@ begin
  if ComIdle then
  Begin
   comport1.ReadStr(s,count);
-  ln:=ln+s;
-  if s[count-1]=#13 then
-  Begin
-   Adddebug(ln);
-   ln:='';
-  End;
+  repeat
+   if (s[1]=#13) or (s[1]=#10) then
+   Begin
+    if ln<>'' then
+      Adddebug(ln);
+    ln:='';
+   End
+   else   ln:=ln+s[1];
+   s:=copy(s,2,maxint);
+   count:=count-1;
+  Until count=0;
  End;
 
 end;
 
-procedure TfrmRoboLang.CreateCommands;
-Begin
-    CreateStartCommands;
-    CreateMoveCommands;
-    CreateLoopCommands;
-    CreateControlCommands;
-    CreateVariousCommands;
-    CreateLCDCommands;
-    CreateLaserCommands;
-    CreateSoundCommands;
-    CreateUltraSonicCommands;
-    CreateServoCommands;
-End;
 
 Function TfrmRoboLang.getFullCaption:String;
 Var srv:string;
 Begin
 //  if isServer then
-//    srv:='Καθηγητής'
+//    srv:='ΞΞ±ΞΈΞ·Ξ³Ξ·Ο„Ξ®Ο‚'
 //  Else
-//    srv:='Μαθητής';
+//    srv:='ΞΞ±ΞΈΞ·Ο„Ξ®Ο‚';
   Result:=progname+' '+ Version+' - '+programmer;
 End;
 
@@ -1746,7 +2104,11 @@ begin
         if Components[i] is TDspBlock and assigned(TControl(Components[i]).parent) then
         Begin
           TControl(Components[i]).parent := nil;
-          Components[i].Free;
+          try
+           Components[i].Free;
+          except
+
+          end;
           brk:=true;
           break;
         End;
@@ -1936,7 +2298,7 @@ begin
    End;
    if (t='') then //and IsServer then
    Begin
-     ShowMessage('Δεν βρέθηκε ασύρματη σειριακή θύρα Bluetooth!!!'#13#10'Πρέπει να εγκαταστήσετε έναν Bluetooth adaptor και να κάνετε Pair.'#13#10'Αν γνωρίζετε την σειριακή θύρα προσθέστε την στο αρχείο BTPort.ini {ComPort=COMx}');
+     ShowMessage('Ξ”ΞµΞ½ Ξ²ΟΞ­ΞΈΞ·ΞΊΞµ Ξ±ΟƒΟΟΞΌΞ±Ο„Ξ· ΟƒΞµΞΉΟΞΉΞ±ΞΊΞ® ΞΈΟΟΞ± Bluetooth!!!'#13#10'Ξ ΟΞ­Ο€ΞµΞΉ Ξ½Ξ± ΞµΞ³ΞΊΞ±Ο„Ξ±ΟƒΟ„Ξ®ΟƒΞµΟ„Ξµ Ξ­Ξ½Ξ±Ξ½ Bluetooth adaptor ΞΊΞ±ΞΉ Ξ½Ξ± ΞΊΞ¬Ξ½ΞµΟ„Ξµ Pair.'#13#10'Ξ‘Ξ½ Ξ³Ξ½Ο‰ΟΞ―Ξ¶ΞµΟ„Ξµ Ο„Ξ·Ξ½ ΟƒΞµΞΉΟΞΉΞ±ΞΊΞ® ΞΈΟΟΞ± Ο€ΟΞΏΟƒΞΈΞ­ΟƒΟ„Ξµ Ο„Ξ·Ξ½ ΟƒΟ„ΞΏ Ξ±ΟΟ‡ΞµΞ―ΞΏ BTPort.ini {ComPort=COMx}');
      sbar.Panels[0].Text:='BT Port: None';
    End
    else
@@ -1969,7 +2331,7 @@ begin
   lbl:=getPanelCountLabel(p);
    if Tbitbtn(Sender).tag>=ArduinoDevices[p.tag].DeviceMax then
    Begin
-     ShowMessage('Μόνο μια επιτρέπετε!!!');
+     ShowMessage('ΞΟΞ½ΞΏ ΞΌΞΉΞ± ΞµΟ€ΞΉΟ„ΟΞ­Ο€ΞµΟ„Ξµ!!!');
      exit;
    End;
   Tbitbtn(Sender).Tag:=  Tbitbtn(Sender).Tag+1;
@@ -2017,59 +2379,7 @@ Begin
 //  end;
 End;
 
-procedure TfrmRoboLang.addDevices;
-Var i,m:Integer;
-begin
-  //set counter label tag to -1 for only one device
 
-  i:=0;
-  ArduinoDevices[i].DeviceName:='LCD Serial';
-  ArduinoDevices[i].DeviceFormClass:=TfrmSerialLcd;
-  ArduinoDevices[i].DevicePanel:=pnlLCD;
-  ArduinoDevices[i].DeviceCmdId:=120;
-  ArduinoDevices[i].DeviceParamCount:=0;
-  ArduinoDevices[i].DeviceMax:=1;//only one of these
-  i:=i+1;
-
-  ArduinoDevices[i].DeviceName:='Laser';
-  ArduinoDevices[i].DeviceFormClass:=TfrmLaser;
-  ArduinoDevices[i].DevicePanel:=pnlLaser;
-  ArduinoDevices[i].DeviceCmdId:=130;
-  ArduinoDevices[i].DeviceParamCount:=1;
-  ArduinoDevices[i].DeviceMax:=10;
-  i:=i+1;
-
-  ArduinoDevices[i].DeviceName:='Sound';
-  ArduinoDevices[i].DeviceFormClass:=TfrmSound;
-  ArduinoDevices[i].DevicePanel:=pnlSound;
-  ArduinoDevices[i].DeviceCmdId:=110;
-  ArduinoDevices[i].DeviceParamCount:=1;
-  ArduinoDevices[i].DeviceMax:=10;
-  i:=i+1;
-
-  ArduinoDevices[i].DeviceName:='UltraSonic';
-  ArduinoDevices[i].DeviceFormClass:=TfrmUSonic;
-  ArduinoDevices[i].DevicePanel:=pnlUSonic;
-  ArduinoDevices[i].DeviceCmdId:=140;
-  ArduinoDevices[i].DeviceParamCount:=2;
-  ArduinoDevices[i].DeviceMax:=4;
-  i:=i+1;
-
-  ArduinoDevices[i].DeviceName:='Servo';
-  ArduinoDevices[i].DeviceFormClass:=TfrmServo;
-  ArduinoDevices[i].DevicePanel:=pnlServo;
-  ArduinoDevices[i].DeviceCmdId:=150;
-  ArduinoDevices[i].DeviceParamCount:=1;
-  ArduinoDevices[i].DeviceMax:=4;
-  i:=i+1;
-
-
-   m:=i;
-  //Set panel tag to device number
-  for i := 0 to m-1 do
-   if ArduinoDevices[i].DeviceName<>'' then
-       ArduinoDevices[i].DevicePanel.Tag:=i;
-end;
 
 procedure TfrmRoboLang.LCDaddClick(Sender: TObject);
 Begin
@@ -2084,6 +2394,17 @@ end;
 procedure TfrmRoboLang.N7Click(Sender: TObject);
 begin
   frmAbout.showmodal;
+end;
+
+procedure TfrmRoboLang.OnRefVarRequest(var Msg: TMessage);
+var
+  i: Integer;
+begin
+  for i := 0 to Pred(Componentcount) do
+  Begin
+    if Components[i] is TDspBlock then
+     TDspBlock(Components[i]).Perform(msg.Msg,msg.WParam,msg.LParam);
+  End;
 end;
 
 procedure TfrmRoboLang.DeviceChanged;

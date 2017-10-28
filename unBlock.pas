@@ -14,6 +14,7 @@ Type
 
  TDspBlock=Class(TCustomControl)
   private
+    loading:boolean;
     enblColor:TColor;
     cancelMouseDn:boolean;
     a: TPointArray;
@@ -35,6 +36,8 @@ Type
     FMyhint: string;
     Fprototype: boolean;
     FDeviceOnlyCommandID: integer;
+    FVarParam1: TDspBlock;
+    FParam1Attaching: Boolean;
     procedure CalcArea;
     function InCircle(p, Cp: Tpoint): boolean;
     procedure MakeBorderDn;
@@ -61,7 +64,6 @@ Type
     procedure Setparam2prompt(const Value: string);
     procedure Setparam2question(const Value: String);
     procedure SetMyhint(const Value: string);
-    procedure Setprototype(const Value: boolean);
     function getFixedCommandText: String;
     function getParentControl: TWincontrol;
     function IndexInOwner(VControl: Tcontrol): integer;
@@ -76,6 +78,11 @@ Type
     procedure SetPDevice(const Value: Integer);
     function getParamDControl(x, y: integer): integer;
     procedure ComboChange(Sender: TObject);
+    function GetVarParam1Name: String;
+    procedure SetVarParam1(const Value: TDspBlock);
+    procedure SetVarParam1Name(const Value: String);
+    procedure SetParam1Attaching(const Value: Boolean);
+    procedure SubFromRect(Var R:tRect;n: Integer);
   protected
     FCommandText:String;
     move:boolean;
@@ -89,6 +96,7 @@ Type
     CtrltoAttach:TDspBlock;
     FCtrlAttachUp:boolean;
     FCtrlAttachDn:boolean;
+    Param1toAttach:TDspBlock;
     ctrl1:TWinControl;
     ctrl2:TWinControl;
     ctrlS:TWinControl;
@@ -97,6 +105,8 @@ Type
     updn2:tupdown;
     ctrlcolor1:TColor;
     ctrlcolor2:TColor;
+    procedure CheckAttach;virtual;
+    procedure Setprototype(const Value: boolean);Virtual;
     procedure SetParent(AParent: TWinControl); override;
     procedure CreateCtrl1;virtual;
     procedure CreateCtrl2;virtual;
@@ -148,6 +158,7 @@ Type
     FPDevice: Integer;  //Device Pin formerly in param1 // or Device ID if we keep track on arduino
     FLinkToName: String;
     FLinkFromName: String;
+    FVarParam1Name:String;
     constructor Create(AOwner: TComponent); override;
     destructor Destroy; override;
     Function IndexInParent(VControl:Tcontrol):integer;
@@ -163,8 +174,11 @@ Type
     function getLastDspBlock(caller:TDspBlock):TDspBlock;virtual;
     constructor CreateFloat(AOwner: TComponent);
     procedure FillComboBox;
+    function GetParam1Rect: TRect;virtual;
+    function Param1Visible: Boolean;
   Published
     property Color;
+    property Param1Attaching:Boolean read FParam1Attaching write SetParam1Attaching;
     property CtrlAttachUp:boolean read FCtrlAttachUp write setCtrlAttachUp;
     property CtrlAttachDn:boolean read FCtrlAttachDn write setCtrlAttachDn;
     property CommandText: String read getCommandText write setCommandText;
@@ -194,7 +208,8 @@ Type
     property MyHint:string read FMyhint write SetMyhint;
     property prototype:boolean read Fprototype write Setprototype;
     property DeviceOnlyCommandID:integer read FDeviceOnlyCommandID write SetDeviceOnlyCommandID;
-
+    property VarParam1:TDspBlock read FVarParam1 write SetVarParam1;
+    Property VarParam1Name:String read GetVarParam1Name write SetVarParam1Name;
   End;
 
 var  debugging:boolean=false;
@@ -243,6 +258,7 @@ begin
 
 end;
 
+
 Function TDspBlock.IndexInOwner(VControl:Tcontrol):integer;
 var
   OwnerControl: TForm;
@@ -267,6 +283,8 @@ End;
 constructor TDspBlock.Create(AOwner: TComponent);
 begin
   inherited;
+  ControlStyle:=ControlStyle+[ csAcceptsControls];
+  Param1Attaching:=false;
  // ControlStyle := ControlStyle - [csOpaque];
   FDeviceOnlyCommandID:=-1;
   ctrlcolor1:=clWebDarkRed ;
@@ -309,6 +327,8 @@ begin
   createctrl2;
   CreateCtrlS;
   CreateCtrlD;
+  FVarParam1:=nil;
+  FVarParam1Name:='';
  // ID:=IndexInowner(self);
 end;
 
@@ -419,22 +439,28 @@ begin
 
   if not prototype then
   begin
+   if assigned(parent) and not (parent is TDspBlock) then
+   Begin
      if assigned(parent) and assigned(tscrollbox(parent).VertScrollBar) then
       ktop:=tscrollbox(parent).VertScrollBar.ScrollPos;
 
      if assigned(parent) and assigned(tscrollbox(parent).HorzScrollBar) then
       kleft:=tscrollbox(parent).HorzScrollBar.ScrollPos;
+   End;
   end
   else
   Begin
     ktop:=0;kleft:=0;
   End;
 
-  if ktop+ptop<5 then
-     ptop:=5;
+  if assigned(parent) and  not (parent is TDspBlock) then
+  Begin
+    if ktop+ptop<5 then
+      ptop:=5;
 
-  if kleft+pleft<5 then
-    pLeft:=5;
+    if kleft+pleft<5 then
+     pLeft:=5;
+  End;
 
 
   lMoved := ( pLeft <> Left ) or ( pTop <> Top );
@@ -628,9 +654,22 @@ end;
 
 procedure TDspBlock.SetParent(AParent: TWinControl);
 begin
+  if assigned(parent) and ((Parent is TDspBlock) or (assigned(AParent) and (Aparent is TDspBlock) and TDspBlock(AParent).loading))then    //remove from this parent
+  Begin
+   Width:=Width+2*lnw;
+   Height:=Height+2*lnw+8;
+   Margins.Top:=0;
+  End;
   inherited;
   if IsParamDev and (AParent<>nil) then
     FillComboBox;
+  if assigned(Aparent) and (AParent is TDspBlock) then
+  Begin
+    //smaller rect
+   Width:=Width-2*lnw;
+   Height:=Height-2*lnw-8;
+   Margins.Top:=2;
+  End;
 end;
 
 procedure TDspBlock.SetPDevice(const Value: Integer);
@@ -642,7 +681,7 @@ begin
   end;
   if assigned(ctrlD) then
   Begin
-   SetComboBoxValue;
+   SeTComboBoxValue;
   End;
 end;
 
@@ -665,6 +704,50 @@ begin
   FTotalParams := Value;
 end;
 
+
+procedure TDspBlock.SetVarParam1(const Value: TDspBlock);
+begin
+  if assigned(Value) then  //New Var Param
+  Begin
+   Value.Parent:=Self;
+   Value.left:=ctrl1.Left;
+   value.Top:=ctrl1.Top-lnw*2;
+   ctrl1.Visible:=false;
+   if assigned(updn1) then updn1.Visible:=false;
+  End;
+  if Assigned(FVarParam1) then   //old Var Param Get it Out of us
+  Begin
+   FVarParam1.Left:=left+FVarParam1.Left+10;
+   FVarParam1.Top:=Top+FVarParam1.Top+10;
+   FVarParam1.Parent:=parent;
+   if not assigned(value) then //nil
+   Begin
+    ctrl1.Visible:=True;
+    if assigned(updn1) then updn1.Visible:=True;
+   End;
+  End;
+
+
+  FVarParam1 := Value;
+
+end;
+
+procedure TDspBlock.SetVarParam1Name(const Value: String);
+var f:TDspBlock;
+begin
+  loading:=(value<>'') and not assigned(FVarParam1);
+  FVarParam1Name := Value;
+  if assigned(owner) and not assigned(FVarParam1) then  //LinkByName
+  Begin
+     f:=TDspBlock(owner.FindComponent(FVarParam1Name));
+     if assigned(f) then
+     Begin
+       VarParam1:=f;
+       loading:=false;
+     End;
+  End;
+
+end;
 
 procedure TDspBlock.Resize;
 begin
@@ -767,74 +850,30 @@ end;
 
 Const ScrollQuant=100;
 
-procedure TDspBlock.MouseMove(Shift: TShiftState; X, Y: Integer);
-Var otApUp,otApDn,myApUp,myApDn:TPoint;
-    tmpctrl:TDspBlock;
+Function TDspBlock.Param1Visible:Boolean;
+Begin
+   Result:=Ctrl1.visible and (totalparams>0);
+End;
+
+Function TDspBlock.GetParam1Rect:TRect;
+Begin
+  if Param1Visible then
+  Begin
+     Result:=Ctrl1.BoundsRect;
+     Result.left:=Result.Left+left;
+     Result.Right:=Result.Right+left;
+     Result.Top:=Result.Top+Top;
+     Result.Bottom:=Result.Bottom+Top;
+  End
+  Else Result.Empty;
+
+End;
+
+procedure TDspBlock.CheckAttach;
+var tmpctrl:TDspBlock;
+    otApUp,otApDn,myApUp,myApDn:TPoint;
     i:integer;
-    par:Twincontrol;
-begin
-   inherited;
-   if move then
-   Begin
-     if (parent.Tag=995) then twincontrol(parent).Repaint;
-     if X>P1.X then
-        Left:=Left +(X - p1.X);
-     if X<P1.X then
-        Left:=Left -(P1.X - X);
-     if Y>P1.Y then
-        Top:=Top +(Y - p1.Y);
-     if Y<P1.Y then
-        Top:=Top -(p1.Y - Y);
-
-     if not prototype and assigned(parent) and (parent=Owner)  then
-     Begin
-       par:=getParentControl;
-       if (left>=par.Left) and (top>par.Top) then
-       Begin
-         Parent:=par;
-         left:=left-par.Left;
-         top:=top-par.Top;
-         move:=false;
-        // PostMessage(Handle, WM_LBUTTONUP, 0, 0);
-
-         PostMessage(Handle, WM_LBUTTONDOWN, 0, X or (Y shl 16));
-         exit;
-       End;
-
-     End else
-     if not prototype and assigned(parent) and assigned(tscrollbox(parent).VertScrollBar) then
-     Begin
-         FillComboBox;
-        //horiz scroll
-        if (tscrollbox(parent).HorzScrollBar.Position+left+width)>  Max(tscrollbox(parent).HorzScrollBar.Range,tscrollbox(parent).clientwidth) then
-           tscrollbox(parent).HorzScrollBar.Range:=tscrollbox(parent).width+tscrollbox(parent).HorzScrollBar.Range+ScrollQuant*4;
-        if (left+width)>  tscrollbox(parent).ClientWidth then
-        begin
-         tscrollbox(parent).HorzScrollBar.Position:=tscrollbox(parent).HorzScrollBar.Position+ScrollQuant;
-         SetCursorPos(Mouse.CursorPos.X-ScrollQuant, Mouse.CursorPos.Y);
-        end;
-        if (left)<0 then
-        begin
-         tscrollbox(parent).HorzScrollBar.Position:=tscrollbox(parent).HorzScrollBar.Position-ScrollQuant;
-         SetCursorPos(Mouse.CursorPos.X+ScrollQuant, Mouse.CursorPos.Y);
-        end;
-
-        //Vert scroll
-        if (tscrollbox(parent).VertScrollBar.Position+top+Height)>  Max(tscrollbox(parent).VertScrollBar.Range,tscrollbox(parent).ClientHeight) then
-           tscrollbox(parent).VertScrollBar.Range:=tscrollbox(parent).height+tscrollbox(parent).VertScrollBar.Range+ScrollQuant*4;
-        if (top+Height)>  tscrollbox(parent).ClientHeight then
-        begin
-         tscrollbox(parent).VertScrollBar.Position:=tscrollbox(parent).VertScrollBar.Position+ScrollQuant;
-         SetCursorPos(Mouse.CursorPos.X, Mouse.CursorPos.Y-ScrollQuant);
-        end;
-        if (top)<0 then
-        begin
-         tscrollbox(parent).VertScrollBar.Position:=tscrollbox(parent).VertScrollBar.Position-ScrollQuant;
-         SetCursorPos(Mouse.CursorPos.X, Mouse.CursorPos.Y+ScrollQuant);
-        end;
-
-     End;
-
+Begin
      if CtrltoAttach<>nil then
      Begin
        CtrltoAttach.CtrlAttachUp:=false;
@@ -844,8 +883,6 @@ begin
      sameattach:=false;
      if (parent<>nil) and (parent.Tag=995) then
      Begin
-
-
         for i := 0 to  parent.ControlCount-1 do
         Begin
            if parent.Controls[i] is TDspBlock then
@@ -887,6 +924,91 @@ begin
            End; //if parent controls
         End; //for i
      End; //if parent tag
+
+End;
+
+procedure TDspBlock.MouseMove(Shift: TShiftState; X, Y: Integer);
+Var otApUp,otApDn,myApUp,myApDn:TPoint;
+    tmpctrl:TDspBlock;
+    i:integer;
+    par:Twincontrol;
+begin
+   inherited;
+   if move then
+   Begin
+     if (parent.Tag=995) then twincontrol(parent).Repaint;
+     if X>P1.X then
+        Left:=Left +(X - p1.X);
+     if X<P1.X then
+        Left:=Left -(P1.X - X);
+     if Y>P1.Y then
+        Top:=Top +(Y - p1.Y);
+     if Y<P1.Y then
+        Top:=Top -(p1.Y - Y);
+
+     if not prototype and assigned(parent) and (parent=Owner)  then
+     Begin
+       par:=getParentControl;
+       if (left>=par.Left) and (top>par.Top) then
+       Begin
+         Parent:=par;
+         left:=left-par.Left;
+         top:=top-par.Top;
+         move:=false;
+        // PostMessage(Handle, WM_LBUTTONUP, 0, 0);
+
+         PostMessage(Handle, WM_LBUTTONDOWN, 0, X or (Y shl 16));
+         exit;
+       End;
+
+     End else   //TODO:Tell the other blocks that are under us that we moved
+     if not prototype and assigned(parent) and not (parent is TDspBlock) and assigned(tscrollbox(parent).VertScrollBar) then
+     Begin
+         FillComboBox;
+        //horiz scroll
+        if (tscrollbox(parent).HorzScrollBar.Position+left+width)>  Max(tscrollbox(parent).HorzScrollBar.Range,tscrollbox(parent).clientwidth) then
+           tscrollbox(parent).HorzScrollBar.Range:=tscrollbox(parent).width+tscrollbox(parent).HorzScrollBar.Range+ScrollQuant*4;
+        if (left+width)>  tscrollbox(parent).ClientWidth then
+        begin
+         tscrollbox(parent).HorzScrollBar.Position:=tscrollbox(parent).HorzScrollBar.Position+ScrollQuant;
+         SetCursorPos(Mouse.CursorPos.X-ScrollQuant, Mouse.CursorPos.Y);
+        end;
+        if (left)<0 then
+        begin
+         tscrollbox(parent).HorzScrollBar.Position:=tscrollbox(parent).HorzScrollBar.Position-ScrollQuant;
+         SetCursorPos(Mouse.CursorPos.X+ScrollQuant, Mouse.CursorPos.Y);
+        end;
+
+        //Vert scroll
+        if (tscrollbox(parent).VertScrollBar.Position+top+Height)>  Max(tscrollbox(parent).VertScrollBar.Range,tscrollbox(parent).ClientHeight) then
+           tscrollbox(parent).VertScrollBar.Range:=tscrollbox(parent).height+tscrollbox(parent).VertScrollBar.Range+ScrollQuant*4;
+        if (top+Height)>  tscrollbox(parent).ClientHeight then
+        begin
+         tscrollbox(parent).VertScrollBar.Position:=tscrollbox(parent).VertScrollBar.Position+ScrollQuant;
+         SetCursorPos(Mouse.CursorPos.X, Mouse.CursorPos.Y-ScrollQuant);
+        end;
+        if (top)<0 then
+        begin
+         tscrollbox(parent).VertScrollBar.Position:=tscrollbox(parent).VertScrollBar.Position-ScrollQuant;
+         SetCursorPos(Mouse.CursorPos.X, Mouse.CursorPos.Y+ScrollQuant);
+        end;
+
+     End
+     else
+      if not prototype and assigned(parent) and (parent is TDspBlock) then//a var block wants to move out
+      Begin
+        //detach var block
+        tmpctrl:= TDspBlock(parent);
+        parent:=tmpctrl.Parent;
+        left:=left+tmpctrl.Left;
+        top:=top+tmpctrl.Top;
+        tmpctrl.VarParam1:=nil;
+        tmpctrl.Repaint;
+        PostMessage(Handle, WM_LBUTTONDOWN, 0, X or (Y shl 16));
+      End;
+
+     CheckAttach;
+
    End;//if move
    if fLinkTo<>nil then
    Begin
@@ -909,6 +1031,14 @@ Begin
     End;
   End;
 End;
+
+function TDspBlock.GetVarParam1Name: String;
+begin
+  if assigned(FVarParam1 ) then
+   result:=FVarParam1.name
+  else
+    result:='';
+end;
 
 procedure TDspBlock.MouseUp(Button: TMouseButton; Shift: TShiftState; X,
   Y: Integer);
@@ -1035,7 +1165,6 @@ begin
     if not sameattach and assigned(linkfrom) then //dettach
     Begin
       DettachFrom(linkfrom);
-
     End;
   End;
   if CtrltoAttach<>nil then
@@ -1065,17 +1194,17 @@ begin
   if DeviceOnlyCommandID<>DevTypeID  then exit;
   //Something Changed Refresh the device list
   FillComboBox;
-  if TCombobox(ctrlD).Items.Count>0 then
+  if TComboBox(ctrlD).Items.Count>0 then
   Begin
-   if TCombobox(ctrlD).ItemIndex=-1 then
-      TCombobox(ctrlD).ItemIndex:=0;
-    FPDevice:=Integer(TCombobox(ctrlD).items.objects[TCombobox(ctrlD).ItemIndex]);
-    TCombobox(ctrlD).Text:=TCombobox(ctrlD).items[TCombobox(ctrlD).ItemIndex];
+   if TComboBox(ctrlD).ItemIndex=-1 then
+      TComboBox(ctrlD).ItemIndex:=0;
+    FPDevice:=Integer(TComboBox(ctrlD).items.objects[TComboBox(ctrlD).ItemIndex]);
+    TComboBox(ctrlD).Text:=TComboBox(ctrlD).items[TComboBox(ctrlD).ItemIndex];
     Invalidate;
   End
   Else
   Begin
-    TCombobox(ctrlD).Text:='';
+    TComboBox(ctrlD).Text:='';
     FParam1:=0;
   End;
 
@@ -1191,7 +1320,7 @@ Begin
 End;
 
 
-procedure TDspBlock.SetComboBoxValue;      //Sets String value of device
+procedure TDspBlock.SeTComboBoxValue;      //Sets String value of device
 Var k:Integer;
 Begin
    if csLoading in ComponentState then exit;
@@ -1228,7 +1357,7 @@ Begin
 //    End;
 //    TComboBox(ctrld).Items.EndUpdate;
     sl.Free;
-    SetComboBoxValue;
+    SeTComboBoxValue;
 End;
 
 function TDspBlock.getParam1Control(x, y: integer): integer;
@@ -1246,6 +1375,8 @@ begin
   End
   else
   Begin
+   if not assigned(VarParam1) then
+   Begin
     ctrl1.Visible:=true;
     updn1.Visible:=true;
     tedit(ctrl1).Color:=LightenColor(Color,30);
@@ -1256,6 +1387,13 @@ begin
     updn1.top:=y;
     TEdit(ctrl1).text:=inttostr(param1);
     result:=ctrl1.Left+ctrl1.Width+updn1.width;
+   End
+   else
+   Begin
+     VarParam1.Left:=x;
+     VarParam1.Top:=y-3;
+     result:=VarParam1.Left+VarParam1.Width;
+   End;
   End;
 
 end;
@@ -1353,6 +1491,12 @@ End;
 
 
 
+procedure TDspBlock.SetParam1Attaching(const Value: Boolean);
+begin
+  FParam1Attaching := Value;
+  Repaint;
+end;
+
 procedure TDspBlock.paintCmd;
 var cmds:String;
      txth,txtw:integer;
@@ -1413,7 +1557,16 @@ begin
      H := Height - lnw-1 ;
 
     setCommandStyle;
-    x:=lnw+10;y:=lnw+2+nosh;
+
+    if Assigned(Parent) and (Parent is TDspBlock) then
+    Begin
+      x:=margins.Left+2;y:=Margins.top+2;
+    End
+    Else
+    Begin
+      x:=lnw+Max(margins.Left,10);y:=lnw+2+nosh+Margins.top;
+    End;
+
     if debugging then
      y:=y+10;
 
@@ -1500,10 +1653,18 @@ begin
 //     canvas.TextOut(lnw+w div 2-txtw,lnw+h div 2-txth-nosh div 2,cmds);
 end;
 
+procedure TDspBlock.SubFromRect(Var R:tRect;n:Integer);
+Begin
+  R.Left:=R.Left-n;
+  R.Top:=R.Top-n;
+  R.Right:=R.Right+n;
+  R.Bottom:=R.Bottom+n;
+End;
 
 procedure TDspBlock.PaintAttach;
  var k:array of tpoint;
      i:integer;
+     r:tRect;
 Begin
   with Canvas do
   begin
@@ -1525,6 +1686,17 @@ Begin
       k[i-1]:=borderDn[i];
      polyline(k);
    end;
+   if Param1Attaching and assigned(ctrl1) then
+   Begin
+     R:=ctrl1.BoundsRect;
+     if assigned(updn1) then
+     Begin
+       r.Right:=updn1.BoundsRect.Right;
+       r.Bottom:=updn1.BoundsRect.Bottom;
+     End;
+    // SubFromRect(R,3);
+     Rectangle(R);
+   End;
 
   end;
 
@@ -1533,6 +1705,7 @@ End;
 procedure TDspBlock.paintborderUp;
 var lightColor:TColor;
 Begin
+  if assigned(parent) and (parent is TDspBlock) then exit;
   lightColor:=LightenColor(Color,40);
   with Canvas do
   begin
@@ -1546,6 +1719,8 @@ End;
 procedure TDspBlock.paintborderDn;
 var darkColor:TColor;
 Begin
+  if assigned(parent) and (parent is TDspBlock) then exit;
+
   darkColor:=DarkenColor(Color,40);
   with Canvas do
   begin
@@ -1737,18 +1912,18 @@ begin
   TComboBox(ctrlD).AutoCompleteDelay:=1000;
 
 //  TComboBox(ctrlS).BorderStyle:=bsNone;
-  TComboBox(ctrlD).height:=14;
+  TComboBox(ctrlD).height:=16;
 end;
 
 procedure TDspBlock.ComboChange(Sender: TObject);
 Var sl:TStringlist;
 Begin
-   sl:=TStringlist(tComboBox(ctrld).Items);
+   sl:=TStringlist(TComboBox(ctrld).Items);
    try
-    if tComboBox(ctrld).ItemIndex>-1 then
+    if TComboBox(ctrld).ItemIndex>-1 then
     Begin
-      Paramd:=sl[tComboBox(ctrld).ItemIndex];
-      FPDevice:=Integer(sl.Objects[tComboBox(ctrld).ItemIndex]);
+      Paramd:=sl[TComboBox(ctrld).ItemIndex];
+      FPDevice:=Integer(sl.Objects[TComboBox(ctrld).ItemIndex]);
     End;
    except
     fParam1:=0;

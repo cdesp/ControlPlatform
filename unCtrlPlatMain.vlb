@@ -49,9 +49,6 @@ Coordinates=551,111,69,36
 [LaserAdd]
 Coordinates=595,10,69,58
 
-[SetServer1]
-Coordinates=551,166,79,36
-
 [acsave]
 Coordinates=551,221,55,36
 
@@ -186,8 +183,5 @@ Coordinates=328,212,66,36
 Visible=True
 
 []
-Coordinates=605,144,56,58
-
-[LCDpanel]
 Coordinates=251,212,67,58
 

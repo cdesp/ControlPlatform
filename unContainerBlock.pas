@@ -83,7 +83,7 @@ Type
       procedure edit2Change(Sender: TObject);override;
       procedure edit1Change(Sender: TObject);override;
       procedure loaded;override;
-
+      function GetParam1Rect: TRect;override;
   public
     constructor Create(AOwner: TComponent);override;
   end;
@@ -475,6 +475,11 @@ Begin
     result:=res;
 
 End;
+
+function TDspControlBlock.GetParam1Rect: TRect;
+begin
+  Result.Empty;
+end;
 
 function TDspControlBlock.getParam2Control(x,y:integer):integer;
 Begin

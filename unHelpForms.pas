@@ -99,7 +99,11 @@ Begin
    if btnC.tag=0 then
     frmRoboLang.CommandsByType(GetDeviceTypeId,False);
    visible:=false;
-   Parent:=frmRoboLang;
+   try
+    Parent:=frmRoboLang;
+   except
+
+   end;
    application.processmessages;
    //tabpage must not be active or it crashes when you delete it BUG???
    pi:=frmRoboLang.DevBook.PageIndex;

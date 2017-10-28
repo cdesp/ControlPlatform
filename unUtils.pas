@@ -5,6 +5,7 @@ uses Vcl.Graphics;
 
 function DarkenColor(Color: TColor; Amount: Integer): TColor;
 function LightenColor(Color: TColor; Amount: Integer): TColor;
+function HTMLtocolor(htmColor:String):tColor;
 
 implementation
 
@@ -12,6 +13,15 @@ type
 TRGBAColor = packed record
 R, G, B, A: Byte;
 end;
+
+function HTMLtocolor(htmColor:String):tColor;
+var DColor:String;
+begin
+//  htmColor= #084B8A    Delphi Color='$008A4B08'
+  DColor:='$00'+copy(htmColor,6,2)+copy(htmColor,4,2)+copy(htmColor,2,2);
+  result:=StringtoColor(DColor)
+end;
+
 
 function DarkenColor(Color: TColor; Amount: Integer): TColor;
 var

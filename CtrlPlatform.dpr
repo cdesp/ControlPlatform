@@ -16,7 +16,11 @@ uses
   unUtils in 'unUtils.pas',
   fSound in 'fSound.pas' {frmSound},
   fUSonic in 'fUSonic.pas' {frmUSonic},
-  fServo in 'fServo.pas' {frmServo};
+  fServo in 'fServo.pas' {frmServo},
+  fSwitch in 'fSwitch.pas' {frmSwitch},
+  fTemp in 'fTemp.pas' {frmTemp},
+  unVariables in 'unVariables.pas',
+  unBlockVar in 'unBlockVar.pas';
 
 {$R *.res}
 
@@ -28,5 +32,7 @@ begin
   Application.CreateForm(TfrmAbout, frmAbout);
   Application.CreateForm(TfrmUSonic, frmUSonic);
   Application.CreateForm(TfrmServo, frmServo);
+  Application.CreateForm(TfrmSwitch, frmSwitch);
+  Application.CreateForm(TfrmTemp, frmTemp);
   Application.Run;
 end.
