@@ -222,6 +222,7 @@ type
     procedure CreateTempCommands;
     procedure CreateBlocksFromVars;
     procedure CreateVarCommands;
+    function MakeInt(v1, v2: byte): integer;
     { Private declarations }
   public
     { Public declarations }
@@ -713,19 +714,33 @@ End;
 
 procedure TfrmRoboLang.SendCommands(blck:TDspBlock);
 var nxtblock:TDspBlock;
-     i:Integer;
+     i,vid:Integer;
+     myvar:TArduVar;
 Begin
   NxtBlock:=blck;
   while Assigned(nxtblock) do
   Begin
-    Adddebug('Sending CMD='+inttostr(NxtBlock.CommndID)
-     +'Dev= '+inttostr(NxtBlock.FpDevice)
-     +'p_1='+inttostr(NxtBlock.Param1)
-     +'P_2='+inttostr(NxtBlock.Param2)
-    );
     BTSendInteger( NxtBlock.CommndID);
     BTSendInteger( NxtBlock.PDevice);//device id -1 for no device
     BTSendInteger( NxtBlock.Param1);
+    vid:=-1;
+    if assigned(NxtBlock.VarParam1) then
+    Begin
+       myvar:=ArduVars.GetVarByName(NxtBlock.VarParam1.param1question);
+       vid:=myvar.VarID;
+    End;
+
+    BTSendInteger(vid);
+    BTSendInteger(-1);  //TODO:Make varparam2
+    Adddebug('Sending CMD='+inttostr(NxtBlock.CommndID)
+     +' Dev= '+inttostr(NxtBlock.pDevice)
+     +' p_1='+inttostr(NxtBlock.Param1)
+     +' v_1='+inttostr(vid)
+     +' v_1='+inttostr(-1)
+     +' p_2='+inttostr(NxtBlock.Param2)
+
+    );
+
     if NxtBlock.paramstr<>'' then
     Begin
        NxtBlock.Param2:=Length(NxtBlock.paramstr);
@@ -766,6 +781,11 @@ Begin
    sleep(2000);
  end;
 
+End;
+
+function TfrmRoboLang.MakeInt(v1,v2:byte):integer;
+Begin
+      Result:=v1 and (v1 shl 8);  //no vars on setup devices
 End;
 
 procedure TfrmRoboLang.acConnectExecute(Sender: TObject);
@@ -832,12 +852,16 @@ begin
      adddebug('Setup Cmd:'+inttostr(CommndID));
      adddebug('Device ID:'+inttostr(i));
      adddebug('Param 1  :'+inttostr(Param1));
+     adddebug('Vars 1   :'+inttostr(-1));
+     adddebug('Vars 2   :'+inttostr(-1));
      adddebug('Param 2  :'+inttostr(Param2));
      adddebug('------------------------');
      BTSendInteger(CommndID);
      BTSendInteger(i); //device id
      BTSendInteger(Param1);
-     BTSendInteger(Param2);
+     BTSendInteger(-1); BTSendInteger(-1); //No Vars
+     BTSendInteger(Param2);//param2 always last because of string vars
+
      k:=k+2;
     until k>=ActDevs[i].ActDevParamCount;
   End;
