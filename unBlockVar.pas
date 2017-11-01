@@ -13,17 +13,18 @@ Type
      private
        DelCbox:TCheckBox;
        function GetToDelete: Boolean;
-
+       procedure SetToDelete(const Value: Boolean);
      protected
          procedure Setprototype(const Value: boolean);Override;
          function createNewBlock: TDspBlock;override;
          procedure CheckAttach;override;
          procedure MouseUp(Button: TMouseButton; Shift: TShiftState; X,  Y: Integer);override;
+         procedure setParent(AParent:TWinControl);Override;
      public
        constructor Create(AOwner: TComponent); override;
        Procedure DelCboxClick(Sender:TObject);
        procedure SetBounds( pLeft , pTop , pWidth , pHeight:integer );Override;
-       Property ToDelete:Boolean read GetToDelete;
+       Property ToDelete:Boolean read GetToDelete write SetToDelete;
 
      End;
 
@@ -41,6 +42,7 @@ Type
        Procedure CreateCtrl2;Override;
        function getParam2Control(x, y: integer): integer;Override;
        Constructor Create(AOwner: TComponent);Override;
+       destructor destroy;Override;
      Public
       Function varCombo:TComboBox;
      End;
@@ -63,7 +65,14 @@ begin
        Param1toAttach.Invalidate;
      End;
 
+     if Param2toAttach<>nil then
+     Begin
+       Param2toAttach.Param2Attaching:=false;
+       Param2toAttach.Invalidate;
+     End;
+
      Param1toAttach:=nil;
+     Param2toAttach:=nil;
      if (parent<>nil) and (parent.Tag=995) then
      Begin
         for i := 0 to  parent.ControlCount-1 do
@@ -72,7 +81,7 @@ begin
            Begin
               tmpctrl:=TDspBlock(parent.Controls[i]);
               MyRect:=BoundsRect;
-              OtherParamRect:=tmpctrl.GetParam1Rect;
+              OtherParamRect:=tmpctrl.GetParam1Rect; //check param1
               if (not OtherParamRect.IsEmpty) and  tmpctrl.Param1Visible and
                 IntersectRect(OtherParamRect,MyRect) then
                Begin
@@ -81,7 +90,15 @@ begin
                   Repaint;
                   Break;//attach to 1st block we found
                End;
-
+              OtherParamRect:=tmpctrl.GetParam2Rect; //check param2
+              if (not OtherParamRect.IsEmpty) and  tmpctrl.Param2Visible and
+                IntersectRect(OtherParamRect,MyRect) then
+               Begin
+                  Param2toAttach:=  tmpctrl;
+                  Param2toAttach.Param2Attaching:=True;
+                  Repaint;
+                  Break;//attach to 1st block we found
+               End;
            End;
         End;
      End;
@@ -133,12 +150,25 @@ begin
     Param1toAttach.VarParam1:=Self;
     Param1toAttach.Param1Attaching:=false;
   End;
+  if assigned(Param2toAttach) then
+  Begin
+    //Attach self variable block to Param1toAttach
+    Param2toAttach.VarParam2:=Self;
+    Param2toAttach.Param2Attaching:=false;
+  End;
+
 end;
 
 
 procedure TDspVarBlock.SetBounds(pLeft, pTop, pWidth, pHeight: integer);
 begin
   inherited SetBounds( pLeft , pTop , pWidth , pHeight );
+end;
+
+
+procedure TDspVarBlock.setParent(AParent: TWinControl);
+begin
+  inherited;
 end;
 
 procedure TDspVarBlock.Setprototype(const Value: boolean);
@@ -155,6 +185,11 @@ end;
 
 
 
+procedure TDspVarBlock.SetToDelete(const Value: Boolean);
+begin
+   DelCbox.Checked:=value;
+end;
+
 { TDspCommandVarBlock }
 
 procedure TDspCommandVarBlock.AssignTo(Dest: TPersistent);
@@ -170,9 +205,19 @@ begin
 end;
 
 procedure TDspCommandVarBlock.OnComboChange(Sender:tObject);
+Var pName:string;
 Begin
   if assigned(ctrl2) then
-   fParam2:=TComboBox(ctrl2).itemindex;
+  Begin
+   pname:='';
+   if TComboBox(ctrl2).itemindex>-1 then
+     pname:=TComboBox(ctrl2).Items[TComboBox(ctrl2).itemindex];
+   if assigned(arduvars.GetVarByName(pName)) then
+     fParam2:=arduvars.GetVarByName(pname).VarID
+   else
+    fParam2:=-1;
+
+  End;
 End;
 
 procedure TDspCommandVarBlock.OnRefVarRequest(var Msg: TMessage);
@@ -183,15 +228,23 @@ begin
 end;
 
 procedure TDspCommandVarBlock.setfParam2(const Value: Integer);
+Var pName:string;
 begin
-  fParam2 := Value;
+  fParam2 := Value; //variable id
   if not (csLoading in componentstate) then
   begin
     RecalcWidth;
 
     if assigned(ctrl2) then
-     if TComboBox(ctrl2).items.Count>fParam2 then
-      TComboBox(ctrl2).itemindex:=fParam2;
+     if TComboBox(ctrl2).items.Count>0 then
+     Begin
+      //find itemindex
+      pname:='';
+      if assigned(arduvars.GetVarByID(fparam2)) then
+        pname:=arduvars.GetVarByID(fparam2).VarName;
+
+      TComboBox(ctrl2).itemindex:=TComboBox(ctrl2).Items.IndexOf(pname);
+     End;
   end;
 end;
 
@@ -239,6 +292,12 @@ begin
  Result:=TDspCommandVarBlock.CreateFloat(Owner);
 end;
 
+destructor TDspCommandVarBlock.destroy;
+begin
+
+  inherited;
+end;
+
 procedure TDspCommandVarBlock.FillVarCombo;
 var
   i,w: Integer;
@@ -272,9 +331,15 @@ begin
 end;
 
 function TDspCommandVarBlock.getParam2: Integer;
+var pname:string;
 begin
+  result:=-1;
   if Assigned(Ctrl2) and not (csloading in componentstate)  then
-   Result:=TCombobox(Ctrl2).ItemIndex
+  Begin
+   pname:=TCombobox(Ctrl2).items[TCombobox(Ctrl2).ItemIndex];
+   if arduvars.GetVarByName(pname)<>nil then
+     Result:=arduvars.GetVarByName(pname).VarID;
+  End;
 end;
 
 function TDspCommandVarBlock.getParam2Control(x, y: integer): integer;

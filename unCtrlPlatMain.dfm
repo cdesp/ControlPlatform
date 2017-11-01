@@ -2,7 +2,7 @@ object frmRoboLang: TfrmRoboLang
   Left = 0
   Top = 0
   Caption = #904#955#949#947#967#959#962' '#963#965#963#954#949#965#974#957' Arduino'
-  ClientHeight = 555
+  ClientHeight = 515
   ClientWidth = 944
   Color = clBtnFace
   DoubleBuffered = True
@@ -26,7 +26,7 @@ object frmRoboLang: TfrmRoboLang
   TextHeight = 13
   object Splitter1: TSplitter
     Left = 0
-    Top = 470
+    Top = 430
     Width = 944
     Height = 6
     Cursor = crVSplit
@@ -36,7 +36,7 @@ object frmRoboLang: TfrmRoboLang
   end
   object ListBox1: TListBox
     Left = 0
-    Top = 476
+    Top = 436
     Width = 944
     Height = 60
     Align = alBottom
@@ -142,7 +142,7 @@ object frmRoboLang: TfrmRoboLang
   end
   object SBar: TStatusBar
     Left = 0
-    Top = 536
+    Top = 496
     Width = 944
     Height = 19
     Color = clLime
@@ -164,10 +164,11 @@ object frmRoboLang: TfrmRoboLang
     OnDblClick = SBarDblClick
   end
   object TNBook: TTabbedNotebook
+    Tag = 990
     Left = 0
     Top = 37
     Width = 944
-    Height = 433
+    Height = 393
     ParentCustomHint = False
     Align = alClient
     TabFont.Charset = DEFAULT_CHARSET
@@ -178,12 +179,14 @@ object frmRoboLang: TfrmRoboLang
     TabOrder = 3
     object TTabPage
       Left = 4
-      Top = 24
+      Top = 30
       Caption = #928#961#972#947#961#945#956#956#945
+      ExplicitTop = 24
+      ExplicitHeight = 365
       object Splitter2: TSplitter
         Left = 320
         Top = 0
-        Height = 405
+        Height = 359
         ExplicitLeft = 294
         ExplicitTop = 4
         ExplicitHeight = 290
@@ -192,20 +195,21 @@ object frmRoboLang: TfrmRoboLang
         Left = 0
         Top = 0
         Width = 320
-        Height = 405
+        Height = 359
         ActivePage = TabSheet3
         Align = alLeft
         Constraints.MinWidth = 320
         MultiLine = True
+        Style = tsFlatButtons
+        TabHeight = 30
         TabOrder = 1
-        TabPosition = tpLeft
         object TabSheet1: TTabSheet
           Caption = #915#949#957#953#954#941#962' '#917#957#964#959#955#941#962
           object CategoryPanelGroup1: TCategoryPanelGroup
             Left = 0
             Top = 0
-            Width = 292
-            Height = 397
+            Width = 312
+            Height = 319
             VertScrollBar.Smooth = True
             VertScrollBar.Style = ssHotTrack
             VertScrollBar.Tracking = True
@@ -295,15 +299,17 @@ object frmRoboLang: TfrmRoboLang
           object CategoryPanelGroup2: TCategoryPanelGroup
             Left = 0
             Top = 0
-            Width = 292
-            Height = 397
+            Width = 312
+            Height = 319
             VertScrollBar.Tracking = True
             Align = alClient
+            GradientBaseColor = 5635925
+            GradientColor = 5635925
             HeaderFont.Charset = DEFAULT_CHARSET
-            HeaderFont.Color = clWindowText
-            HeaderFont.Height = -11
+            HeaderFont.Color = clGreen
+            HeaderFont.Height = -16
             HeaderFont.Name = 'Tahoma'
-            HeaderFont.Style = []
+            HeaderFont.Style = [fsBold]
             TabOrder = 0
             object TempPanel: TCategoryPanel
               Top = 1200
@@ -349,26 +355,30 @@ object frmRoboLang: TfrmRoboLang
           object CategoryPanelGroup3: TCategoryPanelGroup
             Left = 0
             Top = 0
-            Width = 292
-            Height = 397
+            Width = 312
+            Height = 319
             VertScrollBar.Tracking = True
             Align = alClient
+            GradientBaseColor = 9094655
+            GradientColor = 9094655
             HeaderFont.Charset = DEFAULT_CHARSET
-            HeaderFont.Color = clWindowText
-            HeaderFont.Height = -11
+            HeaderFont.Color = 21930
+            HeaderFont.Height = -16
             HeaderFont.Name = 'Tahoma'
-            HeaderFont.Style = []
+            HeaderFont.Style = [fsBold]
             TabOrder = 0
             object VarPanel: TCategoryPanel
               Top = 0
               Height = 406
               Caption = #924#949#964#945#946#955#951#964#941#962
-              Color = 33023
+              Color = 295679
+              Ctl3D = True
+              ParentCtl3D = False
               TabOrder = 0
               object ToolBar1: TToolBar
                 Left = 0
                 Top = 0
-                Width = 271
+                Width = 291
                 Height = 30
                 AutoSize = True
                 BorderWidth = 1
@@ -415,7 +425,7 @@ object frmRoboLang: TfrmRoboLang
         Left = 323
         Top = 0
         Width = 613
-        Height = 405
+        Height = 359
         HorzScrollBar.Smooth = True
         HorzScrollBar.Style = ssHotTrack
         VertScrollBar.Smooth = True
@@ -424,7 +434,7 @@ object frmRoboLang: TfrmRoboLang
         AutoScroll = False
         BevelOuter = bvNone
         BorderStyle = bsNone
-        Color = clHighlight
+        Color = clSilver
         Font.Charset = DEFAULT_CHARSET
         Font.Color = clWindowText
         Font.Height = -11
@@ -435,6 +445,7 @@ object frmRoboLang: TfrmRoboLang
         TabOrder = 0
         OnMouseEnter = ScrollBox1MouseEnter
         OnMouseWheel = ScrollBox1MouseWheel
+        ExplicitHeight = 365
         object Image2: TImage
           Tag = -1
           Left = 0
@@ -1368,18 +1379,21 @@ object frmRoboLang: TfrmRoboLang
     end
     object TTabPage
       Left = 4
-      Top = 24
+      Top = 30
       Caption = #931#965#963#954#949#965#941#962
+      ExplicitTop = 24
+      ExplicitHeight = 365
       object ScrollBox2: TScrollBox
         Left = 0
         Top = 0
         Width = 303
-        Height = 405
+        Height = 359
         HorzScrollBar.Visible = False
         Align = alLeft
         Color = clHighlight
         ParentColor = False
         TabOrder = 0
+        ExplicitHeight = 365
         object pnlLCD: TPanel
           Left = 16
           Top = 3
@@ -46689,7 +46703,7 @@ object frmRoboLang: TfrmRoboLang
         Left = 303
         Top = 0
         Width = 633
-        Height = 405
+        Height = 359
         Align = alClient
         TabFont.Charset = DEFAULT_CHARSET
         TabFont.Color = clBtnText
@@ -46698,15 +46712,25 @@ object frmRoboLang: TfrmRoboLang
         TabFont.Style = []
         TabOrder = 1
         OnChange = DevBookChange
+        ExplicitHeight = 365
         object TTabPage
           Left = 4
           Top = 24
           Caption = 'Arduino'
+          ExplicitHeight = 337
+          object Splitter3: TSplitter
+            Left = 209
+            Top = 0
+            Height = 331
+            ExplicitLeft = 24
+            ExplicitTop = 96
+            ExplicitHeight = 100
+          end
           object RadioGroup1: TRadioGroup
             Left = 0
             Top = 0
             Width = 209
-            Height = 377
+            Height = 331
             Align = alLeft
             Caption = #917#960#943#955#949#958#949' '#924#959#957#964#941#955#959
             ItemIndex = 0
@@ -46716,15 +46740,19 @@ object frmRoboLang: TfrmRoboLang
               'Arduino MEGA')
             TabOrder = 0
             OnClick = RadioGroup1Click
+            ExplicitHeight = 337
           end
           object Panel1: TPanel
-            Left = 209
+            Left = 212
             Top = 0
-            Width = 416
-            Height = 377
+            Width = 413
+            Height = 331
             Align = alClient
             Caption = 'Panel1'
             TabOrder = 1
+            ExplicitLeft = 209
+            ExplicitWidth = 416
+            ExplicitHeight = 337
             object ArduImage: TImage
               Left = 2
               Top = 9
@@ -46785,7 +46813,7 @@ object frmRoboLang: TfrmRoboLang
     Left = 785
     Top = 104
     Bitmap = {
-      494C01010B002400680110001000FFFFFFFFFF10FFFFFFFFFFFFFFFF424D3600
+      494C01010B002400700110001000FFFFFFFFFF10FFFFFFFFFFFFFFFF424D3600
       0000000000003600000028000000400000003000000001002000000000000030
       0000000000000000000000000000000000000000000000000000000000000303
       03044B4A4A7A6D6C6CB36E6E6EB37F7E7ECB7F7E7ECB6E6D6DB36D6C6CB34B4A

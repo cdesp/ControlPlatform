@@ -1,5 +1,5 @@
 [Var Count]
-Count=2
+Count=3
 [Var_0]
 VarName=x1
 VarID=1
@@ -7,4 +7,8 @@ VarValue=
 [Var_1]
 VarName=y1
 VarID=2
+VarValue=
+[Var_2]
+VarName=í
+VarID=3
 VarValue=

@@ -37,7 +37,9 @@ Type
     Fprototype: boolean;
     FDeviceOnlyCommandID: integer;
     FVarParam1: TDspBlock;
+    FVarParam2: TDspBlock;
     FParam1Attaching: Boolean;
+    FParam2Attaching: Boolean;
     procedure CalcArea;
     function InCircle(p, Cp: Tpoint): boolean;
     procedure MakeBorderDn;
@@ -83,6 +85,10 @@ Type
     procedure SetVarParam1Name(const Value: String);
     procedure SetParam1Attaching(const Value: Boolean);
     procedure SubFromRect(Var R:tRect;n: Integer);
+    function GetVarParam2Name: String;
+    procedure SetVarParam2(const Value: TDspBlock);
+    procedure SetVarParam2Name(const Value: String);
+    procedure SetParam2Attaching(const Value: Boolean);
   protected
     FCommandText:String;
     move:boolean;
@@ -97,14 +103,13 @@ Type
     FCtrlAttachUp:boolean;
     FCtrlAttachDn:boolean;
     Param1toAttach:TDspBlock;
+    Param2toAttach:TDspBlock;
     ctrl1:TWinControl;
     ctrl2:TWinControl;
     ctrlS:TWinControl;
     ctrlD:TWinControl;
     updn1:tupdown;
     updn2:tupdown;
-    ctrlcolor1:TColor;
-    ctrlcolor2:TColor;
     procedure CheckAttach;virtual;
     procedure Setprototype(const Value: boolean);Virtual;
     procedure SetParent(AParent: TWinControl); override;
@@ -159,6 +164,9 @@ Type
     FLinkToName: String;
     FLinkFromName: String;
     FVarParam1Name:String;
+    FVarParam2Name:String;
+    ctrlcolor1:TColor;
+    ctrlcolor2:TColor;
     constructor Create(AOwner: TComponent); override;
     destructor Destroy; override;
     Function IndexInParent(VControl:Tcontrol):integer;
@@ -175,10 +183,14 @@ Type
     constructor CreateFloat(AOwner: TComponent);
     procedure FillComboBox;
     function GetParam1Rect: TRect;virtual;
+    function GetParam2Rect: TRect;virtual;
     function Param1Visible: Boolean;
-  Published
+    function Param2Visible: Boolean;
     property Color;
+    property Height;
+  Published
     property Param1Attaching:Boolean read FParam1Attaching write SetParam1Attaching;
+    property Param2Attaching:Boolean read FParam2Attaching write SetParam2Attaching;
     property CtrlAttachUp:boolean read FCtrlAttachUp write setCtrlAttachUp;
     property CtrlAttachDn:boolean read FCtrlAttachDn write setCtrlAttachDn;
     property CommandText: String read getCommandText write setCommandText;
@@ -210,6 +222,8 @@ Type
     property DeviceOnlyCommandID:integer read FDeviceOnlyCommandID write SetDeviceOnlyCommandID;
     property VarParam1:TDspBlock read FVarParam1 write SetVarParam1;
     Property VarParam1Name:String read GetVarParam1Name write SetVarParam1Name;
+    property VarParam2:TDspBlock read FVarParam2 write SetVarParam2;
+    Property VarParam2Name:String read GetVarParam2Name write SetVarParam2Name;
   End;
 
 var  debugging:boolean=false;
@@ -285,17 +299,18 @@ begin
   inherited;
   ControlStyle:=ControlStyle+[ csAcceptsControls];
   Param1Attaching:=false;
+  Param2Attaching:=false;
  // ControlStyle := ControlStyle - [csOpaque];
   FDeviceOnlyCommandID:=-1;
-  ctrlcolor1:=clWebDarkRed ;
-  ctrlcolor2:=clWebDarkRed;
+  ctrlcolor1:=htmltocolor('#FFD900') ;
+  ctrlcolor2:=htmltocolor('#003300');
   enabled:=true;
   Prototype:=true;
   setUniqueComponentName(Self,'dspBlock_');
 
   cancelMouseDn:=false;
   width:=150;
-  height:=40;
+  height:=44;
   dragMode:=dmManual;
   move:=false;
 //  InterceptMouse:=true;
@@ -329,6 +344,9 @@ begin
   CreateCtrlD;
   FVarParam1:=nil;
   FVarParam1Name:='';
+  FVarParam2:=nil;
+  FVarParam2Name:='';
+
  // ID:=IndexInowner(self);
 end;
 
@@ -510,6 +528,7 @@ begin
 end;
 
 
+
 procedure TDspBlock.setCtrlAttachDn(vl: boolean);
 begin
      fCtrlAttachDn:=vl;
@@ -617,6 +636,13 @@ end;
 procedure TDspBlock.Setparam1question(const Value: String);
 begin
   Fparam1question := Value;
+end;
+
+procedure TDspBlock.SetParam2Attaching(const Value: Boolean);
+begin
+  FParam2Attaching := Value;
+  Repaint;
+
 end;
 
 procedure TDspBlock.Setparam2prompt(const Value: string);
@@ -749,6 +775,49 @@ begin
 
 end;
 
+procedure TDspBlock.SetVarParam2(const Value: TDspBlock);
+begin
+  if assigned(Value) then  //New Var Param
+  Begin
+   Value.Parent:=Self;
+   Value.left:=ctrl2.Left;
+   value.Top:=ctrl2.Top-lnw*2;
+   ctrl2.Visible:=false;
+   if assigned(updn2) then updn2.Visible:=false;
+  End;
+  if Assigned(FVarParam2) then   //old Var Param Get it Out of us
+  Begin
+   FVarParam2.Left:=left+FVarParam2.Left+10;
+   FVarParam2.Top:=Top+FVarParam2.Top+10;
+   FVarParam2.Parent:=parent;
+   if not assigned(value) then //nil
+   Begin
+    ctrl2.Visible:=True;
+    if assigned(updn2) then updn2.Visible:=True;
+   End;
+  End;
+
+
+  FVarParam2 := Value;
+end;
+
+procedure TDspBlock.SetVarParam2Name(const Value: String);
+var f:TDspBlock;
+begin
+  loading:=(value<>'') and not assigned(FVarParam2);
+  FVarParam2Name := Value;
+  if assigned(owner) and not assigned(FVarParam2) then  //LinkByName
+  Begin
+     f:=TDspBlock(owner.FindComponent(FVarParam2Name));
+     if assigned(f) then
+     Begin
+       VarParam2:=f;
+       loading:=false;
+     End;
+  End;
+
+end;
+
 procedure TDspBlock.Resize;
 begin
   if length(a)>0 then
@@ -854,6 +923,11 @@ Function TDspBlock.Param1Visible:Boolean;
 Begin
    Result:=Ctrl1.visible and (totalparams>0);
 End;
+
+function TDspBlock.Param2Visible: Boolean;
+begin
+   Result:=Ctrl2.visible and (totalparams>1);
+end;
 
 Function TDspBlock.GetParam1Rect:TRect;
 Begin
@@ -1002,7 +1076,11 @@ begin
         parent:=tmpctrl.Parent;
         left:=left+tmpctrl.Left;
         top:=top+tmpctrl.Top;
-        tmpctrl.VarParam1:=nil;
+        if tmpctrl.VarParam1=self then
+          tmpctrl.VarParam1:=nil;
+        if tmpctrl.VarParam2=self then
+          tmpctrl.VarParam2:=nil;
+
         tmpctrl.Repaint;
         PostMessage(Handle, WM_LBUTTONDOWN, 0, X or (Y shl 16));
       End;
@@ -1040,6 +1118,15 @@ begin
     result:='';
 end;
 
+function TDspBlock.GetVarParam2Name: String;
+begin
+  if assigned(FVarParam2 ) then
+   result:=FVarParam2.name
+  else
+    result:='';
+
+end;
+
 procedure TDspBlock.MouseUp(Button: TMouseButton; Shift: TShiftState; X,
   Y: Integer);
 var targcontrol:twinControl;
@@ -1073,7 +1160,7 @@ begin
        Top:=Top-Parent.Top;
        Newlycreated:=false;
      end
-     else
+     else if (targcontrol.Tag<>990) then
       free;
 
     End
@@ -1294,7 +1381,7 @@ begin
   if prototype then
   Begin
     sv:=canvas.Font.Color;
-    canvas.Font.Color:=clLime;
+    canvas.Font.Color:=ctrlcolor1;
     canvas.TextOut(x,y ,paramStr);
     canvas.Font.Color:=sv;
     result:=x+canvas.TextWidth(paramStr);
@@ -1303,7 +1390,7 @@ begin
   Begin
     ctrls.Visible:=true;
     tedit(ctrls).Color:=LightenColor(Color,30);
-    tedit(ctrls).font.Color:= clLime;
+    tedit(ctrls).font.Color:= ctrlcolor1;
     ctrls.Left:=x;
     ctrls.Top:=y;
     TEdit(ctrls).text:=paramStr;
@@ -1368,7 +1455,7 @@ begin
   if prototype then
   Begin
     sv:=canvas.Font.Color;
-    canvas.Font.Color:=clLime;
+    canvas.Font.Color:=ctrlcolor1;
     canvas.TextOut(x,y ,inttostr(param1));
     canvas.Font.Color:=sv;
     result:=x+canvas.TextWidth(inttostr(param1));
@@ -1380,7 +1467,7 @@ begin
     ctrl1.Visible:=true;
     updn1.Visible:=true;
     tedit(ctrl1).Color:=LightenColor(Color,30);
-    tedit(ctrl1).font.Color:= clLime;
+    tedit(ctrl1).font.Color:= ctrlcolor1;
     ctrl1.Left:=x;
     ctrl1.Top:=y;
     updn1.left:=x+ctrl1.Width;
@@ -1406,7 +1493,7 @@ begin
   if prototype then
   Begin
     sv:=canvas.Font.Color;
-    canvas.Font.Color:=clLime;
+    canvas.Font.Color:=ctrlColor1;
     canvas.TextOut(x,y ,ParamD);
     canvas.Font.Color:=sv;
     result:=x+canvas.TextWidth(ParamD);
@@ -1429,32 +1516,56 @@ begin
 end;
 
 function TDspBlock.getParam2Control(x, y: integer): integer;
-var sv:TColor;
+Var sl:tstringlist;
+    i,k:integer;
+    sv:tColor;
 begin
   if prototype then
   Begin
     sv:=canvas.Font.Color;
-    canvas.Font.Color:=clAqua;
+    canvas.Font.Color:=ctrlColor2;
     canvas.TextOut(x,y ,inttostr(param2));
     canvas.Font.Color:=sv;
     result:=x+canvas.TextWidth(inttostr(param2));
   End
   else
   Begin
+   if not assigned(VarParam2) then
+   Begin
     ctrl2.Visible:=true;
-    tedit(ctrl2).Color:=LightenColor(Color,30);
-    tedit(ctrl2).font.Color:= clAqua;
     updn2.Visible:=true;
+    tedit(ctrl2).Color:=LightenColor(Color,30);
+    tedit(ctrl2).font.Color:= ctrlcolor2;
     ctrl2.Left:=x;
     ctrl2.Top:=y;
     updn2.left:=x+ctrl2.Width;
-    updn2.Top:=y;
+    updn2.top:=y;
     TEdit(ctrl2).text:=inttostr(param2);
     result:=ctrl2.Left+ctrl2.Width+updn2.width;
+   End
+   else
+   Begin
+     VarParam2.Left:=x;
+     VarParam2.Top:=y-3;
+     result:=VarParam2.Left+VarParam2.Width;
+   End;
   End;
 
 end;
 
+
+function TDspBlock.GetParam2Rect: TRect;
+begin
+  if Param2Visible then
+  Begin
+     Result:=Ctrl2.BoundsRect;
+     Result.left:=Result.Left+left;
+     Result.Right:=Result.Right+left;
+     Result.Top:=Result.Top+Top;
+     Result.Bottom:=Result.Bottom+Top;
+  End
+  Else Result.Empty;
+end;
 
 procedure TDspBlock.Reattach(Sender:TDspBlock);   //follow upper block
 Begin
@@ -1697,6 +1808,17 @@ Begin
     // SubFromRect(R,3);
      Rectangle(R);
    End;
+   if Param2Attaching and assigned(ctrl2) then
+   Begin
+     R:=ctrl2.BoundsRect;
+     if assigned(updn2) then
+     Begin
+       r.Right:=updn2.BoundsRect.Right;
+       r.Bottom:=updn2.BoundsRect.Bottom;
+     End;
+    // SubFromRect(R,3);
+     Rectangle(R);
+   End;
 
   end;
 
@@ -1840,7 +1962,8 @@ Begin
    parent:=self;
    associate:=ctrl1;
    visible:=ctrl1.Visible;
-   Max:=65535;
+   Max:=32767;
+   Min:=-32768;
    Thousands:=false;
   end;
 

@@ -8,7 +8,7 @@ uses  Vcl.Dialogs, CPort, System.Classes,
   Vcl.Menus, Vcl.ComCtrls, Vcl.Imaging.pngimage, Vcl.Forms, Vcl.StdCtrls,
   Vcl.Buttons,Winapi.Windows,unBlock,Winapi.Messages,System.SysUtils, System.Variants,
   unContainerBlock,Vcl.Graphics, Vcl.TabNotBk, Vcl.ExtCtrls, Vcl.WinXCtrls,
-  Vcl.Imaging.jpeg, VCLTee.TeCanvas, Vcl.ToolWin;
+  Vcl.Imaging.jpeg, VCLTee.TeCanvas, Vcl.ToolWin, Vcl.Samples.Spin;
 
 
 Const Version='0.4 (Άλφα έκδοση 10/10/2017)  - ';
@@ -140,6 +140,7 @@ type
     ToolBar1: TToolBar;
     ToolButton1: TToolButton;
     ToolButton2: TToolButton;
+    Splitter3: TSplitter;
     procedure FormCreate(Sender: TObject);
     procedure ListBox1DblClick(Sender: TObject);
     procedure Button1Click(Sender: TObject);
@@ -223,6 +224,7 @@ type
     procedure CreateBlocksFromVars;
     procedure CreateVarCommands;
     function MakeInt(v1, v2: byte): integer;
+    procedure DeleteVarBlocks;
     { Private declarations }
   public
     { Public declarations }
@@ -679,12 +681,21 @@ var i:integer;
            TDspVarBlock(Container.Controls[i]).Free;// destroy only this
          End
          else if Container.Controls[i] is TDspblock Then
+         Begin
           if assigned(TDspblock(Container.Controls[i]).VarParam1) and  sametext(nm,TDspblock(Container.Controls[i]).VarParam1.param1question)  then
           Begin
             tb:=TDspblock(Container.Controls[i]).VarParam1;
             TDspblock(Container.Controls[i]).VarParam1:=nil;
             tb.Free;
           End;
+          if assigned(TDspblock(Container.Controls[i]).VarParam2) and  sametext(nm,TDspblock(Container.Controls[i]).VarParam2.param2question)  then
+          Begin
+            tb:=TDspblock(Container.Controls[i]).VarParam2;
+            TDspblock(Container.Controls[i]).VarParam2:=nil;
+            tb.Free;
+          End;
+
+         End;
 
     End;
 Begin
@@ -714,7 +725,7 @@ End;
 
 procedure TfrmRoboLang.SendCommands(blck:TDspBlock);
 var nxtblock:TDspBlock;
-     i,vid:Integer;
+     i,vid,vid2:Integer;
      myvar:TArduVar;
 Begin
   NxtBlock:=blck;
@@ -723,20 +734,25 @@ Begin
     BTSendInteger( NxtBlock.CommndID);
     BTSendInteger( NxtBlock.PDevice);//device id -1 for no device
     BTSendInteger( NxtBlock.Param1);
-    vid:=-1;
+    vid:=-1;vid2:=-1;
     if assigned(NxtBlock.VarParam1) then
     Begin
        myvar:=ArduVars.GetVarByName(NxtBlock.VarParam1.param1question);
        vid:=myvar.VarID;
     End;
+    if assigned(NxtBlock.VarParam2) then
+    Begin
+       myvar:=ArduVars.GetVarByName(NxtBlock.VarParam2.param1question);
+       vid2:=myvar.VarID;
+    End;
 
     BTSendInteger(vid);
-    BTSendInteger(-1);  //TODO:Make varparam2
+    BTSendInteger(vid2);  //TODO:Make varparam2
     Adddebug('Sending CMD='+inttostr(NxtBlock.CommndID)
      +' Dev= '+inttostr(NxtBlock.pDevice)
      +' p_1='+inttostr(NxtBlock.Param1)
      +' v_1='+inttostr(vid)
-     +' v_1='+inttostr(-1)
+     +' v_1='+inttostr(vid2)
      +' p_2='+inttostr(NxtBlock.Param2)
 
     );
@@ -1049,6 +1065,7 @@ begin
             TDspBlock(owner.Components[i]).LinkToName:=TDspBlock(owner.Components[i]).fLinkToName;
             TDspBlock(owner.Components[i]).LinkFromName:=TDspBlock(owner.Components[i]).fLinkFromName;
             TDspBlock(owner.Components[i]).VarParam1Name:=TDspBlock(owner.Components[i]).fVarParam1Name;
+            TDspBlock(owner.Components[i]).VarParam2Name:=TDspBlock(owner.Components[i]).fVarParam2Name;
         End;
         if owner.Components[i] is TDspContainerBlockEnd then
             TDspContainerBlockEnd(owner.Components[i]).FContainerBlock.EndBlock:=TDspContainerBlockEnd(owner.Components[i]);
@@ -1075,11 +1092,27 @@ Begin
   End;
 End;
 
+procedure TfrmRoboLang.DeleteVarBlocks;
+Var i:integer;
+    wc:TWincontrol;
+Begin
+  wc:=TWinControl(VarPanel.Controls[0]);
+  for i := 0 to wc.ControlCount-1 do
+  Begin
+     if wc.Controls[i] is TDspVarBlock then
+       TDspVarBlock(wc.Controls[i]).todelete:=true;
+  End;
+
+  Toolbutton2click(nil);
+End;
+
+
 procedure TfrmRoboLang.acopenExecute(Sender: TObject);
 begin
 
   if opendialog1.Execute then
   Begin
+    DeleteVarBlocks;
     ArduVars.LoadVars(opendialog1.FileName);
     CreateBlocksFromVars;
     LoadActiveDevices(opendialog1.FileName);
@@ -1494,7 +1527,7 @@ Var col:Tcolor;
     tp:integer;
     pnl:TCategoryPanel;
 Begin
-    col:=TColor( $00CC6600 );
+    col:= HTMLtocolor('#0080ff');
     pnl:=LCDpanel;
     tp:=-40;
 
@@ -1576,7 +1609,7 @@ Begin
     blck.Color:=col;
     blck.CommandColor:=clWhite;
     blck.CommndID:=131;  //Laser On
-    blck.Commandtext:='%pd -> Ενεργοποίησε το Laser ';
+    blck.Commandtext:='%pd → Ενεργοποίησε το Laser ';
     blck.Param1:=0;
     blck.Param2:=0;
     blck.TotalParams:=1;
@@ -1592,7 +1625,7 @@ Begin
     blck.Color:=col;
     blck.CommandColor:=clWhite;
     blck.CommndID:=132;  //Laser Off
-    blck.Commandtext:='%pd -> Απενεργοποίησε το Laser ';
+    blck.Commandtext:='%pd → Απενεργοποίησε το Laser ';
     blck.Param1:=0;
     blck.Param2:=0;
     blck.TotalParams:=1;
@@ -1830,7 +1863,7 @@ Begin
     blck.CommandColor:=clWhite;
     blck.CommndID:=171;
     blck.Commandtext:='%pd → Εάν Θερμοκρασία %p1 μεγαλύτερη από %p2 (°C)';
-    blck.param1prompt:='δεν';
+    blck.param1prompt:='όχι';
     TDspControlBlock(blck).EndBlockText:='Τέλος Εάν';
     blck.TotalParams:=2;
     blck.MyHint:='Ελέγχει εάν η θερμοκρασία ξεπέρασε τους βαθμούς °Κελσίου';
@@ -1845,7 +1878,7 @@ Begin
     blck.CommandColor:=clWhite;
     blck.CommndID:=172;
     blck.Commandtext:='%pd → Εάν Θερμοκρασία %p1 μικρότερη από %p2 (°C)';
-    blck.param1prompt:='δεν';
+    blck.param1prompt:='όχι';
     TDspControlBlock(blck).EndBlockText:='Τέλος Εάν';
     blck.TotalParams:=2;
     blck.MyHint:='Ελέγχει εάν η θερμοκρασία είναι χαμηλότερη από τους βαθμούς °Κελσίου';
@@ -1860,7 +1893,7 @@ Begin
     blck.CommandColor:=clWhite;
     blck.CommndID:=173;
     blck.Commandtext:='%pd → Εάν υγρασία %p1 μεγαλύτερη από %p2 %';
-    blck.param1prompt:='δεν';
+    blck.param1prompt:='όχι';
     TDspControlBlock(blck).EndBlockText:='Τέλος Εάν';
     blck.TotalParams:=2;
     blck.MyHint:='Ελέγχει εάν η υγρασία είναι μεγαλύτερη από τον αριθμό τοις εκατό (%)';
@@ -1875,7 +1908,7 @@ Begin
     blck.CommandColor:=clWhite;
     blck.CommndID:=174;
     blck.Commandtext:='%pd → Εάν υγρασία %p1 μικρότερη από %p2 %';
-    blck.param1prompt:='δεν';
+    blck.param1prompt:='όχι';
     TDspControlBlock(blck).EndBlockText:='Τέλος Εάν';
     blck.TotalParams:=2;
     blck.MyHint:='Ελέγχει εάν η υγρασία είναι μικρότερη από τον αριθμό τοις εκατό (%)';
@@ -1908,6 +1941,18 @@ Begin
     blck.Commandtext:='Βάλε τιμή %p1 στην Μεταβλητή %p2';
     blck.TotalParams:=2;
     blck.MyHint:='Θέτει μια τιμή ή μεταβλητή στην μεταβλητή που επιλέγουμε';
+    inc(tp,50);blck.Top:=tp;
+    blck.Left:=10;
+    blck.Prototype:=true;
+
+    blck:=TDspCommandVarBlock.Create(Self);
+    blck.Parent:=pnl;
+    blck.Color:=col;
+    blck.CommandColor:=clWhite;
+    blck.CommndID:=231;
+    blck.Commandtext:='Άλλαξε κατά %p1 την Μεταβλητή %p2';
+    blck.TotalParams:=2;
+    blck.MyHint:='Αλλάζει κατά τιμή ή μεταβλητή την μεταβλητή που επιλέγουμε';
     inc(tp,50);blck.Top:=tp;
     blck.Left:=10;
     blck.Prototype:=true;
