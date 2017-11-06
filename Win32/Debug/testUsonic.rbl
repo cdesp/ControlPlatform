@@ -1,9 +1,11 @@
 object dspBlock__1: TDspBlock
-  Left = 206
-  Top = 32
+  Left = 200
+  Top = 53
   Width = 168
   Height = 40
   Color = clGreen
+  Param1Attaching = False
+  Param2Attaching = False
   CtrlAttachUp = False
   CtrlAttachDn = False
   CommandText = #904#957#945#961#958#951' '#960#961#959#947#961#940#956#956#945#964#959#962
@@ -23,107 +25,15 @@ object dspBlock__1: TDspBlock
   prototype = False
   DeviceOnlyCommandID = -1
 end
-object dspBlock__2: TDspControlElseBlock
-  Left = 226
-  Top = 187
-  Width = 522
-  Height = 40
-  Hint = 
-    #917#955#941#947#967#949#953' '#949#940#957' '#965#960#940#961#967#949#953' '#945#957#964#953#954#949#943#956#949#957#959' '#956#960#961#959#963#964#940' '#963#949' '#945#960#972#963#964#945#963#951' '#956#949#947#945#955#973#964#949#961#951' '#945 +
-    #960#972' '#964#959#957' '#945#961#953#952#956#972' '#963#949' '#949#954#945#964#959#963#964#940
-  Color = 49151
-  CtrlAttachUp = False
-  CtrlAttachDn = False
-  CommandText = '%pd -> '#917#940#957' '#945#960#972#963#964#945#963#951' %p1 '#956#949#947#945#955#973#964#949#961#951' '#964#969#957' %p2 '#949#954#945#964#959#963#964#974#957
-  NewlyCreated = False
-  CommndID = 141
-  Param1 = 0
-  Param2 = 10
-  ParamD = 'USonic_1'
-  PDevice = 1
-  topNose = True
-  botNose = True
-  LinkTo = frmRoboLang.dspBlock__3
-  LinkFrom = frmRoboLang.dspBlock__5
-  TotalParams = 2
-  param1prompt = #972#967#953
-  Id = 2
-  BorderColor = clRed
-  CommandColor = clWhite
-  LinkToName = 'dspBlock__7'
-  LinkFromName = 'dspBlock__5'
-  MyHint = 
-    #917#955#941#947#967#949#953' '#949#940#957' '#965#960#940#961#967#949#953' '#945#957#964#953#954#949#943#956#949#957#959' '#956#960#961#959#963#964#940' '#963#949' '#945#960#972#963#964#945#963#951' '#956#949#947#945#955#973#964#949#961#951' '#945 +
-    #960#972' '#964#959#957' '#945#961#953#952#956#972' '#963#949' '#949#954#945#964#959#963#964#940
-  prototype = False
-  DeviceOnlyCommandID = 3
-  EndBlock = frmRoboLang.dspBlock__3
-  EndBlockName = 'dspBlock__3'
-  ElseBlock = frmRoboLang.dspBlock__4
-  ElseBlockName = 'dspBlock__4'
-  Elsebutchecked = True
-end
-object dspBlock__3: TDspContainerBlockEnd
-  Left = 226
-  Top = 349
-  Width = 84
-  Height = 40
-  Color = 49151
-  CtrlAttachUp = False
-  CtrlAttachDn = False
-  CommandText = #932#941#955#959#962' '#917#940#957
-  NewlyCreated = False
-  CommndID = 99
-  Param1 = 0
-  Param2 = 0
-  PDevice = -1
-  topNose = False
-  botNose = True
-  LinkTo = frmRoboLang.dspBlock__12
-  TotalParams = 0
-  Id = 3
-  BorderColor = clRed
-  CommandColor = clWhite
-  LinkToName = 'dspBlock__12'
-  prototype = False
-  DeviceOnlyCommandID = -1
-  ContainerBlock = frmRoboLang.dspBlock__2
-  ContainerBlockName = 'dspBlock__2'
-end
-object dspBlock__4: TDspControlBlockELSE
-  Left = 226
-  Top = 268
-  Width = 67
-  Height = 40
-  Color = 49151
-  CtrlAttachUp = False
-  CtrlAttachDn = False
-  CommandText = #913#955#955#953#974#962
-  NewlyCreated = False
-  CommndID = 100
-  Param1 = 0
-  Param2 = 0
-  PDevice = -1
-  topNose = False
-  botNose = True
-  LinkTo = frmRoboLang.dspBlock__8
-  TotalParams = 0
-  Id = 4
-  BorderColor = clRed
-  CommandColor = clWhite
-  LinkToName = 'dspBlock__8'
-  prototype = False
-  DeviceOnlyCommandID = -1
-  ContainerBlock = frmRoboLang.dspBlock__2
-  ContainerBlockName = 'dspBlock__2'
-end
 object dspBlock__5: TDspLoopBlock
-  Left = 206
-  Top = 156
+  Left = 200
+  Top = 177
   Width = 196
   Height = 40
   Hint = #917#960#945#957#945#955#945#956#946#940#957#949#953' '#964#953#962' '#949#957#964#959#955#941#962' '#960#959#965' '#960#949#961#953#941#967#959#957#964#945#953' '#972#963#949#962' '#966#959#961#941#962' '#952#941#955#959#965#956#949
   Color = clMaroon
+  Param1Attaching = False
+  Param2Attaching = False
   CtrlAttachUp = False
   CtrlAttachDn = False
   CommandText = #917#960#945#957#940#955#945#946#949' %p1 '#966#959#961#941#962
@@ -140,7 +50,7 @@ object dspBlock__5: TDspLoopBlock
   Id = 5
   BorderColor = clRed
   CommandColor = clWhite
-  LinkToName = 'dspBlock__2'
+  LinkToName = 'dspBlock__14'
   LinkFromName = 'dspBlock__11'
   MyHint = #917#960#945#957#945#955#945#956#946#940#957#949#953' '#964#953#962' '#949#957#964#959#955#941#962' '#960#959#965' '#960#949#961#953#941#967#959#957#964#945#953' '#972#963#949#962' '#966#959#961#941#962' '#952#941#955#959#965#956#949
   prototype = False
@@ -149,11 +59,13 @@ object dspBlock__5: TDspLoopBlock
   EndBlockName = 'dspBlock__6'
 end
 object dspBlock__6: TDspContainerBlockEnd
-  Left = 206
-  Top = 430
+  Left = 200
+  Top = 463
   Width = 142
   Height = 40
   Color = clMaroon
+  Param1Attaching = False
+  Param2Attaching = False
   CtrlAttachUp = False
   CtrlAttachDn = False
   CommandText = #932#941#955#959#962' '#917#960#945#957#940#955#951#968#951#962
@@ -176,12 +88,14 @@ object dspBlock__6: TDspContainerBlockEnd
   ContainerBlockName = 'dspBlock__5'
 end
 object dspBlock__7: TDspBlock
-  Left = 246
-  Top = 218
+  Left = 240
+  Top = 243
   Width = 278
   Height = 40
   Hint = #917#957#949#961#947#959#960#959#953#949#943' '#964#959' Laser'
   Color = 7667916
+  Param1Attaching = False
+  Param2Attaching = False
   CtrlAttachUp = False
   CtrlAttachDn = False
   CommandText = '%pd -> '#917#957#949#961#947#959#960#959#943#951#963#949' '#964#959' Laser '
@@ -193,23 +107,25 @@ object dspBlock__7: TDspBlock
   PDevice = 2
   topNose = True
   botNose = True
-  LinkFrom = frmRoboLang.dspBlock__2
+  LinkFrom = frmRoboLang.dspBlock__14
   TotalParams = 1
   Id = 7
   BorderColor = clRed
   CommandColor = clWhite
-  LinkFromName = 'dspBlock__2'
+  LinkFromName = 'dspBlock__14'
   MyHint = #917#957#949#961#947#959#960#959#953#949#943' '#964#959' Laser'
   prototype = False
   DeviceOnlyCommandID = 1
 end
 object dspBlock__8: TDspBlock
-  Left = 246
-  Top = 299
+  Left = 240
+  Top = 328
   Width = 296
   Height = 40
   Hint = #913#960#949#957#949#961#947#959#960#959#953#949#943' '#964#959' Laser'
   Color = 7667916
+  Param1Attaching = False
+  Param2Attaching = False
   CtrlAttachUp = False
   CtrlAttachDn = False
   CommandText = '%pd -> '#913#960#949#957#949#961#947#959#960#959#943#951#963#949' '#964#959' Laser '
@@ -221,23 +137,25 @@ object dspBlock__8: TDspBlock
   PDevice = 2
   topNose = True
   botNose = True
-  LinkFrom = frmRoboLang.dspBlock__4
+  LinkFrom = frmRoboLang.dspBlock__16
   TotalParams = 1
   Id = 8
   BorderColor = clRed
   CommandColor = clWhite
-  LinkFromName = 'dspBlock__4'
+  LinkFromName = 'dspBlock__16'
   MyHint = #913#960#949#957#949#961#947#959#960#959#953#949#943' '#964#959' Laser'
   prototype = False
   DeviceOnlyCommandID = 1
 end
 object dspBlock__9: TDspBlock
-  Left = 206
-  Top = 63
+  Left = 200
+  Top = 84
   Width = 134
   Height = 40
   Hint = #922#945#952#945#961#943#950#949#953' '#964#951#957' LCD'
   Color = 13395456
+  Param1Attaching = False
+  Param2Attaching = False
   CtrlAttachUp = False
   CtrlAttachDn = False
   CommandText = #922#945#952#940#961#943#963#949' '#964#951#957' LCD'
@@ -261,12 +179,14 @@ object dspBlock__9: TDspBlock
   DeviceOnlyCommandID = 0
 end
 object dspBlock__10: TDspBlock
-  Left = 206
-  Top = 94
+  Left = 200
+  Top = 115
   Width = 183
   Height = 40
   Hint = #932#965#960#974#957#949#953' '#954#949#943#956#949#957#959' '#963#964#951#957' LCD'#13' [START]'
   Color = 13395456
+  Param1Attaching = False
+  Param2Attaching = False
   CtrlAttachUp = False
   CtrlAttachDn = False
   CommandText = #932#973#960#969#963#949' '#963#964#951#957' LCD %ps '
@@ -291,11 +211,13 @@ object dspBlock__10: TDspBlock
   DeviceOnlyCommandID = 0
 end
 object dspBlock__11: TDspBlock
-  Left = 206
-  Top = 125
+  Left = 200
+  Top = 146
   Width = 298
   Height = 40
   Color = 16711808
+  Param1Attaching = False
+  Param2Attaching = False
   CtrlAttachUp = False
   CtrlAttachDn = False
   CommandText = #928#949#961#943#956#949#957#949' %p1 '#967#953#955#953#959#963#964#940' '#948#949#965#964#949#961#959#955#941#960#964#959#965
@@ -320,11 +242,13 @@ object dspBlock__11: TDspBlock
   DeviceOnlyCommandID = -1
 end
 object dspBlock__12: TDspBlock
-  Left = 226
-  Top = 380
+  Left = 220
+  Top = 413
   Width = 298
   Height = 40
   Color = 16711808
+  Param1Attaching = False
+  Param2Attaching = False
   CtrlAttachUp = False
   CtrlAttachDn = False
   CommandText = #928#949#961#943#956#949#957#949' %p1 '#967#953#955#953#959#963#964#940' '#948#949#965#964#949#961#959#955#941#960#964#959#965
@@ -335,24 +259,26 @@ object dspBlock__12: TDspBlock
   PDevice = -1
   topNose = True
   botNose = True
-  LinkFrom = frmRoboLang.dspBlock__3
+  LinkFrom = frmRoboLang.dspBlock__15
   TotalParams = 1
   param1question = #916#974#963#949' '#964#945' '#967#953#955#953#959#963#964#940' '#948#949#965#964#949#961#959#955#941#960#964#959#965' (1000=1 '#948#949#965#964') '
   param1prompt = #935#953#955#953#959#963#964#940
   Id = 12
   BorderColor = clRed
   CommandColor = clWhite
-  LinkFromName = 'dspBlock__3'
+  LinkFromName = 'dspBlock__15'
   prototype = False
   DeviceOnlyCommandID = -1
 end
 object dspBlock__13: TDspBlock
-  Left = 206
-  Top = 461
+  Left = 200
+  Top = 494
   Width = 296
   Height = 40
   Hint = #913#960#949#957#949#961#947#959#960#959#953#949#943' '#964#959' Laser'
   Color = 7667916
+  Param1Attaching = False
+  Param2Attaching = False
   CtrlAttachUp = False
   CtrlAttachDn = False
   CommandText = '%pd -> '#913#960#949#957#949#961#947#959#960#959#943#951#963#949' '#964#959' Laser '
@@ -373,4 +299,104 @@ object dspBlock__13: TDspBlock
   MyHint = #913#960#949#957#949#961#947#959#960#959#953#949#943' '#964#959' Laser'
   prototype = False
   DeviceOnlyCommandID = 1
+end
+object dspBlock__14: TDspControlElseBlock
+  Left = 220
+  Top = 208
+  Width = 518
+  Height = 44
+  Hint = 
+    #917#955#941#947#967#949#953' '#949#940#957' '#965#960#940#961#967#949#953' '#945#957#964#953#954#949#943#956#949#957#959' '#956#960#961#959#963#964#940' '#963#949' '#945#960#972#963#964#945#963#951' '#956#949#947#945#955#973#964#949#961#951' '#945 +
+    #960#972' '#964#959#957' '#945#961#953#952#956#972' '#963#949' '#949#954#945#964#959#963#964#940
+  Color = 3042094
+  Param1Attaching = False
+  Param2Attaching = False
+  CtrlAttachUp = False
+  CtrlAttachDn = False
+  CommandText = '%pd '#8594' '#917#940#957' '#945#960#972#963#964#945#963#951' %p1 '#956#949#947#945#955#973#964#949#961#951' '#964#969#957' %p2 '#949#954#945#964#959#963#964#974#957
+  NewlyCreated = False
+  CommndID = 141
+  Param1 = 0
+  Param2 = 10
+  ParamD = 'USonic_1'
+  PDevice = 1
+  topNose = True
+  botNose = True
+  LinkTo = frmRoboLang.dspBlock__15
+  LinkFrom = frmRoboLang.dspBlock__5
+  TotalParams = 2
+  param1prompt = #972#967#953
+  Id = 14
+  BorderColor = clRed
+  CommandColor = clWhite
+  LinkToName = 'dspBlock__7'
+  LinkFromName = 'dspBlock__5'
+  MyHint = 
+    #917#955#941#947#967#949#953' '#949#940#957' '#965#960#940#961#967#949#953' '#945#957#964#953#954#949#943#956#949#957#959' '#956#960#961#959#963#964#940' '#963#949' '#945#960#972#963#964#945#963#951' '#956#949#947#945#955#973#964#949#961#951' '#945 +
+    #960#972' '#964#959#957' '#945#961#953#952#956#972' '#963#949' '#949#954#945#964#959#963#964#940
+  prototype = False
+  DeviceOnlyCommandID = 3
+  EndBlock = frmRoboLang.dspBlock__15
+  EndBlockName = 'dspBlock__15'
+  ElseBlock = frmRoboLang.dspBlock__16
+  ElseBlockName = 'dspBlock__16'
+  Elsebutchecked = True
+end
+object dspBlock__15: TDspContainerBlockEnd
+  Left = 220
+  Top = 378
+  Width = 84
+  Height = 44
+  Color = 3042094
+  Param1Attaching = False
+  Param2Attaching = False
+  CtrlAttachUp = False
+  CtrlAttachDn = False
+  CommandText = #932#941#955#959#962' '#917#940#957
+  NewlyCreated = False
+  CommndID = 99
+  Param1 = 0
+  Param2 = 0
+  PDevice = -1
+  topNose = False
+  botNose = True
+  LinkTo = frmRoboLang.dspBlock__12
+  TotalParams = 0
+  Id = 15
+  BorderColor = clRed
+  CommandColor = clWhite
+  LinkToName = 'dspBlock__12'
+  prototype = False
+  DeviceOnlyCommandID = -1
+  ContainerBlock = frmRoboLang.dspBlock__14
+  ContainerBlockName = 'dspBlock__14'
+end
+object dspBlock__16: TDspControlBlockELSE
+  Left = 220
+  Top = 293
+  Width = 67
+  Height = 44
+  Color = 3042094
+  Param1Attaching = False
+  Param2Attaching = False
+  CtrlAttachUp = False
+  CtrlAttachDn = False
+  CommandText = #913#955#955#953#974#962
+  NewlyCreated = False
+  CommndID = 100
+  Param1 = 0
+  Param2 = 0
+  PDevice = -1
+  topNose = False
+  botNose = True
+  LinkTo = frmRoboLang.dspBlock__8
+  TotalParams = 0
+  Id = 16
+  BorderColor = clRed
+  CommandColor = clWhite
+  LinkToName = 'dspBlock__8'
+  prototype = False
+  DeviceOnlyCommandID = -1
+  ContainerBlock = frmRoboLang.dspBlock__14
+  ContainerBlockName = 'dspBlock__14'
 end

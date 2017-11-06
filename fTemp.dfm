@@ -535,9 +535,9 @@ object frmTemp: TfrmTemp
     end
     object Label2: TLabel
       Left = 1
-      Top = 230
+      Top = 232
       Width = 343
-      Height = 21
+      Height = 19
       Align = alBottom
       Alignment = taCenter
       Caption = #913#953#963#952#951#964#942#961#945#962' '#920#949#956#959#954#961#945#963#943#945#962'/'#933#947#961#945#963#943#945#962
@@ -547,6 +547,8 @@ object frmTemp: TfrmTemp
       Font.Name = 'Tahoma'
       Font.Style = [fsBold]
       ParentFont = False
+      ExplicitTop = 230
+      ExplicitWidth = 287
     end
   end
   object RichEdit1: TRichEdit
@@ -643,6 +645,7 @@ object frmTemp: TfrmTemp
       ShowHint = True
       TabOrder = 2
       Value = 22
+      Visible = False
       OnChange = SpinEdit2Change
     end
   end

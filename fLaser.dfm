@@ -2,9 +2,9 @@ object frmLaser: TfrmLaser
   Left = 0
   Top = 0
   BorderStyle = bsSizeToolWin
-  Caption = 'Laser'
+  Caption = 'LaserLED'
   ClientHeight = 513
-  ClientWidth = 928
+  ClientWidth = 886
   Color = clBtnFace
   Font.Charset = DEFAULT_CHARSET
   Font.Color = clWindowText
@@ -12,26 +12,24 @@ object frmLaser: TfrmLaser
   Font.Name = 'Tahoma'
   Font.Style = []
   OldCreateOrder = False
+  OnCreate = FormCreate
   OnShow = FormShow
   PixelsPerInch = 96
   TextHeight = 13
   object pnlLaser: TPanel
     Left = 16
     Top = 8
-    Width = 265
+    Width = 449
     Height = 187
     Color = clSkyBlue
     ParentBackground = False
     TabOrder = 0
-    DesignSize = (
-      265
-      187)
     object Image3: TImage
-      Left = 1
+      Left = 168
       Top = 1
-      Width = 263
-      Height = 156
-      Align = alTop
+      Width = 280
+      Height = 166
+      Align = alClient
       Picture.Data = {
         0954506E67496D61676589504E470D0A1A0A0000000D49484452000001EE0000
         01740806000000E5EADA73000000017352474200AECE1CE90000000467414D41
@@ -5594,30 +5592,44 @@ object frmLaser: TfrmLaser
         F05FFFC6340E3C34716B687440BB06B786C64E62BBD5F2340E36FE3F0F34B57E
         87B4A3660000000049454E44AE426082}
       Stretch = True
-      ExplicitLeft = 0
-      ExplicitTop = 0
+      ExplicitLeft = 248
+      ExplicitWidth = 200
     end
     object Label2: TLabel
-      Left = 34
-      Top = 165
-      Width = 44
+      Left = 1
+      Top = 167
+      Width = 447
       Height = 19
-      Anchors = [akLeft, akBottom]
-      Caption = 'Laser'
+      Align = alBottom
+      Caption = 'Laser && LED'
       Font.Charset = DEFAULT_CHARSET
       Font.Color = clWindowText
       Font.Height = -16
       Font.Name = 'Tahoma'
       Font.Style = [fsBold]
       ParentFont = False
-      ExplicitTop = 115
+      ExplicitWidth = 98
+    end
+    object RadioGroup1: TRadioGroup
+      Left = 1
+      Top = 1
+      Width = 167
+      Height = 166
+      Align = alLeft
+      Caption = #917#960#953#955#941#958#964#949' '#916#953#945#954#972#960#964#951
+      Items.Strings = (
+        'Laser'
+        'Led '#923#945#956#960#940#954#953)
+      TabOrder = 0
+      OnClick = RadioGroup1Click
+      ExplicitHeight = 158
     end
   end
   object RichEdit1: TRichEdit
     Left = 16
     Top = 210
     Width = 681
-    Height = 231
+    Height = 263
     Font.Charset = GREEK_CHARSET
     Font.Color = clWindowText
     Font.Height = -16
@@ -5626,9 +5638,17 @@ object frmLaser: TfrmLaser
     Lines.Strings = (
       #913#965#964#942' '#951' '#963#965#963#954#949#965#942' '#967#961#949#953#940#950#949#964#945#953' '#956#972#957#959' '#941#957#945' '#963#942#956#945' '#947#953#945' '#957#945' '#955#949#953#964#959#965#961#947#942#963#949#953'.'
       ''
-      #932#959' signal '#963#965#957#948#941#963#964#949' '#964#959' '#963#949' '#954#940#960#959#953#959' pin '#964#959#965' Arduino.'
+      '1) '#931#965#957#948#941#963#964#949' '#947#953#945' Laser:'
       ''
-      #954#945#953'  '#967#961#949#953#940#950#949#964#945#953' '#964#951#957' '#964#940#963#951' (+5v) '#954#945#953' '#964#951' '#947#949#943#969#963#951' (GND)'
+      '- '#932#959' signal '#963#949' '#954#940#960#959#953#959' pin '#964#959#965' Arduino.'
+      '- T'#951' '#947#949#943#969#963#951' (GND)'
+      #954#945#953
+      '- '#932#959' Laser '#963#964#951#957' '#964#940#963#951' (+5v)'
+      ''
+      '2) '#931#965#957#948#941#963#964#949' '#947#953#945' LED:'
+      ''
+      '- '#932#959' (+) '#956#945#954#961#973' '#960#959#948#945#961#940#954#953' '#964#959#965' LED '#963#949' '#954#940#960#959#953#959' pin '#964#959#965' Arduino.'
+      '- T'#959' (-) '#954#959#957#964#972' '#960#959#948#945#961#940#954#953' '#964#959#965' LED '#963#964#951' '#947#949#943#969#963#951' (GND)'
       '')
     ParentFont = False
     ReadOnly = True
@@ -5636,14 +5656,16 @@ object frmLaser: TfrmLaser
     Zoom = 100
   end
   object GroupBox1: TGroupBox
-    Left = 304
+    Left = 480
     Top = 8
-    Width = 393
+    Width = 217
     Height = 184
     Caption = #929#973#952#956#953#963#951' '#931#965#963#954#949#965#942#962
     Color = clSkyBlue
+    DoubleBuffered = True
     ParentBackground = False
     ParentColor = False
+    ParentDoubleBuffered = False
     TabOrder = 2
     object Label1: TLabel
       Left = 16
@@ -5658,13 +5680,30 @@ object frmLaser: TfrmLaser
       Width = 49
       Height = 22
       Hint = #916#953#940#955#949#958#949' '#964#959' Pin '#960#959#965' '#941#967#949#953#962' '#963#965#957#948#941#963#949#953' '#964#951#957' '#963#965#963#954#949#965#942
+      AutoSize = False
+      Ctl3D = True
       MaxValue = 255
       MinValue = 0
+      ParentCtl3D = False
       ParentShowHint = False
       ShowHint = True
       TabOrder = 0
       Value = 0
       OnChange = SpinEdit1Change
+    end
+    object SpinEdit2: TSpinEdit
+      Left = 63
+      Top = 77
+      Width = 49
+      Height = 22
+      MaxValue = 255
+      MinValue = 0
+      ParentShowHint = False
+      ShowHint = True
+      TabOrder = 1
+      Value = 0
+      Visible = False
+      OnChange = SpinEdit2Change
     end
   end
 end

@@ -1,9 +1,11 @@
 object dspBlock__1: TDspBlock
-  Left = 195
-  Top = 39
+  Left = 202
+  Top = 57
   Width = 168
   Height = 40
   Color = clGreen
+  Param1Attaching = False
+  Param2Attaching = False
   CtrlAttachUp = False
   CtrlAttachDn = False
   CommandText = #904#957#945#961#958#951' '#960#961#959#947#961#940#956#956#945#964#959#962
@@ -24,12 +26,14 @@ object dspBlock__1: TDspBlock
   DeviceOnlyCommandID = -1
 end
 object dspBlock__2: TDspBlock
-  Left = 195
-  Top = 132
+  Left = 202
+  Top = 150
   Width = 447
   Height = 40
   Hint = #924#949#964#945#954#953#957#949#943' '#964#959' Servo '#963#964#953#962' '#956#959#943#961#949#962
   Color = 13107
+  Param1Attaching = False
+  Param2Attaching = False
   CtrlAttachUp = False
   CtrlAttachDn = False
   CommandText = '%pd -> '#924#949#964#945#954#943#957#951#963#949' '#963#964#953#962' %p1 '#956#959#943#961#949#962' (0-90) '#913#961#953#963#964#949#961#940
@@ -37,7 +41,7 @@ object dspBlock__2: TDspBlock
   CommndID = 151
   Param1 = 60
   Param2 = 0
-  ParamD = 'Servo (180 '#924#959#943#961#949#962')_0'
+  ParamD = 'Servo_0'
   PDevice = 0
   topNose = True
   botNose = True
@@ -54,11 +58,13 @@ object dspBlock__2: TDspBlock
   DeviceOnlyCommandID = 4
 end
 object dspBlock__3: TDspBlock
-  Left = 195
-  Top = 163
+  Left = 202
+  Top = 181
   Width = 298
   Height = 40
   Color = 16711808
+  Param1Attaching = False
+  Param2Attaching = False
   CtrlAttachUp = False
   CtrlAttachDn = False
   CommandText = #928#949#961#943#956#949#957#949' %p1 '#967#953#955#953#959#963#964#940' '#948#949#965#964#949#961#959#955#941#960#964#959#965
@@ -83,11 +89,13 @@ object dspBlock__3: TDspBlock
   DeviceOnlyCommandID = -1
 end
 object dspBlock__4: TDspBlock
-  Left = 195
-  Top = 225
+  Left = 202
+  Top = 243
   Width = 298
   Height = 40
   Color = 16711808
+  Param1Attaching = False
+  Param2Attaching = False
   CtrlAttachUp = False
   CtrlAttachDn = False
   CommandText = #928#949#961#943#956#949#957#949' %p1 '#967#953#955#953#959#963#964#940' '#948#949#965#964#949#961#959#955#941#960#964#959#965
@@ -112,11 +120,13 @@ object dspBlock__4: TDspBlock
   DeviceOnlyCommandID = -1
 end
 object dspBlock__5: TDspBlock
-  Left = 195
-  Top = 287
+  Left = 202
+  Top = 305
   Width = 298
   Height = 40
   Color = 16711808
+  Param1Attaching = False
+  Param2Attaching = False
   CtrlAttachUp = False
   CtrlAttachDn = False
   CommandText = #928#949#961#943#956#949#957#949' %p1 '#967#953#955#953#959#963#964#940' '#948#949#965#964#949#961#959#955#941#960#964#959#965
@@ -141,12 +151,14 @@ object dspBlock__5: TDspBlock
   DeviceOnlyCommandID = -1
 end
 object dspBlock__6: TDspBlock
-  Left = 195
-  Top = 194
+  Left = 202
+  Top = 212
   Width = 447
   Height = 40
   Hint = #924#949#964#945#954#953#957#949#943' '#964#959' Servo '#963#964#953#962' '#956#959#943#961#949#962
   Color = 13107
+  Param1Attaching = False
+  Param2Attaching = False
   CtrlAttachUp = False
   CtrlAttachDn = False
   CommandText = '%pd -> '#924#949#964#945#954#943#957#951#963#949' '#963#964#953#962' %p1 '#956#959#943#961#949#962' (0-90) '#913#961#953#963#964#949#961#940
@@ -154,7 +166,7 @@ object dspBlock__6: TDspBlock
   CommndID = 151
   Param1 = 30
   Param2 = 0
-  ParamD = 'Servo (180 '#924#959#943#961#949#962')_0'
+  ParamD = 'Servo_0'
   PDevice = 0
   topNose = True
   botNose = True
@@ -171,12 +183,14 @@ object dspBlock__6: TDspBlock
   DeviceOnlyCommandID = 4
 end
 object dspBlock__7: TDspBlock
-  Left = 195
-  Top = 256
+  Left = 202
+  Top = 274
   Width = 447
   Height = 40
   Hint = #924#949#964#945#954#953#957#949#943' '#964#959' Servo '#963#964#953#962' '#956#959#943#961#949#962
   Color = 13107
+  Param1Attaching = False
+  Param2Attaching = False
   CtrlAttachUp = False
   CtrlAttachDn = False
   CommandText = '%pd -> '#924#949#964#945#954#943#957#951#963#949' '#963#964#953#962' %p1 '#956#959#943#961#949#962' (0-90) '#913#961#953#963#964#949#961#940
@@ -184,7 +198,7 @@ object dspBlock__7: TDspBlock
   CommndID = 151
   Param1 = 0
   Param2 = 0
-  ParamD = 'Servo (180 '#924#959#943#961#949#962')_0'
+  ParamD = 'Servo_0'
   PDevice = 0
   topNose = True
   botNose = True
@@ -201,11 +215,13 @@ object dspBlock__7: TDspBlock
   DeviceOnlyCommandID = 4
 end
 object dspBlock__13: TDspBlock
-  Left = 195
-  Top = 101
+  Left = 202
+  Top = 119
   Width = 298
   Height = 40
   Color = 16711808
+  Param1Attaching = False
+  Param2Attaching = False
   CtrlAttachUp = False
   CtrlAttachDn = False
   CommandText = #928#949#961#943#956#949#957#949' %p1 '#967#953#955#953#959#963#964#940' '#948#949#965#964#949#961#959#955#941#960#964#959#965
@@ -230,12 +246,14 @@ object dspBlock__13: TDspBlock
   DeviceOnlyCommandID = -1
 end
 object dspBlock__14: TDspBlock
-  Left = 195
-  Top = 70
+  Left = 202
+  Top = 88
   Width = 447
   Height = 40
   Hint = #924#949#964#945#954#953#957#949#943' '#964#959' Servo '#963#964#953#962' '#956#959#943#961#949#962
   Color = 13107
+  Param1Attaching = False
+  Param2Attaching = False
   CtrlAttachUp = False
   CtrlAttachDn = False
   CommandText = '%pd -> '#924#949#964#945#954#943#957#951#963#949' '#963#964#953#962' %p1 '#956#959#943#961#949#962' (0-90) '#913#961#953#963#964#949#961#940
@@ -243,7 +261,7 @@ object dspBlock__14: TDspBlock
   CommndID = 151
   Param1 = 90
   Param2 = 0
-  ParamD = 'Servo (180 '#924#959#943#961#949#962')_0'
+  ParamD = 'Servo_0'
   PDevice = 0
   topNose = True
   botNose = True
@@ -260,11 +278,13 @@ object dspBlock__14: TDspBlock
   DeviceOnlyCommandID = 4
 end
 object dspBlock__15: TDspBlock
-  Left = 195
-  Top = 349
+  Left = 202
+  Top = 367
   Width = 298
   Height = 40
   Color = 16711808
+  Param1Attaching = False
+  Param2Attaching = False
   CtrlAttachUp = False
   CtrlAttachDn = False
   CommandText = #928#949#961#943#956#949#957#949' %p1 '#967#953#955#953#959#963#964#940' '#948#949#965#964#949#961#959#955#941#960#964#959#965
@@ -289,11 +309,13 @@ object dspBlock__15: TDspBlock
   DeviceOnlyCommandID = -1
 end
 object dspBlock__16: TDspBlock
-  Left = 195
-  Top = 411
+  Left = 202
+  Top = 429
   Width = 298
   Height = 40
   Color = 16711808
+  Param1Attaching = False
+  Param2Attaching = False
   CtrlAttachUp = False
   CtrlAttachDn = False
   CommandText = #928#949#961#943#956#949#957#949' %p1 '#967#953#955#953#959#963#964#940' '#948#949#965#964#949#961#959#955#941#960#964#959#965
@@ -318,11 +340,13 @@ object dspBlock__16: TDspBlock
   DeviceOnlyCommandID = -1
 end
 object dspBlock__17: TDspBlock
-  Left = 195
-  Top = 473
+  Left = 202
+  Top = 491
   Width = 298
   Height = 40
   Color = 16711808
+  Param1Attaching = False
+  Param2Attaching = False
   CtrlAttachUp = False
   CtrlAttachDn = False
   CommandText = #928#949#961#943#956#949#957#949' %p1 '#967#953#955#953#959#963#964#940' '#948#949#965#964#949#961#959#955#941#960#964#959#965
@@ -347,12 +371,14 @@ object dspBlock__17: TDspBlock
   DeviceOnlyCommandID = -1
 end
 object dspBlock__21: TDspBlock
-  Left = 195
-  Top = 318
+  Left = 202
+  Top = 336
   Width = 421
   Height = 40
   Hint = #924#949#964#945#954#953#957#949#943' '#964#959' Servo '#963#964#953#962' '#956#959#943#961#949#962
   Color = 13107
+  Param1Attaching = False
+  Param2Attaching = False
   CtrlAttachUp = False
   CtrlAttachDn = False
   CommandText = '%pd -> '#924#949#964#945#954#943#957#951#963#949' '#963#964#953#962' %p1 '#956#959#943#961#949#962' (0-90) '#916#949#958#953#940
@@ -360,7 +386,7 @@ object dspBlock__21: TDspBlock
   CommndID = 152
   Param1 = 0
   Param2 = 0
-  ParamD = 'Servo (180 '#924#959#943#961#949#962')_0'
+  ParamD = 'Servo_0'
   PDevice = 0
   topNose = True
   botNose = True
@@ -377,12 +403,14 @@ object dspBlock__21: TDspBlock
   DeviceOnlyCommandID = 4
 end
 object dspBlock__22: TDspBlock
-  Left = 195
-  Top = 380
+  Left = 202
+  Top = 398
   Width = 421
   Height = 40
   Hint = #924#949#964#945#954#953#957#949#943' '#964#959' Servo '#963#964#953#962' '#956#959#943#961#949#962
   Color = 13107
+  Param1Attaching = False
+  Param2Attaching = False
   CtrlAttachUp = False
   CtrlAttachDn = False
   CommandText = '%pd -> '#924#949#964#945#954#943#957#951#963#949' '#963#964#953#962' %p1 '#956#959#943#961#949#962' (0-90) '#916#949#958#953#940
@@ -390,7 +418,7 @@ object dspBlock__22: TDspBlock
   CommndID = 152
   Param1 = 30
   Param2 = 0
-  ParamD = 'Servo (180 '#924#959#943#961#949#962')_0'
+  ParamD = 'Servo_0'
   PDevice = 0
   topNose = True
   botNose = True
@@ -407,12 +435,14 @@ object dspBlock__22: TDspBlock
   DeviceOnlyCommandID = 4
 end
 object dspBlock__23: TDspBlock
-  Left = 195
-  Top = 442
+  Left = 202
+  Top = 460
   Width = 421
   Height = 40
   Hint = #924#949#964#945#954#953#957#949#943' '#964#959' Servo '#963#964#953#962' '#956#959#943#961#949#962
   Color = 13107
+  Param1Attaching = False
+  Param2Attaching = False
   CtrlAttachUp = False
   CtrlAttachDn = False
   CommandText = '%pd -> '#924#949#964#945#954#943#957#951#963#949' '#963#964#953#962' %p1 '#956#959#943#961#949#962' (0-90) '#916#949#958#953#940
@@ -420,7 +450,7 @@ object dspBlock__23: TDspBlock
   CommndID = 152
   Param1 = 60
   Param2 = 0
-  ParamD = 'Servo (180 '#924#959#943#961#949#962')_0'
+  ParamD = 'Servo_0'
   PDevice = 0
   topNose = True
   botNose = True
@@ -437,12 +467,14 @@ object dspBlock__23: TDspBlock
   DeviceOnlyCommandID = 4
 end
 object dspBlock__24: TDspBlock
-  Left = 195
-  Top = 504
+  Left = 202
+  Top = 522
   Width = 421
   Height = 40
   Hint = #924#949#964#945#954#953#957#949#943' '#964#959' Servo '#963#964#953#962' '#956#959#943#961#949#962
   Color = 13107
+  Param1Attaching = False
+  Param2Attaching = False
   CtrlAttachUp = False
   CtrlAttachDn = False
   CommandText = '%pd -> '#924#949#964#945#954#943#957#951#963#949' '#963#964#953#962' %p1 '#956#959#943#961#949#962' (0-90) '#916#949#958#953#940
@@ -450,7 +482,7 @@ object dspBlock__24: TDspBlock
   CommndID = 152
   Param1 = 90
   Param2 = 0
-  ParamD = 'Servo (180 '#924#959#943#961#949#962')_0'
+  ParamD = 'Servo_0'
   PDevice = 0
   topNose = True
   botNose = True

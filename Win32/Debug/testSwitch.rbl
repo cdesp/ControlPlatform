@@ -1,9 +1,11 @@
 object dspBlock__1: TDspBlock
-  Left = 189
-  Top = 115
+  Left = 220
+  Top = 102
   Width = 168
   Height = 40
   Color = clGreen
+  Param1Attaching = False
+  Param2Attaching = False
   CtrlAttachUp = False
   CtrlAttachDn = False
   CommandText = #904#957#945#961#958#951' '#960#961#959#947#961#940#956#956#945#964#959#962
@@ -24,12 +26,14 @@ object dspBlock__1: TDspBlock
   DeviceOnlyCommandID = -1
 end
 object dspBlock__2: TDspLoopBlock
-  Left = 189
-  Top = 146
+  Left = 220
+  Top = 133
   Width = 150
   Height = 40
   Hint = #917#960#945#957#945#955#945#956#946#940#957#949#953' '#964#953#962' '#949#957#964#959#955#941#962' '#960#959#965' '#960#949#961#953#941#967#959#957#964#945#953' '#947#953#945' '#960#940#957#964#945
   Color = clMaroon
+  Param1Attaching = False
+  Param2Attaching = False
   CtrlAttachUp = False
   CtrlAttachDn = False
   CommandText = #917#960#945#957#940#955#945#946#949' '#963#965#957#949#967#974#962
@@ -55,11 +59,13 @@ object dspBlock__2: TDspLoopBlock
   EndBlockName = 'dspBlock__3'
 end
 object dspBlock__3: TDspContainerBlockEnd
-  Left = 189
-  Top = 389
+  Left = 220
+  Top = 376
   Width = 142
   Height = 40
   Color = clMaroon
+  Param1Attaching = False
+  Param2Attaching = False
   CtrlAttachUp = False
   CtrlAttachDn = False
   CommandText = #932#941#955#959#962' '#917#960#945#957#940#955#951#968#951#962
@@ -82,12 +88,14 @@ object dspBlock__3: TDspContainerBlockEnd
   ContainerBlockName = 'dspBlock__2'
 end
 object dspBlock__4: TDspControlElseBlock
-  Left = 209
-  Top = 177
+  Left = 240
+  Top = 164
   Width = 350
   Height = 40
   Hint = #917#955#941#947#967#949#953' '#949#940#957' '#960#945#964#942#952#951#954#949'/'#949#957#949#961#947#959#960#959#953#942#952#951#954#949' '#959' '#948#953#945#954#972#960#964#951#962
   Color = 13107
+  Param1Attaching = False
+  Param2Attaching = False
   CtrlAttachUp = False
   CtrlAttachDn = False
   CommandText = '%pd -> '#917#940#957' %p1 '#960#945#964#942#952#951#954#949' '#959' '#948#953#945#954#972#960#964#951#962
@@ -118,11 +126,13 @@ object dspBlock__4: TDspControlElseBlock
   Elsebutchecked = True
 end
 object dspBlock__5: TDspContainerBlockEnd
-  Left = 209
-  Top = 339
+  Left = 240
+  Top = 326
   Width = 84
   Height = 40
   Color = 13107
+  Param1Attaching = False
+  Param2Attaching = False
   CtrlAttachUp = False
   CtrlAttachDn = False
   CommandText = #932#941#955#959#962' '#917#940#957
@@ -143,11 +153,13 @@ object dspBlock__5: TDspContainerBlockEnd
   ContainerBlockName = 'dspBlock__4'
 end
 object dspBlock__6: TDspControlBlockELSE
-  Left = 209
-  Top = 258
+  Left = 240
+  Top = 245
   Width = 67
   Height = 40
   Color = 13107
+  Param1Attaching = False
+  Param2Attaching = False
   CtrlAttachUp = False
   CtrlAttachDn = False
   CommandText = #913#955#955#953#974#962
@@ -170,12 +182,14 @@ object dspBlock__6: TDspControlBlockELSE
   ContainerBlockName = 'dspBlock__4'
 end
 object dspBlock__7: TDspBlock
-  Left = 229
-  Top = 208
+  Left = 260
+  Top = 195
   Width = 278
   Height = 40
   Hint = #917#957#949#961#947#959#960#959#953#949#943' '#964#959' Laser'
   Color = 7667916
+  Param1Attaching = False
+  Param2Attaching = False
   CtrlAttachUp = False
   CtrlAttachDn = False
   CommandText = '%pd -> '#917#957#949#961#947#959#960#959#943#951#963#949' '#964#959' Laser '
@@ -198,12 +212,14 @@ object dspBlock__7: TDspBlock
   DeviceOnlyCommandID = 1
 end
 object dspBlock__8: TDspBlock
-  Left = 189
-  Top = 420
+  Left = 220
+  Top = 407
   Width = 296
   Height = 40
   Hint = #913#960#949#957#949#961#947#959#960#959#953#949#943' '#964#959' Laser'
   Color = 7667916
+  Param1Attaching = False
+  Param2Attaching = False
   CtrlAttachUp = False
   CtrlAttachDn = False
   CommandText = '%pd -> '#913#960#949#957#949#961#947#959#960#959#943#951#963#949' '#964#959' Laser '
@@ -226,12 +242,14 @@ object dspBlock__8: TDspBlock
   DeviceOnlyCommandID = 1
 end
 object dspBlock__9: TDspBlock
-  Left = 229
-  Top = 289
+  Left = 260
+  Top = 276
   Width = 296
   Height = 40
   Hint = #913#960#949#957#949#961#947#959#960#959#953#949#943' '#964#959' Laser'
   Color = 7667916
+  Param1Attaching = False
+  Param2Attaching = False
   CtrlAttachUp = False
   CtrlAttachDn = False
   CommandText = '%pd -> '#913#960#949#957#949#961#947#959#960#959#943#951#963#949' '#964#959' Laser '

@@ -7,9 +7,10 @@ uses Vcl.Forms,Vcl.ExtCtrls,Vcl.StdCtrls,Vcl.Buttons,System.SysUtils, Vcl.TabNot
 Type
   TDefDevForm = class(TForm)
   private
-    procedure SetSEfromParam(Pno: integer; SE: TSpinedit);
+
     class constructor Create;
     procedure FormCloseQuery(Sender: TObject; var CanClose: Boolean);
+    function getmainpath: string;
 
 
   protected
@@ -27,8 +28,11 @@ Type
     Function LblC:TLabel;
     Function btnC:TBitBtn;
     Procedure KillDevice;
+    procedure SetSEfromParam(Pno: integer; SE: TSpinedit);
     Procedure SetParam(Pno:integer;SE:TSpinedit);
     Function ActDev:TActiveDevice;
+    procedure NewMaxPins;
+    property AppPath:string read getmainpath;
   end;
 
 
@@ -87,6 +91,11 @@ begin
  Result:=ActDev.DeviceTypeID;
 end;
 
+function TDefDevForm.getmainpath: string;
+begin
+ result:=mainpath;
+end;
+
 procedure TDefDevForm.KillDevice;
 Var lbl:TLabel;
     pi:Integer;
@@ -140,6 +149,20 @@ begin
   Result:=frmRoboLang.getPanelCountLabel(ArduinoDevices[GetDeviceTypeId].DevicePanel);
 end;
 
+procedure TDefDevForm.NewMaxPins;
+begin
+  if assigned(param1SE) then
+   TSpinEdit(Param1Se).MaxValue:=Arduino.MaxPins;
+  if assigned(param2SE) then
+   TSpinEdit(Param2Se).MaxValue:=Arduino.MaxPins;
+  if assigned(param3SE) then
+   TSpinEdit(Param3Se).MaxValue:=Arduino.MaxPins;
+  if assigned(param4SE) then
+   TSpinEdit(Param4Se).MaxValue:=Arduino.MaxPins;
+
+
+end;
+
 procedure TDefDevForm.SetParam(Pno: integer; SE: TSpinedit);
 begin
   ActDevs[ActiveDeviceId].ActDevParams[Pno-1]:=Se.Value;
@@ -149,7 +172,10 @@ end;
 procedure TDefDevForm.SetSEfromParam(Pno: integer; SE: TSpinedit);
 Begin
    if assigned(SE) then
+   Begin
      Se.Value:=ActDevs[ActiveDeviceId].ActDevParams[Pno-1];
+     Se.EditorEnabled:=true;
+   End;
 End;
 
 end.

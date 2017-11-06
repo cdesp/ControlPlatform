@@ -16,8 +16,6 @@ Type
   TArduVariables=Class(TStringlist)
   private
     function GetNewID: Integer;
-    procedure EmptyVars;
-
   Public
      Constructor Create;
      Destructor Destroy;Override;
@@ -28,6 +26,7 @@ Type
      Procedure SaveVars(fnm:String);
      Procedure LoadVars(fnm:String);
      Function GetArduVar(idx:integer):TArduVar;
+     procedure EmptyVars;
   end;
 
 var

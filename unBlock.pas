@@ -186,9 +186,9 @@ Type
     function GetParam2Rect: TRect;virtual;
     function Param1Visible: Boolean;
     function Param2Visible: Boolean;
-    property Color;
     property Height;
   Published
+    property Color;
     property Param1Attaching:Boolean read FParam1Attaching write SetParam1Attaching;
     property Param2Attaching:Boolean read FParam2Attaching write SetParam2Attaching;
     property CtrlAttachUp:boolean read FCtrlAttachUp write setCtrlAttachUp;

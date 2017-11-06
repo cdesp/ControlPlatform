@@ -16,9 +16,15 @@ type
     GroupBox1: TGroupBox;
     SpinEdit1: TSpinEdit;
     Label1: TLabel;
+    RadioGroup1: TRadioGroup;
+    SpinEdit2: TSpinEdit;
     procedure FormShow(Sender: TObject);
     procedure SpinEdit1Change(Sender: TObject);
+    procedure SpinEdit2Change(Sender: TObject);
+    procedure RadioGroup1Click(Sender: TObject);
+    procedure FormCreate(Sender: TObject);
   private
+    procedure Setimage;
     { Private declarations }
   public
     { Public declarations }
@@ -32,9 +38,19 @@ uses unDevices;
 
 {$R *.dfm}
 
+procedure TfrmLaser.FormCreate(Sender: TObject);
+begin
+ SetSEfromParam(2,SpinEdit2);
+
+ radiogroup1.ItemIndex:=spinedit2.value;
+ Setimage;
+
+end;
+
 procedure TfrmLaser.FormShow(Sender: TObject);
 begin
   Param1SE:=SpinEdit1;
+  Param2SE:=SpinEdit2;
   SpinEdit1.MaxValue:=arduino.MaxPins;
 end;
 
@@ -42,5 +58,34 @@ procedure TfrmLaser.SpinEdit1Change(Sender: TObject);
 begin
  SetParam(1,TSpinEdit(Sender));
 end;
+
+procedure TfrmLaser.SpinEdit2Change(Sender: TObject);
+begin
+  if radiogroup1.ItemIndex<>SpinEdit2.Value then
+   radiogroup1.ItemIndex:=SpinEdit2.Value;
+  Setimage;
+end;
+
+procedure TfrmLaser.RadioGroup1Click(Sender: TObject);
+begin
+  SpinEdit2.Value:=radiogroup1.ItemIndex;
+  SetParam(2,SpinEdit2);
+end;
+
+procedure TfrmLaser.Setimage;
+Var fnm:String;
+Begin
+   fnm:=apppath+'\images\'+'Laser_'+inttostr(radiogroup1.ItemIndex)+'.jpg';
+   if NOT  fileexists(fnm) then
+     fnm:=ChangeFileExt(fnm,'.png');
+   if fileexists(fnm) then
+   Begin
+     image3.Picture.LoadFromFile(fnm);
+   End
+   else
+     image3.Picture:=nil;
+
+End;
+
 
 end.

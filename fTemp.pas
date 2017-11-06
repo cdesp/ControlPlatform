@@ -49,9 +49,9 @@ begin
   else spinedit2.Value:=22;
   end;
 
-  if fileexists('DHT'+inttostr(spinedit2.Value)+'.jpg')  then
+  if fileexists(AppPath+'\images\DHT'+inttostr(spinedit2.Value)+'.jpg')  then
   Begin
-    image3.Picture.LoadFromFile('DHT'+inttostr(spinedit2.Value)+'.jpg');
+    image3.Picture.LoadFromFile(AppPath+'\images\DHT'+inttostr(spinedit2.Value)+'.jpg');
   End;
 
 end;

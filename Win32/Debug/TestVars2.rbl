@@ -1,18 +1,19 @@
 object dspBlock__1: TDspCommandVarBlock
-  Left = 187
-  Top = 169
+  Left = 195
+  Top = 193
   Width = 343
   Height = 40
   Hint = #920#941#964#949#953' '#956#953#945' '#964#953#956#942' '#942' '#956#949#964#945#946#955#951#964#942' '#963#964#951#957' '#956#949#964#945#946#955#951#964#942' '#960#959#965' '#949#960#953#955#941#947#959#965#956#949
   Color = 4983647
   Param1Attaching = False
+  Param2Attaching = False
   CtrlAttachUp = False
   CtrlAttachDn = False
   CommandText = #914#940#955#949' '#964#953#956#942' %p1 '#963#964#951#957' '#924#949#964#945#946#955#951#964#942' %p2'
   NewlyCreated = False
   CommndID = 230
   Param1 = 33
-  Param2 = 0
+  Param2 = 2
   PDevice = -1
   topNose = True
   botNose = True
@@ -29,12 +30,13 @@ object dspBlock__1: TDspCommandVarBlock
   DeviceOnlyCommandID = -1
 end
 object dspBlock__2: TDspBlock
-  Left = 187
-  Top = 138
+  Left = 195
+  Top = 162
   Width = 168
   Height = 40
   Color = clGreen
   Param1Attaching = False
+  Param2Attaching = False
   CtrlAttachUp = False
   CtrlAttachDn = False
   CommandText = #904#957#945#961#958#951' '#960#961#959#947#961#940#956#956#945#964#959#962
@@ -55,13 +57,14 @@ object dspBlock__2: TDspBlock
   DeviceOnlyCommandID = -1
 end
 object dspBlock__3: TDspCommandVarBlock
-  Left = 187
-  Top = 200
+  Left = 195
+  Top = 224
   Width = 343
   Height = 40
   Hint = #920#941#964#949#953' '#956#953#945' '#964#953#956#942' '#942' '#956#949#964#945#946#955#951#964#942' '#963#964#951#957' '#956#949#964#945#946#955#951#964#942' '#960#959#965' '#949#960#953#955#941#947#959#965#956#949
   Color = 4983647
   Param1Attaching = False
+  Param2Attaching = False
   CtrlAttachUp = False
   CtrlAttachDn = False
   CommandText = #914#940#955#949' '#964#953#956#942' %p1 '#963#964#951#957' '#924#949#964#945#946#955#951#964#942' %p2'
@@ -85,20 +88,21 @@ object dspBlock__3: TDspCommandVarBlock
   DeviceOnlyCommandID = -1
 end
 object dspBlock__4: TDspCommandVarBlock
-  Left = 187
-  Top = 231
+  Left = 195
+  Top = 255
   Width = 334
   Height = 40
   Hint = #920#941#964#949#953' '#956#953#945' '#964#953#956#942' '#942' '#956#949#964#945#946#955#951#964#942' '#963#964#951#957' '#956#949#964#945#946#955#951#964#942' '#960#959#965' '#949#960#953#955#941#947#959#965#956#949
   Color = 4983647
   Param1Attaching = False
+  Param2Attaching = False
   CtrlAttachUp = False
   CtrlAttachDn = False
   CommandText = #914#940#955#949' '#964#953#956#942' %p1 '#963#964#951#957' '#924#949#964#945#946#955#951#964#942' %p2'
   NewlyCreated = False
   CommndID = 230
   Param1 = 150
-  Param2 = 0
+  Param2 = 1
   PDevice = -1
   topNose = True
   botNose = True
@@ -123,6 +127,7 @@ object dspBlock__5: TDspVarBlock
   Margins.Top = 2
   Color = 9063176
   Param1Attaching = False
+  Param2Attaching = False
   CtrlAttachUp = False
   CtrlAttachDn = False
   CommandText = 'test5'

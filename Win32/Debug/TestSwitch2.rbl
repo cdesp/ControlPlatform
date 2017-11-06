@@ -1,0 +1,25 @@
+object dspBlock__1: TDspBlock
+  Left = 135
+  Top = 149
+  Width = 168
+  Height = 44
+  Color = clGreen
+  Param1Attaching = False
+  Param2Attaching = False
+  CtrlAttachUp = False
+  CtrlAttachDn = False
+  CommandText = #904#957#945#961#958#951' '#960#961#959#947#961#940#956#956#945#964#959#962
+  NewlyCreated = False
+  CommndID = 1
+  Param1 = 0
+  Param2 = 0
+  PDevice = -1
+  topNose = False
+  botNose = True
+  TotalParams = 0
+  Id = 1
+  BorderColor = clAqua
+  CommandColor = clWhite
+  prototype = False
+  DeviceOnlyCommandID = -1
+end

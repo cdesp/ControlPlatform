@@ -27,12 +27,8 @@ uses
 begin
   Application.Initialize;
   Application.MainFormOnTaskbar := True;
-  Application.Title := 'Κέντρο Ελέγχου Ρομποτικού Οχήματος';
+  Application.Title := 'Έλεγχος συσκευών Arduino';
   Application.CreateForm(TfrmRoboLang, frmRoboLang);
   Application.CreateForm(TfrmAbout, frmAbout);
-  Application.CreateForm(TfrmUSonic, frmUSonic);
-  Application.CreateForm(TfrmServo, frmServo);
-  Application.CreateForm(TfrmSwitch, frmSwitch);
-  Application.CreateForm(TfrmTemp, frmTemp);
   Application.Run;
 end.

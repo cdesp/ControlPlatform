@@ -8,10 +8,12 @@ uses  Vcl.Dialogs, CPort, System.Classes,
   Vcl.Menus, Vcl.ComCtrls, Vcl.Imaging.pngimage, Vcl.Forms, Vcl.StdCtrls,
   Vcl.Buttons,Winapi.Windows,unBlock,Winapi.Messages,System.SysUtils, System.Variants,
   unContainerBlock,Vcl.Graphics, Vcl.TabNotBk, Vcl.ExtCtrls, Vcl.WinXCtrls,
-  Vcl.Imaging.jpeg, VCLTee.TeCanvas, Vcl.ToolWin, Vcl.Samples.Spin;
+  Vcl.Imaging.jpeg, VCLTee.TeCanvas, Vcl.ToolWin, Vcl.Samples.Spin,
+  Vcl.OleCtrls, SHDocVw;
 
 
-Const Version='0.4 (Άλφα έκδοση 10/10/2017)  - ';
+Const ProjectStart='10/10/2017';
+Const Version='0.61 (Άλφα έκδοση 6/11/2017)  - ';
 Const Programmer='© 2017 Despoinidis Christos';
 Const Progname='Έλεγχος συσκευών Arduino';
 Const Onlybluetooth=FALSE;
@@ -89,9 +91,6 @@ type
     LaserAdd: TBitBtn;
     DevBook: TTabbedNotebook;
     RadioGroup1: TRadioGroup;
-    Panel1: TPanel;
-    ArduImage: TImage;
-    ArduPinout: TImage;
     pnlSound: TPanel;
     Image4: TImage;
     Label3: TLabel;
@@ -141,6 +140,12 @@ type
     ToolButton1: TToolButton;
     ToolButton2: TToolButton;
     Splitter3: TSplitter;
+    TreeView1: TTreeView;
+    Label8: TLabel;
+    Panel2: TPanel;
+    WebBrowser1: TWebBrowser;
+    ScrollBox3: TScrollBox;
+    ArduPinout: TImage;
     procedure FormCreate(Sender: TObject);
     procedure ListBox1DblClick(Sender: TObject);
     procedure Button1Click(Sender: TObject);
@@ -176,6 +181,9 @@ type
     procedure FormCloseQuery(Sender: TObject; var CanClose: Boolean);
     procedure ToolButton1Click(Sender: TObject);
     procedure ToolButton2Click(Sender: TObject);
+    procedure ScrollBox2MouseWheel(Sender: TObject; Shift: TShiftState;
+      WheelDelta: Integer; MousePos: TPoint; var Handled: Boolean);
+    procedure TreeView1Change(Sender: TObject; Node: TTreeNode);
   private
     NewVarName:String;
     ComIdle:boolean;
@@ -225,6 +233,11 @@ type
     procedure CreateVarCommands;
     function MakeInt(v1, v2: byte): integer;
     procedure DeleteVarBlocks;
+    procedure CompReadError(Reader: TReader; const Message: string;
+      var Handled: Boolean);
+    procedure LoadNode(Node: TTreeNode);
+    procedure LoadNodeName(NodeName: String);
+    procedure NewMaxPins;
     { Private declarations }
   public
     { Public declarations }
@@ -249,10 +262,11 @@ var
   ipAddr:String='';
   BTComList:TStringList;
   BTIndex:integer=-1;
+  MainPath:String;
 
 
 implementation
-uses Registry, unAbout, inifiles,setupapi,math,  unDevices, unHelpForms,unUtils,unVariables,unBlockVar,
+uses Registry, system.ioutils,unAbout, inifiles,setupapi,math,  unDevices, unHelpForms,unUtils,unVariables,unBlockVar,
       fserialLcd,fLaser,fSound,fUSonic,fServo,fSwitch,fTemp
     ;
 
@@ -587,6 +601,23 @@ begin
     end;
 end;
 
+procedure TfrmRoboLang.ScrollBox2MouseWheel(Sender: TObject; Shift: TShiftState;
+  WheelDelta: Integer; MousePos: TPoint; var Handled: Boolean);
+var
+  I: Integer;
+begin
+    for I := 1 to Mouse.WheelScrollLines do
+    try
+      if WheelDelta > 0 then
+        TWinControl(Sender).Perform(WM_VSCROLL, SB_LINEUP, 0)
+      else
+        TWinControl(Sender).Perform(WM_VSCROLL, SB_LINEDOWN, 0);
+    finally
+      TWinControl(Sender).Perform(WM_VSCROLL, SB_ENDSCROLL, 0);
+    end;
+
+end;
+
 procedure TfrmRoboLang.splitInteger(k:integer;var b1:char;var b2:char);
 Begin
    b2:=char(trunc(k/256)); //high byte
@@ -712,6 +743,53 @@ Begin
 
            End;
 
+end;
+
+
+
+procedure TfrmRoboLang.LoadNodeName(NodeName: String);
+var pth:String;
+Begin
+  NodeName:=NodeName+'.htm';
+  pth:=extractfilepath(NodeName);
+  if not fileexists(pth) then
+    CreateDir(pth);
+
+  Label8.Caption:=NodeName;
+  if not fileexists(NodeName) then
+   NodeName:=Changefileext(NodeName,'.html');
+  if not fileexists(NodeName) then
+   NodeName:=Changefileext(NodeName,'.mht');
+  if not fileexists(NodeName) then
+   NodeName:=Changefileext(NodeName,'.mhtml');
+
+  if  fileexists(NodeName) then
+   WebBrowser1.Navigate(NodeName)
+  else
+  Begin
+   pth:=TDirectory.GetParent(ExcludeTrailingPathDelimiter(pth));
+   WebBrowser1.Navigate(pth+'\Error.mht');
+  End;
+
+  
+End;
+
+procedure TfrmRoboLang.LoadNode(Node: TTreeNode);
+Var nm,pth:String;
+Begin
+  pth:='';
+  if assigned(Node.Parent) then
+  Begin
+   pth:=Node.Parent.Text;
+   nm:=Node.Text;
+   LoadNodeName(Mainpath+'Lessons\'+pth+'\'+nm);
+  End;
+End;
+
+
+procedure TfrmRoboLang.TreeView1Change(Sender: TObject; Node: TTreeNode);
+begin
+   LoadNode(Node);
 end;
 
 procedure TfrmRoboLang.BTSendInteger(k:integer);
@@ -948,8 +1026,11 @@ End;
 procedure TfrmRoboLang.acNewExecute(Sender: TObject);
 begin
 
-    if hasblocks and (MessageDlg('Επιβεβαίωση', mtConfirmation, [mbYes, mbNo], 0) = mrYes)  then
+    if  (MessageDlg('Επιβεβαίωση', mtConfirmation, [mbYes, mbNo], 0) = mrYes)  then
     Begin
+      DeleteVarBlocks;
+      arduvars.EmptyVars;
+      ClearActiveDevices;
       DoNewDoc;
       SaveDialog1.FileName:='';
       OpenDialog1.FileName:='';
@@ -1010,6 +1091,12 @@ begin
 end;
 
 
+procedure TfrmRoboLang.CompReadError(Reader: TReader; const Message: string; var Handled: Boolean);
+Begin
+   AddDebug(Message);
+   Handled:=True;
+End;
+
 procedure LoadComponentFromFile(parent: TComponent; const FileName: TFileName; MyStream:TMemoryStream=Nil);
 var
   FileStream : TFileStream;
@@ -1017,6 +1104,21 @@ var
   i: Integer;
   component,owner:TComponent;
   fl,fr:boolean;
+
+  function ReadComponent(ms:TMemoryStream):TComponent;
+  var
+   Reader: TReader;
+  begin
+    Reader := TReader.Create(ms, 4096);
+    Reader.OnError:=frmRoboLang.CompReadError;
+    try
+      Result := Reader.ReadRootComponent(Nil);
+    finally
+      Reader.Free;
+    end;
+  end;
+
+
 begin
   MemStream := nil;
   owner:=parent.Owner;
@@ -1041,7 +1143,9 @@ begin
       else
         ObjectTextToBinary(MyStream, MemStream);
       MemStream.Position := 0;
-      component:=MemStream.ReadComponent(nil);
+
+      component:=ReadComponent(MemStream);
+//      component:=MemStream.ReadComponent(nil);
       frmRoboLang.InsertComponent(Component);
       TDspBlock(component).parent:=TWinControl(parent);
     finally
@@ -1609,11 +1713,11 @@ Begin
     blck.Color:=col;
     blck.CommandColor:=clWhite;
     blck.CommndID:=131;  //Laser On
-    blck.Commandtext:='%pd → Ενεργοποίησε το Laser ';
+    blck.Commandtext:='%pd → Ενεργοποίησε το Laser/LED ';
     blck.Param1:=0;
     blck.Param2:=0;
-    blck.TotalParams:=1;
-    blck.MyHint:='Ενεργοποιεί το Laser';
+    blck.TotalParams:=0;
+    blck.MyHint:='Ενεργοποιεί το Laser/LED';
     inc(tp,50);blck.Top:=tp;
     blck.Left:=10;
     blck.Prototype:=true;
@@ -1625,11 +1729,11 @@ Begin
     blck.Color:=col;
     blck.CommandColor:=clWhite;
     blck.CommndID:=132;  //Laser Off
-    blck.Commandtext:='%pd → Απενεργοποίησε το Laser ';
+    blck.Commandtext:='%pd → Απενεργοποίησε το Laser/LED ';
     blck.Param1:=0;
     blck.Param2:=0;
-    blck.TotalParams:=1;
-    blck.MyHint:='Απενεργοποιεί το Laser';
+    blck.TotalParams:=0;
+    blck.MyHint:='Απενεργοποιεί το Laser/LED';
     inc(tp,50);blck.Top:=tp;
     blck.Left:=10;
     blck.Prototype:=true;
@@ -1646,7 +1750,7 @@ Var col:Tcolor;
     tp:integer;
     pnl:TCategoryPanel;
 Begin
-    col:=TColor( $0000BFFF );
+    col:=htmltocolor('#d194a8');
     pnl:=SoundPanel;
     tp:=-40;
 
@@ -1693,7 +1797,7 @@ Var col:Tcolor;
     tp:integer;
     pnl:TCategoryPanel;
 Begin
-    col:=TColor( $0000BFFF );
+    col:=htmltocolor('#2e6b2e');
     pnl:=USonicPanel;
     tp:=-40;
 
@@ -2059,7 +2163,8 @@ end;
 
 procedure TfrmRoboLang.CategoryPanelGroup1MouseEnter(Sender: TObject);
 begin
- CategoryPanelGroup1.setfocus;
+// CategoryPanelGroup1.setfocus;
+ TWinControl(sender).parent.setfocus;
 end;
 
 procedure TfrmRoboLang.CategoryPanelGroup1MouseWheel(Sender: TObject;
@@ -2071,11 +2176,11 @@ begin
     for I := 1 to Mouse.WheelScrollLines do
     try
       if WheelDelta > 0 then
-        CategoryPanelGroup1.Perform(WM_VSCROLL, SB_LINEUP, 0)
+        TCategoryPanelGroup(Sender).Perform(WM_VSCROLL, SB_LINEUP, 0)
       else
-        CategoryPanelGroup1.Perform(WM_VSCROLL, SB_LINEDOWN, 0);
+        TCategoryPanelGroup(Sender).Perform(WM_VSCROLL, SB_LINEDOWN, 0);
     finally
-      CategoryPanelGroup1.Perform(WM_VSCROLL, SB_ENDSCROLL, 0);
+      TCategoryPanelGroup(Sender).Perform(WM_VSCROLL, SB_ENDSCROLL, 0);
     end;
 end;
 
@@ -2482,25 +2587,42 @@ Var k:integer;
     nm,nmpin:String;
 Begin
    //TODO:Take it from the executables dir
-   pth:='G:\_Programming\ControlPlatform';
+  // pth:='G:\_Programming\ControlPlatform';
+   pth:=MainPath;
    k:=RadioGroup1.ItemIndex;
    Arduino.Id:=k;
    case k of
        0:Begin
           nm:='Arduino Uno';
+          Arduino.MaxPins:=19;
          End;
        1:Begin
           nm:='Arduino Nano';
-          nmpin:=nm+' Pin.png';
           Arduino.MaxPins:=19;
          End;
        2:Begin
           nm:='Arduino Mega';
+          Arduino.MaxPins:=59;
          End;
    end;
-   ArduImage.Picture.LoadFromFile(pth+'\images\'+nm+'.png');
-   ArduPinout.Picture.LoadFromFile(pth+'\images\'+nmpin);
+   nmpin:=nm+' Pin.png';
+ //  if fileexists(pth+'\images\'+nm+'.png') then
+ //    ArduImage.Picture.LoadFromFile(pth+'\images\'+nm+'.png');
+   if fileexists(pth+'\images\'+nmpin) then
+     ArduPinout.Picture.LoadFromFile(pth+'\images\'+nmpin)
+   else ArduPinout.Picture:=nil;
    DevBook.Pages[0]:=nm;
+   NewMaxPins;
+End;
+
+procedure TfrmRoboLang.NewMaxPins;
+Var i:integer;
+Begin
+  for i := 0 to Componentcount-1 do
+     if components[i] is TDefDevForm then
+      TDefDevForm(components[i]).NewMaxPins;
+
+
 End;
 
 procedure TfrmRoboLang.RadioGroup1Click(Sender: TObject);
@@ -2535,6 +2657,6 @@ Begin
 End;
 
 initialization
-
+mainpath:=Extractfilepath(Application.ExeName);
 
 end.
