@@ -184,6 +184,8 @@ type
     procedure ScrollBox2MouseWheel(Sender: TObject; Shift: TShiftState;
       WheelDelta: Integer; MousePos: TPoint; var Handled: Boolean);
     procedure TreeView1Change(Sender: TObject; Node: TTreeNode);
+    procedure TNBookChange(Sender: TObject; NewTab: Integer;
+      var AllowChange: Boolean);
   private
     NewVarName:String;
     ComIdle:boolean;
@@ -635,6 +637,13 @@ begin
 end;
 
 
+procedure TfrmRoboLang.TNBookChange(Sender: TObject; NewTab: Integer;
+  var AllowChange: Boolean);
+begin
+ if newtab=2 then
+    TreeView1.FullExpand;
+end;
+
 procedure TfrmRoboLang.ToolButton1Click(Sender: TObject);
 var t:TDspVarBlock;
     varcolor:TColor;
@@ -815,13 +824,23 @@ Begin
     vid:=-1;vid2:=-1;
     if assigned(NxtBlock.VarParam1) then
     Begin
-       myvar:=ArduVars.GetVarByName(NxtBlock.VarParam1.param1question);
-       vid:=myvar.VarID;
+       if NxtBlock.VarParam1.CommndID>100 then //fix variable resolve in Arduino
+         vid:=NxtBlock.VarParam1.CommndID
+       else
+       Begin
+         myvar:=ArduVars.GetVarByName(NxtBlock.VarParam1.param1question);
+         vid:=myvar.VarID;
+       End;
     End;
     if assigned(NxtBlock.VarParam2) then
     Begin
-       myvar:=ArduVars.GetVarByName(NxtBlock.VarParam2.param1question);
-       vid2:=myvar.VarID;
+       if NxtBlock.VarParam1.CommndID>100 then //fix variable resolve in Arduino
+         vid2:=NxtBlock.VarParam1.CommndID
+       else
+       Begin
+          myvar:=ArduVars.GetVarByName(NxtBlock.VarParam2.param1question);
+          vid2:=myvar.VarID;
+       End;
     End;
 
     BTSendInteger(vid);
@@ -1212,17 +1231,26 @@ End;
 
 
 procedure TfrmRoboLang.acopenExecute(Sender: TObject);
+Var k:integer;
 begin
 
   if opendialog1.Execute then
   Begin
+    k:=TNBook.PageIndex;
     DeleteVarBlocks;
     ArduVars.LoadVars(opendialog1.FileName);
     CreateBlocksFromVars;
     LoadActiveDevices(opendialog1.FileName);
+    Application.ProcessMessages;
+
     LoadComponentFromFile(Scrollbox1,opendialog1.FileName);
+    TNBook.PageIndex:=1;//Devices
+    Application.ProcessMessages;
+    TNBook.PageIndex:=0;//Program
+    Application.ProcessMessages;
     SaveDialog1.FileName:=opendialog1.FileName;
     sbar.Panels[1].Text:=    opendialog1.FileName;
+    TNBook.PageIndex:=k;
   End;
 end;
 
@@ -1649,29 +1677,13 @@ Begin
 //    blck.Left:=10;
 //    blck.Prototype:=true;
 
-    blck:=TDspBlock.Create(Self);
-    blck.Parent:=LCDpanel;
-    blck.Color:=col;
-    blck.CommandColor:=clWhite;
-    blck.CommndID:=121;  //LCDprint
-    blck.Commandtext:='Τύπωσε στην LCD %ps ';
-    blck.Param1:=0;
-    blck.ParamStr:='Μήνυμα';//should make an inline editor fro this
-    blck.Param2:=length(blck.ParamStr); //string length
-    blck.TotalParams:=2;
-    blck.MyHint:='Τυπώνει κείμενο στην LCD';
-    inc(tp,50);blck.Top:=tp;
-    blck.Left:=10;
-    blck.Prototype:=true;
-    blck.DeviceOnlyCommandID:=Ord(LCD);
-
 
     blck:=TDspBlock.Create(Self);
     blck.Parent:=LCDpanel;
     blck.Color:=col;
     blck.CommandColor:=clWhite;
     blck.CommndID:=122;
-    blck.Commandtext:='Καθάρίσε την LCD';
+    blck.Commandtext:='Καθάρισε την LCD';
     blck.MyHint:='Καθαρίζει την LCD';
     inc(tp,50);blck.Top:=tp;
     blck.Left:=10;
@@ -1688,6 +1700,54 @@ Begin
     blck.Param2:=0; //ψ
     blck.TotalParams:=2;
     blck.MyHint:='Θέτει τον δείκτη της LCD στην θέση (χ,ψ)';
+    inc(tp,50);blck.Top:=tp;
+    blck.Left:=10;
+    blck.Prototype:=true;
+    blck.DeviceOnlyCommandID:=Ord(LCD);
+
+    blck:=TDspBlock.Create(Self);
+    blck.Parent:=LCDpanel;
+    blck.Color:=col;
+    blck.CommandColor:=clWhite;
+    blck.CommndID:=121;  //LCDprint   text
+    blck.Commandtext:='Τύπωσε στην LCD κείμενο %ps ';
+    blck.Param1:=0;
+    blck.ParamStr:='MESG';//should make an inline editor fro this
+    blck.Param2:=length(blck.ParamStr); //string length
+    blck.TotalParams:=2;
+    blck.MyHint:='Τυπώνει κείμενο στην LCD';
+    inc(tp,50);blck.Top:=tp;
+    blck.Left:=10;
+    blck.Prototype:=true;
+    blck.DeviceOnlyCommandID:=Ord(LCD);
+
+    blck:=TDspBlock.Create(Self);
+    blck.Parent:=LCDpanel;
+    blck.Color:=col;
+    blck.CommandColor:=clWhite;
+    blck.CommndID:=124;  //LCDprint number
+    blck.Commandtext:='Τύπωσε στην LCD αριθμό %p1 ';
+    blck.Param1:=0;
+    blck.ParamStr:='';//should make an inline editor fro this
+    blck.Param2:=0; //string length
+    blck.TotalParams:=1;
+    blck.MyHint:='Τυπώνει αριθμό στην LCD';
+    inc(tp,50);blck.Top:=tp;
+    blck.Left:=10;
+    blck.Prototype:=true;
+    blck.DeviceOnlyCommandID:=Ord(LCD);
+
+    blck:=TDspBlock.Create(Self);
+    blck.Parent:=LCDpanel;
+    blck.Color:=col;
+    blck.CommandColor:=clWhite;
+    blck.CommndID:=125;  //LCDprint  text and number
+    blck.Commandtext:='Τύπωσε στην LCD κείμενο και αριθμό %ps %p1';
+    blck.Param1:=0;
+    blck.ParamStr:='MESG';//should make an inline editor fro this
+    blck.Param2:=length(blck.ParamStr); //string length
+    blck.TotalParams:=2;
+    blck.MyHint:='Τυπώνει κείμενο και αριθμό στην LCD';
     inc(tp,50);blck.Top:=tp;
     blck.Left:=10;
     blck.Prototype:=true;
@@ -1944,6 +2004,20 @@ Begin
     blck.Prototype:=true;
     blck.DeviceOnlyCommandID:=Ord(SWITCH);
 
+    blck:=TDspControlElseBlock.Create(Self);
+    blck.Parent:=pnl;
+    blck.Color:=col;
+    blck.CommandColor:=clWhite;
+    blck.CommndID:=146;
+    blck.Commandtext:='%pd → Εάν %p1 ενεργοποιήθηκε η συσκευή';
+    blck.param1prompt:='δεν';
+    TDspControlBlock(blck).EndBlockText:='Τέλος Εάν';
+    blck.TotalParams:=2;
+    blck.MyHint:='Ελέγχει εάν ενεργοποιήθηκε η συσκευή';
+    inc(tp,50);blck.Top:=tp;
+    blck.Left:=10;
+    blck.Prototype:=true;
+    blck.DeviceOnlyCommandID:=Ord(SWITCH);
 
 
     pnl.Height:=blck.Top+blck.Height+40;
@@ -1960,6 +2034,34 @@ Begin
     tp:=-40;
 
     pnl.color:=LightenColor(col,30);
+
+    blck:=TDspVarBlock.Create(Self);
+    blck.Parent:=pnl;
+    blck.Color:=col;
+    blck.CommandColor:=clWhite;
+    blck.CommndID:=175;
+    blck.Commandtext:='Θερμοκρασία';
+    blck.TotalParams:=0;
+    blck.MyHint:='Η τιμή της θερμοκρασίας της Συσκευής';
+    inc(tp,50);blck.Top:=tp;
+    blck.Left:=10;
+    blck.param1question:=blck.Commandtext;
+    blck.Prototype:=true;
+    blck.DeviceOnlyCommandID:=Ord(TEMP);
+
+    blck:=TDspVarBlock.Create(Self);
+    blck.Parent:=pnl;
+    blck.Color:=col;
+    blck.CommandColor:=clWhite;
+    blck.CommndID:=176;
+    blck.Commandtext:='Υγρασία';
+    blck.TotalParams:=0;
+    blck.MyHint:='Η τιμή της υγρασίας της Συσκευής';
+    inc(tp,50);blck.Top:=tp;
+    blck.Left:=10;
+    blck.param1question:=blck.Commandtext;
+    blck.Prototype:=true;
+    blck.DeviceOnlyCommandID:=Ord(TEMP);
 
     blck:=TDspControlElseBlock.Create(Self);
     blck.Parent:=pnl;
@@ -2036,6 +2138,7 @@ Begin
     tp:=-10;
 
     pnl.color:=LightenColor(col,30);
+
 
     blck:=TDspCommandVarBlock.Create(Self);
     blck.Parent:=pnl;
@@ -2483,6 +2586,8 @@ begin
      sbar.Panels[0].Text:='BT Port: '+t;
    addDevices;
    DeviceChanged;
+   TNBook.PageIndex:=0;
+   PageControl1.TabIndex:=0;
 end;
 
 function TfrmRoboLang.getPanelAddButton(pnl: TPanel): TBitBtn;

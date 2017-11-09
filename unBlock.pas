@@ -184,8 +184,8 @@ Type
     procedure FillComboBox;
     function GetParam1Rect: TRect;virtual;
     function GetParam2Rect: TRect;virtual;
-    function Param1Visible: Boolean;
-    function Param2Visible: Boolean;
+    function Param1Visible: Boolean;virtual;
+    function Param2Visible: Boolean;virtual;
     property Height;
   Published
     property Color;
@@ -224,6 +224,11 @@ Type
     Property VarParam1Name:String read GetVarParam1Name write SetVarParam1Name;
     property VarParam2:TDspBlock read FVarParam2 write SetVarParam2;
     Property VarParam2Name:String read GetVarParam2Name write SetVarParam2Name;
+  End;
+
+  tComboHack=Class(TComboBox)
+  protected
+    procedure WMPaint(var Msg: TMessage); message WM_Paint;
   End;
 
 var  debugging:boolean=false;
@@ -696,6 +701,7 @@ begin
    Height:=Height-2*lnw-8;
    Margins.Top:=2;
   End;
+
 end;
 
 procedure TDspBlock.SetPDevice(const Value: Integer);
@@ -738,6 +744,7 @@ begin
    Value.Parent:=Self;
    Value.left:=ctrl1.Left;
    value.Top:=ctrl1.Top-lnw*2;
+  // value.Height:=Value.height-2;
    ctrl1.Visible:=false;
    if assigned(updn1) then updn1.Visible:=false;
   End;
@@ -746,6 +753,7 @@ begin
    FVarParam1.Left:=left+FVarParam1.Left+10;
    FVarParam1.Top:=Top+FVarParam1.Top+10;
    FVarParam1.Parent:=parent;
+  // FVarParam1.Height:=FVarParam1.height+2;
    if not assigned(value) then //nil
    Begin
     ctrl1.Visible:=True;
@@ -890,10 +898,7 @@ Begin
      blck.Paramstr:=Paramstr;
      blck.ParamD:=ParamD;
      if Paramstr<>'' then
-     Begin
-      blck.Paramstr:=blck.Paramstr+inttostr(random(5)+49);
       blck.Param2:=Length(blck.Paramstr);
-     End;
      blck.TotalParams:=TotalParams;
      blck.param1question:=param1question;
      blck.param1prompt:=param1prompt;
@@ -1409,6 +1414,7 @@ End;
 
 procedure TDspBlock.SeTComboBoxValue;      //Sets String value of device
 Var k:Integer;
+    devwid:Integer;
 Begin
    if csLoading in ComponentState then exit;
 
@@ -1422,6 +1428,10 @@ Begin
      if k=-1 then
         TComboBox(ctrld).text:='';
     End;
+    DevWid:=TComboBox(ctrld).Canvas.TextWidth(TComboBox(ctrld).Text);
+    DevWid:=Max(30,DevWid);
+    TComboBox(ctrld).Width:=DevWid+44;
+
 End;
 
 procedure TDspBlock.FillComboBox;
@@ -1432,6 +1442,7 @@ Begin
 
     sl:=GetActiveDevicePins(DeviceOnlyCommandID) as tstringlist;
     TComboBox(ctrld).items.Assign(sl);
+
 
 //    TComboBox(ctrld).Items.BeginUpdate;
 //    for i := 0 to sl.Count-1 do
@@ -1502,7 +1513,7 @@ begin
   Begin
     TComboBox(ctrld).Visible:=True;
     ctrld.Left:=x;
-    ctrld.Top:=y-4;
+    ctrld.Top:=y-2;
     result:=ctrld.Left+ctrld.Width;
   End;
 
@@ -2018,23 +2029,27 @@ end;
 
 procedure TDspBlock.CreateCtrlD;
 begin
-  ctrlD:=TComboBox.create(self);
+  ctrlD:=tComboHack.create(self);
   ctrlD.Parent:=self;
-  TComboBox(ctrlD).Font.Size:=10;
+  TComboBox(ctrlD).Font.Size:=8;
   TComboBox(ctrlD).Font.Color:=ctrlcolor2;
   TComboBox(ctrlD).Font.Style:=[fsbold];
   TComboBox(ctrlD).Visible:=false;
   TComboBox(ctrlD).Width:=80;
   TComboBox(ctrlD).onchange:=ComboChange;
- // TComboBox(ctrlD).onCloseup:=edit1Change;
+
+  TComboHack(ctrlD).BevelWidth:=1;
   TComboBox(ctrlD).BevelInner:=bvnone;
-  TComboBox(ctrlD).Bevelkind:=bkFlat;
-  TComboBox(ctrlD).BevelOuter:=bvSpace;
-  TComboBox(ctrlD).StyleElements:=[];
+//  TComboBox(ctrlD).BevelKind:=bkFlat;
+  TComboBox(ctrlD).BevelOuter:=bvspace;
+  TComboBox(ctrlD).BevelEdges:=[];
+  TComboBox(ctrlD).Style:=csDropDown;
+  TComboBox(ctrlD).Ctl3D:=true;
+  //TComboBox(ctrlD).Style:=csOwnerDrawFixed;
+
+
   TComboBox(ctrlD).AutoComplete:=true;
   TComboBox(ctrlD).AutoCompleteDelay:=1000;
-
-//  TComboBox(ctrlS).BorderStyle:=bsNone;
   TComboBox(ctrlD).height:=16;
 end;
 
@@ -2047,6 +2062,7 @@ Begin
     Begin
       Paramd:=sl[TComboBox(ctrld).ItemIndex];
       FPDevice:=Integer(sl.Objects[TComboBox(ctrld).ItemIndex]);
+      //TComboBox(ctrld).ClearSelection;
     End;
    except
     fParam1:=0;
@@ -2186,6 +2202,29 @@ procedure TDspBlock.makenose(var a:TPointArray;nx,ny:integer;isUP:boolean=true);
 
 
 
+
+{ tComboHack }
+
+procedure tComboHack.WMPaint(var Msg: TMessage);
+var
+  C: TControlCanvas;
+  R: TRect;
+begin
+  inherited;
+  C := TControlCanvas.Create;
+  try
+  C.Control := Self;
+  with C do
+  begin
+    Brush.Color := TDspBlock(parent).color;
+    R := ClientRect;
+    FrameRect(R);
+    InflateRect(R, - 1, - 1);
+    FrameRect(R);
+    end;
+  finally
+    C.Free;
+  end;end;
 
 initialization
  System.Classes.Registerclass(TDspBlock);

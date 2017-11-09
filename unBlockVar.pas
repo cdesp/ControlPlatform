@@ -20,6 +20,7 @@ Type
          procedure CheckAttach;override;
          procedure MouseUp(Button: TMouseButton; Shift: TShiftState; X,  Y: Integer);override;
          procedure setParent(AParent:TWinControl);Override;
+         procedure AssignTo(Dest:TPersistent);override;
      public
        constructor Create(AOwner: TComponent); override;
        Procedure DelCboxClick(Sender:TObject);
@@ -42,7 +43,8 @@ Type
        Procedure CreateCtrl2;Override;
        function getParam2Control(x, y: integer): integer;Override;
        Constructor Create(AOwner: TComponent);Override;
-       destructor destroy;Override;
+       function Param2Visible: Boolean;Override;
+
      Public
       Function varCombo:TComboBox;
      End;
@@ -52,6 +54,14 @@ implementation
 uses Types,unVariables,unUtils,Sysutils,vcl.graphics,math;
 
 { TDspVarBlock }
+
+procedure TDspVarBlock.AssignTo(Dest: TPersistent);
+begin
+  inherited;
+  if dest is  TDspVarBlock then
+    TDspVarBlock(dest).height:=height-2;
+
+end;
 
 procedure TDspVarBlock.CheckAttach;
 Var tmpctrl:TDspBlock;
@@ -125,7 +135,7 @@ end;
 function TDspVarBlock.createNewBlock: TDspBlock;
 begin
   result:= TDspVarBlock.CreateFloat(Owner);
-
+  result.Height:=result.Height-2;
 end;
 
 procedure TDspVarBlock.DelCboxClick(Sender: TObject);
@@ -227,6 +237,11 @@ begin
 
 end;
 
+function TDspCommandVarBlock.Param2Visible: Boolean;
+begin
+ Result:=False;
+end;
+
 procedure TDspCommandVarBlock.setfParam2(const Value: Integer);
 Var pName:string;
 begin
@@ -292,11 +307,6 @@ begin
  Result:=TDspCommandVarBlock.CreateFloat(Owner);
 end;
 
-destructor TDspCommandVarBlock.destroy;
-begin
-
-  inherited;
-end;
 
 procedure TDspCommandVarBlock.FillVarCombo;
 var
