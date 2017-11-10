@@ -240,6 +240,9 @@ type
     procedure LoadNode(Node: TTreeNode);
     procedure LoadNodeName(NodeName: String);
     procedure NewMaxPins;
+    procedure Refname(Reader: TReader; var name: string);
+    procedure CreateComp(Reader: TReader; ComponentClass: TComponentClass;
+      var Component: TComponent);
     { Private declarations }
   public
     { Public declarations }
@@ -824,7 +827,7 @@ Begin
     vid:=-1;vid2:=-1;
     if assigned(NxtBlock.VarParam1) then
     Begin
-       if NxtBlock.VarParam1.CommndID>100 then //fix variable resolve in Arduino
+       if NxtBlock.VarParam1.CommndID>=75 then //fix variable resolve in Arduino
          vid:=NxtBlock.VarParam1.CommndID
        else
        Begin
@@ -834,7 +837,7 @@ Begin
     End;
     if assigned(NxtBlock.VarParam2) then
     Begin
-       if NxtBlock.VarParam1.CommndID>100 then //fix variable resolve in Arduino
+       if NxtBlock.VarParam1.CommndID>=75 then //fix variable resolve in Arduino
          vid2:=NxtBlock.VarParam1.CommndID
        else
        Begin
@@ -1116,6 +1119,18 @@ Begin
    Handled:=True;
 End;
 
+procedure TfrmRoboLang.Refname(Reader: TReader;Var name:string);
+Begin
+  AddDebug(Name);
+  //if reader.owner.owner=nil then
+   //InsertComponent(Reader.owner);
+End;
+
+procedure TfrmRoboLang.CreateComp(Reader: TReader; ComponentClass: TComponentClass; var Component: TComponent);
+begin
+  AddDebug(ComponentClass.ClassName);
+end;
+
 procedure LoadComponentFromFile(parent: TComponent; const FileName: TFileName; MyStream:TMemoryStream=Nil);
 var
   FileStream : TFileStream;
@@ -1130,8 +1145,10 @@ var
   begin
     Reader := TReader.Create(ms, 4096);
     Reader.OnError:=frmRoboLang.CompReadError;
+    Reader.OnReferenceName:=frmRoboLang.Refname;
+    Reader.OnCreateComponent:=frmRoboLang.CreateComp;
     try
-      Result := Reader.ReadRootComponent(Nil);
+      Result := Reader.ReadRootComponent(nil);
     finally
       Reader.Free;
     end;
@@ -2039,8 +2056,8 @@ Begin
     blck.Parent:=pnl;
     blck.Color:=col;
     blck.CommandColor:=clWhite;
-    blck.CommndID:=175;
-    blck.Commandtext:='Θερμοκρασία';
+    blck.CommndID:=75; //FIX VARS should be 75-90 //signed byte -127..128
+    blck.Commandtext:='%pd → Θερμοκρασία';
     blck.TotalParams:=0;
     blck.MyHint:='Η τιμή της θερμοκρασίας της Συσκευής';
     inc(tp,50);blck.Top:=tp;
@@ -2053,8 +2070,8 @@ Begin
     blck.Parent:=pnl;
     blck.Color:=col;
     blck.CommandColor:=clWhite;
-    blck.CommndID:=176;
-    blck.Commandtext:='Υγρασία';
+    blck.CommndID:=76; //FIX VARS should be 75-90
+    blck.Commandtext:='%pd → Υγρασία';
     blck.TotalParams:=0;
     blck.MyHint:='Η τιμή της υγρασίας της Συσκευής';
     inc(tp,50);blck.Top:=tp;

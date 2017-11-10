@@ -747,6 +747,11 @@ begin
   // value.Height:=Value.height-2;
    ctrl1.Visible:=false;
    if assigned(updn1) then updn1.Visible:=false;
+   if value.CommndID>74 then //fix var from a device
+   Begin
+    if (PDevice<>-1) and (PDevice<>Value.PDevice) then raise Exception.Create('Error device has already a device ID');
+    FPDevice:=Value.PDevice;
+   End;
   End;
   if Assigned(FVarParam1) then   //old Var Param Get it Out of us
   Begin
@@ -759,6 +764,8 @@ begin
     ctrl1.Visible:=True;
     if assigned(updn1) then updn1.Visible:=True;
    End;
+   if FVarParam1.CommndID>74 then //fix var from a device remove device id
+    PDevice:=-1;
   End;
 
 
@@ -792,6 +799,11 @@ begin
    value.Top:=ctrl2.Top-lnw*2;
    ctrl2.Visible:=false;
    if assigned(updn2) then updn2.Visible:=false;
+   if value.CommndID>74 then //fix var from a device
+   Begin
+    if (PDevice<>-1) and (PDevice<>Value.PDevice) then raise Exception.Create('Error device has already a device ID');
+    PDevice:=Value.PDevice;
+   End;
   End;
   if Assigned(FVarParam2) then   //old Var Param Get it Out of us
   Begin
@@ -802,6 +814,8 @@ begin
    Begin
     ctrl2.Visible:=True;
     if assigned(updn2) then updn2.Visible:=True;
+    if FVarParam1.CommndID>74 then //fix var from a device remove device id
+     PDevice:=-1;
    End;
   End;
 
@@ -1441,7 +1455,8 @@ Begin
    if not IsParamDev then exit;
 
     sl:=GetActiveDevicePins(DeviceOnlyCommandID) as tstringlist;
-    TComboBox(ctrld).items.Assign(sl);
+    if (parent<>nil) and (parent.parent<>nil) then
+     TComboBox(ctrld).items.Assign(sl);
 
 
 //    TComboBox(ctrld).Items.BeginUpdate;
@@ -1455,7 +1470,8 @@ Begin
 //    End;
 //    TComboBox(ctrld).Items.EndUpdate;
     sl.Free;
-    SeTComboBoxValue;
+    if (parent<>nil) and (parent.parent<>nil) then
+      SeTComboBoxValue;
 End;
 
 function TDspBlock.getParam1Control(x, y: integer): integer;

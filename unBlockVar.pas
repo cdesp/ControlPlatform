@@ -50,6 +50,8 @@ Type
      End;
 
 
+
+
 implementation
 uses Types,unVariables,unUtils,Sysutils,vcl.graphics,math;
 
