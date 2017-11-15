@@ -13,7 +13,7 @@ uses  Vcl.Dialogs, CPort, System.Classes,
 
 
 Const ProjectStart='10/10/2017';
-Const Version='0.61 (Άλφα έκδοση 6/11/2017)  - ';
+Const Version='0.62 (Άλφα έκδοση 10/11/2017)  - ';
 Const Programmer='© 2017 Despoinidis Christos';
 Const Progname='Έλεγχος συσκευών Arduino';
 Const Onlybluetooth=FALSE;
@@ -146,6 +146,18 @@ type
     WebBrowser1: TWebBrowser;
     ScrollBox3: TScrollBox;
     ArduPinout: TImage;
+    pnlBMP: TPanel;
+    Image9: TImage;
+    Label9: TLabel;
+    lblBMP: TLabel;
+    BMPAdd: TBitBtn;
+    BMPPanel: TCategoryPanel;
+    AnalogInPanel: TCategoryPanel;
+    pnlAnalogIn: TPanel;
+    Image10: TImage;
+    Label10: TLabel;
+    lblAnalogIn: TLabel;
+    AnalogInAdd: TBitBtn;
     procedure FormCreate(Sender: TObject);
     procedure ListBox1DblClick(Sender: TObject);
     procedure Button1Click(Sender: TObject);
@@ -243,6 +255,8 @@ type
     procedure Refname(Reader: TReader; var name: string);
     procedure CreateComp(Reader: TReader; ComponentClass: TComponentClass;
       var Component: TComponent);
+    procedure CreateBMP180Commands;
+    procedure CreateAnalogInCommands;
     { Private declarations }
   public
     { Public declarations }
@@ -272,7 +286,7 @@ var
 
 implementation
 uses Registry, system.ioutils,unAbout, inifiles,setupapi,math,  unDevices, unHelpForms,unUtils,unVariables,unBlockVar,
-      fserialLcd,fLaser,fSound,fUSonic,fServo,fSwitch,fTemp
+      fserialLcd,fLaser,fSound,fUSonic,fServo,fSwitch,fTemp,fBMP180,fAnalogIn
     ;
 
 
@@ -892,8 +906,16 @@ procedure TfrmRoboLang.ResetArduino;
 Begin
  if comport1.connected then //reset arduino to clear memory
  begin
+  try
    comport1.SetDTR(true);
+  except
+
+  end;
+  try
    comport1.SetDTR(false);
+  except
+
+  end;
    sleep(2000);
  end;
 
@@ -1121,14 +1143,14 @@ End;
 
 procedure TfrmRoboLang.Refname(Reader: TReader;Var name:string);
 Begin
-  AddDebug(Name);
+//  AddDebug(Name);
   //if reader.owner.owner=nil then
    //InsertComponent(Reader.owner);
 End;
 
 procedure TfrmRoboLang.CreateComp(Reader: TReader; ComponentClass: TComponentClass; var Component: TComponent);
 begin
-  AddDebug(ComponentClass.ClassName);
+ // AddDebug(ComponentClass.ClassName);
 end;
 
 procedure LoadComponentFromFile(parent: TComponent; const FileName: TFileName; MyStream:TMemoryStream=Nil);
@@ -1880,6 +1902,20 @@ Begin
 
     pnl.color:=LightenColor(col,30);
 
+    blck:=TDspVarBlock.Create(Self);
+    blck.Parent:=pnl;
+    blck.Color:=col;
+    blck.CommandColor:=clWhite;
+    blck.CommndID:=77; //FIX VARS should be 75-90 //signed byte -127..128
+    blck.Commandtext:='%pd → Απόσταση';
+    blck.TotalParams:=0;
+    blck.MyHint:='Η απόσταση από το εμπόδιο';
+    inc(tp,50);blck.Top:=tp;
+    blck.Left:=10;
+    blck.param1question:=blck.Commandtext;
+    blck.Prototype:=true;
+    blck.DeviceOnlyCommandID:=Ord(USONIC);
+
 
    //Command 140  sets 2 pins needed for ultrasonic (trig,Echo)
 
@@ -2187,6 +2223,173 @@ Begin
 End;
 
 
+procedure TfrmRoboLang.CreateBMP180Commands;
+Var col:Tcolor;
+    tp:integer;
+    pnl:TCategoryPanel;
+Begin
+    col:=TColor($00003333);//     #333300
+    pnl:=BMPpanel;
+    tp:=-40;
+
+    pnl.color:=LightenColor(col,30);
+
+    blck:=TDspVarBlock.Create(Self);
+    blck.Parent:=pnl;
+    blck.Color:=col;
+    blck.CommandColor:=clWhite;
+    blck.CommndID:=78; //FIX VARS should be 75-90 //signed byte -127..128
+    blck.Commandtext:='%pd → Πίεση (Απόλυτη)';
+    blck.TotalParams:=0;
+    blck.MyHint:='Η τιμή της Πίεσης στο ύψος που βρισκόμαστε';
+    inc(tp,50);blck.Top:=tp;
+    blck.Left:=10;
+    blck.param1question:=blck.Commandtext;
+    blck.Prototype:=true;
+    blck.DeviceOnlyCommandID:=Ord(BMP);
+
+    blck:=TDspVarBlock.Create(Self);
+    blck.Parent:=pnl;
+    blck.Color:=col;
+    blck.CommandColor:=clWhite;
+    blck.CommndID:=79; //FIX VARS should be 75-90
+    blck.Commandtext:='%pd → Πίεση (σχετική)';
+    blck.TotalParams:=0;
+    blck.MyHint:='Η τιμή της Πίεσης στο επίπεδο της θάλασσας';
+    inc(tp,50);blck.Top:=tp;
+    blck.Left:=10;
+    blck.param1question:=blck.Commandtext;
+    blck.Prototype:=true;
+    blck.DeviceOnlyCommandID:=Ord(BMP);
+
+    blck:=TDspVarBlock.Create(Self);
+    blck.Parent:=pnl;
+    blck.Color:=col;
+    blck.CommandColor:=clWhite;
+    blck.CommndID:=80; //FIX VARS should be 75-90
+    blck.Commandtext:='%pd → Θερμοκρασία';
+    blck.TotalParams:=0;
+    blck.MyHint:='Η τιμή της θερμοκρασίας στο περιβάλλον';
+    inc(tp,50);blck.Top:=tp;
+    blck.Left:=10;
+    blck.param1question:=blck.Commandtext;
+    blck.Prototype:=true;
+    blck.DeviceOnlyCommandID:=Ord(BMP);
+
+    blck:=TDspControlElseBlock.Create(Self);
+    blck.Parent:=pnl;
+    blck.Color:=col;
+    blck.CommandColor:=clWhite;
+    blck.CommndID:=177;
+    blck.Commandtext:='%pd → Εάν Πίεση (Απόλυτη) %p1 είναι μεγαλύτερη από %p2 (mb)';
+    blck.param1prompt:='δεν';
+    TDspControlBlock(blck).EndBlockText:='Τέλος Εάν';
+    blck.TotalParams:=2;
+    blck.MyHint:='Ελέγχει εάν η πίεση είναι μεγαλύτερη από την πίεση σε mb';
+    inc(tp,50);blck.Top:=tp;
+    blck.Left:=10;
+    blck.Prototype:=true;
+    blck.DeviceOnlyCommandID:=Ord(BMP);
+
+    blck:=TDspControlElseBlock.Create(Self);
+    blck.Parent:=pnl;
+    blck.Color:=col;
+    blck.CommandColor:=clWhite;
+    blck.CommndID:=178;
+    blck.Commandtext:='%pd → Εάν Πίεση (Σχετική) %p1 είναι μεγαλύτερη από %p2 (mb)';
+    blck.param1prompt:='δεν';
+    TDspControlBlock(blck).EndBlockText:='Τέλος Εάν';
+    blck.TotalParams:=2;
+    blck.MyHint:='Ελέγχει εάν η πίεση είναι μεγαλύτερη από την πίεση σε mb';
+    inc(tp,50);blck.Top:=tp;
+    blck.Left:=10;
+    blck.Prototype:=true;
+    blck.DeviceOnlyCommandID:=Ord(BMP);
+
+    blck:=TDspControlElseBlock.Create(Self);
+    blck.Parent:=pnl;
+    blck.Color:=col;
+    blck.CommandColor:=clWhite;
+    blck.CommndID:=179;
+    blck.Commandtext:='%pd → Εάν Θερμοκρασία %p1 μεγαλύτερη από %p2 (°C)';
+    blck.param1prompt:='όχι';
+    TDspControlBlock(blck).EndBlockText:='Τέλος Εάν';
+    blck.TotalParams:=2;
+    blck.MyHint:='Ελέγχει εάν η θερμοκρασία ξεπέρασε τους βαθμούς °Κελσίου';
+    inc(tp,50);blck.Top:=tp;
+    blck.Left:=10;
+    blck.Prototype:=true;
+    blck.DeviceOnlyCommandID:=Ord(BMP);
+
+
+
+    pnl.Height:=blck.Top+blck.Height+40;
+
+End;
+
+procedure TfrmRoboLang.CreateAnalogInCommands;
+Var col:Tcolor;
+    tp:integer;
+    pnl:TCategoryPanel;
+Begin
+    col:=TColor($00003333);//     #333300
+    pnl:=AnalogInPanel;
+    tp:=-40;
+
+    pnl.color:=LightenColor(col,30);
+
+    blck:=TDspVarBlock.Create(Self);
+    blck.Parent:=pnl;
+    blck.Color:=col;
+    blck.CommandColor:=clWhite;
+    blck.CommndID:=78; //FIX VARS should be 75-90 //signed byte -127..128
+    blck.Commandtext:='%pd → Τιμή Αναλογικής Συσκευής';
+    blck.TotalParams:=0;
+    blck.MyHint:='Η τιμή της Αναλογικής Συσκευής (0-1024)';
+    inc(tp,50);blck.Top:=tp;
+    blck.Left:=10;
+    blck.param1question:=blck.Commandtext;
+    blck.Prototype:=true;
+    blck.DeviceOnlyCommandID:=Ord(ANIN);
+
+
+    blck:=TDspControlElseBlock.Create(Self);
+    blck.Parent:=pnl;
+    blck.Color:=col;
+    blck.CommandColor:=clWhite;
+    blck.CommndID:=177;
+    blck.Commandtext:='%pd → Εάν η τιμή της συσκευής %p1 είναι μεγαλύτερη από %p2 ';
+    blck.param1prompt:='δεν';
+    TDspControlBlock(blck).EndBlockText:='Τέλος Εάν';
+    blck.TotalParams:=2;
+    blck.MyHint:='Ελέγχει εάν η τιμή της αναλογικής συσκευής είναι μεγαλύτερη από την τιμή ελέγχου';
+    inc(tp,50);blck.Top:=tp;
+    blck.Left:=10;
+    blck.Prototype:=true;
+    blck.DeviceOnlyCommandID:=Ord(ANIN);
+
+    blck:=TDspControlElseBlock.Create(Self);
+    blck.Parent:=pnl;
+    blck.Color:=col;
+    blck.CommandColor:=clWhite;
+    blck.CommndID:=178;
+    blck.Commandtext:='%pd → Εάν η τιμή της  συσκευής %p1 είναι μικρότερη από %p2 ';
+    blck.param1prompt:='δεν';
+    TDspControlBlock(blck).EndBlockText:='Τέλος Εάν';
+    blck.TotalParams:=2;
+    blck.MyHint:='Ελέγχει εάν η τιμή της αναλογικής συσκευής είναι μικρότερη από την τιμή ελέγχου';
+    inc(tp,50);blck.Top:=tp;
+    blck.Left:=10;
+    blck.Prototype:=true;
+    blck.DeviceOnlyCommandID:=Ord(ANIN);
+
+
+
+
+    pnl.Height:=blck.Top+blck.Height+40;
+
+End;
+
 
 procedure TfrmRoboLang.CreateCommands;
 Begin
@@ -2203,6 +2406,8 @@ Begin
     CreateSwitchCommands;
     CreateTempCommands;
     CreateVarCommands;
+    CreateBMP180Commands;
+    CreateAnalogInCommands;
 End;
 
 
@@ -2266,6 +2471,22 @@ begin
   ArduinoDevices[i].DeviceCmdId:=170;
   ArduinoDevices[i].DeviceParamCount:=2;
   ArduinoDevices[i].DeviceMax:=4;
+  i:=i+1;
+
+  ArduinoDevices[i].DeviceName:='BMP';
+  ArduinoDevices[i].DeviceFormClass:=TfrmBMP;
+  ArduinoDevices[i].DevicePanel:=pnlBMP;
+  ArduinoDevices[i].DeviceCmdId:=176;
+  ArduinoDevices[i].DeviceParamCount:=0;
+  ArduinoDevices[i].DeviceMax:=1;
+  i:=i+1;
+
+  ArduinoDevices[i].DeviceName:='ANIN';
+  ArduinoDevices[i].DeviceFormClass:=TfrmAnalogIn;
+  ArduinoDevices[i].DevicePanel:=pnlAnalogIn;
+  ArduinoDevices[i].DeviceCmdId:=165;
+  ArduinoDevices[i].DeviceParamCount:=1;
+  ArduinoDevices[i].DeviceMax:=10;
   i:=i+1;
 
 
@@ -2558,7 +2779,7 @@ Begin
 End;
 
 procedure TfrmRoboLang.FormShow(Sender: TObject);
-var i:integer;
+var i,n:integer;
     t:string;
     ts:Tstringlist;
 begin
@@ -2579,7 +2800,10 @@ begin
      for i := 0 to ts.count-1 do
      Begin
        if (Onlybluetooth and (POS('BLUE',uppercase(ts.values[ts.Names[i]]))>0)) or not Onlybluetooth then
-          BTComList.add(copy(ts.names[i],1,4));
+       Begin
+          n:=max(5,pos(':',ts.names[i]));
+          BTComList.add(copy(ts.names[i],1,n-1));
+       End;
      End;
      ts.free;
      getComPortList(BTComList);
@@ -2609,6 +2833,7 @@ end;
 
 function TfrmRoboLang.getPanelAddButton(pnl: TPanel): TBitBtn;
 begin
+
   result:=TBitBtn(FindComponent(copy(pnl.Name,4,maxint)+'Add'));
 end;
 

@@ -1,0 +1,12 @@
+[ArduinoDevice]
+TypeId=0
+[ActiveDevices]
+Count=0
+[ADev_0]
+DeviceTypeID=1
+ActDevParamCount=1
+ActDevParam1=3
+ActDevParam2=1
+ActDevParam3=0
+ActDevParam4=0
+ActDevParam5=0

@@ -356,49 +356,11 @@ begin
 end;
 
 procedure TDspBlock.requestParam1;
-Var v:string;
-
 Begin
-    //get param1
-    v:=inttostr(param1);
-    if inputquery(param1question,param1prompt,v) then
-    Begin
-      try
-        Param1:=strtoint(v);
-        if Param1>65535 then
-        begin
-          Param1:=65535;
-          Showmessage('Μέγιστο 65535.');
-        end;
-        RecalcWidth;
-        repaint;
-      except
-
-      end;
-    End;
 End;
 
 procedure TDspBlock.requestParam2;
-Var v:string;
-
 Begin
-    //get param1
-    v:=inttostr(param2);
-    if inputquery(param2question,param2prompt,v) then
-    Begin
-      try
-        Param2:=strtoint(v);
-        if Param2>65535 then
-        begin
-          Param2:=65535;
-          Showmessage('Μέγιστο 65535.');
-        end;
-        RecalcWidth;
-        repaint;
-      except
-
-      end;
-    End;
 End;
 
 procedure TDspBlock.DblClick;
@@ -748,7 +710,7 @@ begin
    ctrl1.Visible:=false;
    if assigned(updn1) then updn1.Visible:=false;
    if value.CommndID>74 then //fix var from a device
-   Begin
+   Begin   //todo:don't allow this no fix vars on device blocks
     if (PDevice<>-1) and (PDevice<>Value.PDevice) then raise Exception.Create('Error device has already a device ID');
     FPDevice:=Value.PDevice;
    End;
@@ -800,7 +762,7 @@ begin
    ctrl2.Visible:=false;
    if assigned(updn2) then updn2.Visible:=false;
    if value.CommndID>74 then //fix var from a device
-   Begin
+   Begin           //todo:don't allow this no fix vars on device blocks
     if (PDevice<>-1) and (PDevice<>Value.PDevice) then raise Exception.Create('Error device has already a device ID');
     PDevice:=Value.PDevice;
    End;
@@ -814,7 +776,7 @@ begin
    Begin
     ctrl2.Visible:=True;
     if assigned(updn2) then updn2.Visible:=True;
-    if FVarParam1.CommndID>74 then //fix var from a device remove device id
+    if FVarParam2.CommndID>74 then //fix var from a device remove device id
      PDevice:=-1;
    End;
   End;
@@ -2087,14 +2049,18 @@ End;
 
 procedure TDspBlock.edit1Change(Sender: TObject);
 begin
-  fParam1:=strtoint(tedit(ctrl1).Text);
-  updn1.Position:=fParam1;
+  if tedit(ctrl1).Text<>'' then  Begin
+   fParam1:=strtoint(tedit(ctrl1).Text);
+    updn1.Position:=fParam1;
+  End;
 end;
 
 procedure TDspBlock.edit2Change(Sender: TObject);
 begin
-  fParam2:=strtoint(tedit(ctrl2).Text);
-  updn2.Position:=fParam2;
+  if tedit(ctrl2).Text<>'' then begin
+    fParam2:=strtoint(tedit(ctrl2).Text);
+    updn2.Position:=fParam2;
+  end;
 end;
 
 procedure TDspBlock.edit3Change(Sender: TObject);

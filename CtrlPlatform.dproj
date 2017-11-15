@@ -127,13 +127,13 @@
         <DCCReference Include="unAbout.pas">
             <Form>frmAbout</Form>
         </DCCReference>
-        <DCCReference Include="fserialLcd.pas">
-            <Form>frmSerialLcd</Form>
+        <DCCReference Include="fBMP180.pas">
+            <Form>frmBMP</Form>
             <FormType>dfm</FormType>
         </DCCReference>
         <DCCReference Include="unDevices.pas"/>
-        <DCCReference Include="fLaser.pas">
-            <Form>frmLaser</Form>
+        <DCCReference Include="fAnalogIn.pas">
+            <Form>frmAnalogIn</Form>
             <FormType>dfm</FormType>
         </DCCReference>
         <DCCReference Include="unHelpForms.pas"/>
