@@ -89,6 +89,7 @@ Type
     procedure SetVarParam2(const Value: TDspBlock);
     procedure SetVarParam2Name(const Value: String);
     procedure SetParam2Attaching(const Value: Boolean);
+
   protected
     FCommandText:String;
     move:boolean;
@@ -110,6 +111,7 @@ Type
     ctrlD:TWinControl;
     updn1:tupdown;
     updn2:tupdown;
+    function getParam1Text: String;virtual;
     procedure CheckAttach;virtual;
     procedure Setprototype(const Value: boolean);Virtual;
     procedure SetParent(AParent: TWinControl); override;
@@ -150,6 +152,7 @@ Type
     function getLinkTo: TDspBlock;virtual;
     function getblocksize: integer;virtual;
     function getParam2: Integer;virtual;
+    function getParam1: Integer;virtual;
     procedure loaded;override;
     procedure CMMouseEnter(var Message: TMessage); message CM_MOUSEENTER;
     procedure CMMouseLeave(var Message: TMessage); message CM_MOUSELEAVE;
@@ -198,7 +201,7 @@ Type
     property blocksize:integer read getblocksize;
     property firstBlock:TDspBlock read getFirstBlock;
     property CommndID:Integer read fCommndID write fCommndID;
-    property Param1:Integer read fParam1 write setfParam1;
+    property Param1:Integer read getParam1 write setfParam1;
     property Param2:Integer read getParam2 write setfParam2;
     property ParamStr:string read FParamStr write SetParamStr;
     Property ParamD:String read FParamD write SetParamD;
@@ -522,9 +525,9 @@ begin
   begin
     RecalcWidth;
   end;
-  if assigned(ctrl1) then
+  if assigned(ctrl1) and (ctrl1 is TEdit) then
     Tedit(ctrl1).Text:=inttostr(fparam1);
-
+    MyHint:=fMyhint;
 end;
 
 procedure TDspBlock.setfParam2(const Value: Integer);
@@ -534,17 +537,29 @@ begin
   begin
     RecalcWidth;
   end;
-  if assigned(ctrl2) then
+  if assigned(ctrl2) and (ctrl2 is TEdit) then
    Tedit(ctrl2).Text:=inttostr(fparam2);
 end;
 
+function TDspBlock.getParam1Text:String;
+Begin
+ try
+  Result:=inttostr(param1);
+ except
+   Result:='';
+ end;
+End;
+
+
 procedure TDspBlock.SetMyhint(const Value: string);
-var s:string;
+var s,t:string;
 begin
   if fparamstr<>'' then
     s:=#13' ['+fparamstr+']';
   hint := Value+s;
   fMyhint:=value;
+  t:=StringReplace(Hint,'%p1',getParam1Text,[]);
+  hint:=t;
   ShowHint:=true;
 end;
 
@@ -1435,6 +1450,11 @@ Begin
     if (parent<>nil) and (parent.parent<>nil) then
       SeTComboBoxValue;
 End;
+
+function TDspBlock.getParam1: Integer;
+begin
+  Result:=fParam1;
+end;
 
 function TDspBlock.getParam1Control(x, y: integer): integer;
 Var sl:tstringlist;

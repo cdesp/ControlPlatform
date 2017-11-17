@@ -71,9 +71,17 @@ Type
 
   TDspControlBlock=Class(TDspContainerBlock)
   private
-
+    FisSimple:Boolean;
+    sv:TColor;
+    FisMale: boolean;
     procedure CBClick(Sender: TObject);
+    procedure SetCommaText;
+    procedure SetisMale(const Value: boolean);
+    procedure SetComboWidth;
+    procedure SetisSimple(const Value: Boolean);
+
   protected
+      function getParam1Text: String;override;
       function createNewBlock: TDspBlock;override;
       procedure RecalcWidth;override;
       procedure CreateCtrl1;override;
@@ -83,9 +91,15 @@ Type
       procedure edit2Change(Sender: TObject);override;
       procedure edit1Change(Sender: TObject);override;
       procedure loaded;override;
+      procedure SetParent(AParent: TWinControl); override;
       function GetParam1Rect: TRect;override;
+      function getParam1: Integer;override;
   public
     constructor Create(AOwner: TComponent);override;
+
+  published
+      property IsSimple:Boolean read FisSimple write SetisSimple;
+      property isMale:boolean read FisMale write SetisMale;
   end;
 
   TDspControlBlockELSE=class;
@@ -147,7 +161,42 @@ Type
 
 
 implementation
-uses sysutils,forms,dialogs;
+uses sysutils,forms,dialogs,math;
+
+
+procedure ComboBox_AutoWidth(const theComboBox: TCombobox);
+const
+  HORIZONTAL_PADDING = 4;
+var
+  itemsFullWidth: integer;
+  idx: integer;
+  itemWidth: integer;
+begin
+  if theComboBox.parent=nil then exit;
+  if theComboBox.parent.parent=nil then exit;
+  itemsFullWidth := 0;
+
+  // get the max needed with of the items in dropdown state
+  for idx := 0 to -1 + theComboBox.Items.Count do
+  begin
+    itemWidth := theComboBox.Canvas.TextWidth(theComboBox.Items[idx]);
+    Inc(itemWidth, 2 * HORIZONTAL_PADDING);
+    if (itemWidth > itemsFullWidth) then Begin
+      itemsFullWidth := itemWidth;
+      Inc(itemsFullWidth,length(theComboBox.Items[idx]));
+    End;
+  end;
+
+  // set the width of drop down if needed
+  if (itemsFullWidth > theComboBox.Width) then
+  begin
+    //check if there would be a scroll bar
+    if theComboBox.DropDownCount < theComboBox.Items.Count then
+      itemsFullWidth := itemsFullWidth + GetSystemMetrics(SM_CXVSCROLL);
+
+    SendMessage(theComboBox.Handle, CB_SETDROPPEDWIDTH, itemsFullWidth, 0);
+  end;
+end;
 
 { TDspContainerBlock }
 
@@ -401,18 +450,33 @@ Begin
   Param1:=0;
   param2:=5;
   totalparams:=1;
+  FIsSimple:=true;
+  FisMale:=false;
 End;
 
 procedure TDspControlBlock.CreateCtrl1;
 Begin
-  ctrl1:=Tcheckbox.create(self);
+//  ctrl1:=Tcheckbox.create(self);
+//  ctrl1.parent:=self;
+//  Tcheckbox(ctrl1).Caption:='';
+//  ctrl1.Width:=15;
+//  TCheckBox(ctrl1).Checked:=param1=1;
+//  Tcheckbox(ctrl1).OnClick:=cbclick;
+//  param1prompt:='όχι';
+//  ctrl1.Visible:=false;
+  ctrl1:=TComboHack.Create(self);
   ctrl1.parent:=self;
-  Tcheckbox(ctrl1).Caption:='';
-  ctrl1.Width:=15;
-  TCheckBox(ctrl1).Checked:=param1=1;
-  Tcheckbox(ctrl1).OnClick:=cbclick;
-  param1prompt:='όχι';
-  ctrl1.Visible:=false;
+  TCombobox(ctrl1).OnClick:=cbclick;
+  TCombobox(ctrl1).Font.Size:=8;
+  TCombobox(ctrl1).Font.Style:=[fsBold];  
+//  TComboHack(ctrl1).BevelWidth:=1;
+  TComboBox(ctrl1).BevelInner:=bvnone;
+  TComboBox(ctrl1).BevelOuter:=bvspace;
+  TComboBox(ctrl1).BevelEdges:=[];
+  TComboBox(ctrl1).Style:=csDropDown;
+  TComboBox(ctrl1).Ctl3D:=true;
+  TCombobox(ctrl1).Height:=16;
+  ctrl1.Width:=45;
 End;
 
 procedure TDspControlBlock.CreateCtrl2;
@@ -422,7 +486,9 @@ End;
 
 procedure TDspControlBlock.CBClick(Sender: TObject);
 Begin
-  param1:=Integer(Tcheckbox(sender).checked);
+ // param1:=Integer(Tcheckbox(sender).checked);
+ param1:=TCombobox(sender).ItemIndex;
+ SetComboWidth;
 End;
 
 procedure TDspControlBlock.edit1Change(Sender: TObject);
@@ -440,37 +506,128 @@ end;
 function TDspControlBlock.createNewBlock: TDspBlock;
 begin
   result:= TDspControlBlock.CreateFloat(Owner);
+ // isSimple:=True;
+ // IsMale:=False;
+  sv:=-1;
 end;
+
 
 procedure TDspControlBlock.RecalcWidth;
 begin
  inherited;
 end;
 
+procedure TDspControlBlock.SetComboWidth;
+var i,w:integer;
+const
+  HORIZONTAL_PADDING = 4;
+begin
+  if TCombobox(ctrl1).Text='' then exit;
+  w:=45;
+  w:=max(w,TCombobox(ctrl1).Canvas.TextWidth(TCombobox(ctrl1).Text));
+  Inc(w, 2 * HORIZONTAL_PADDING);
+  Inc(w,length(TCombobox(ctrl1).Text)*2);
+  inc(w,2);
+ // for i := 0 to TCombobox(ctrl1).items.count-1 do
+ //   w:=max(w,TCombobox(ctrl1).Canvas.TextWidth(TCombobox(ctrl1).Items[i]));
+  TCombobox(ctrl1).Width:=w;  
+  ComboBox_AutoWidth(TCombobox(ctrl1));
+end;
+
+function TDspControlBlock.getParam1Text:String;
+Begin
+  Result:=TCombobox(ctrl1).text;
+End;
+
+procedure TDspControlBlock.SetCommaText;
+var s:String;
+Begin
+ s:=param1prompt;
+ if s='' then
+  s:='όχι';
+ if not Assigned(Parent) then exit;
+
+ if FisSimple then
+     TCombobox(ctrl1).Items.CommaText:=',"'+s+'"'
+ else
+    if IsMale then
+     TCombobox(ctrl1).Items.CommaText:='"μεγαλύτερο από","μικρότερο από","ίσο με","μεγαλύτερο ή ίσο από","μικρότερο ή ίσο από"'
+    else
+     TCombobox(ctrl1).Items.CommaText:='"μεγαλύτερη από","μικρότερη από","ίση με","μεγαλύτερη ή ίση από","μικρότερη ή ίση από"';
+ SetComboWidth;
+ ComboBox_AutoWidth(TCombobox(ctrl1));
+ if (TCombobox(ctrl1).Text='') or (TCombobox(ctrl1).Text='0') then
+ Begin
+   TCombobox(ctrl1).Itemindex:=0;
+   Myhint:=myhint;
+ End;
+
+End;
+
+procedure TDspControlBlock.SetisMale(const Value: boolean);
+begin
+  FisMale := Value;
+  SetCommaText;
+end;
+
+procedure TDspControlBlock.SetisSimple(const Value: Boolean);
+begin
+  FisSimple := Value;
+  if Assigned(Parent) then
+    SetCommaText;
+  
+end;
+
+procedure TDspControlBlock.SetParent(AParent: TWinControl);
+begin
+  inherited;
+  if Assigned(AParent) then
+    SetCommatext;
+end;
+
+function TDspControlBlock.getParam1: Integer;
+begin
+  if not IsSimple then
+   Result:=inherited getParam1+2//2 commands of simple is 0 and 1 itemindex of combobox
+  else
+   Result:=inherited getParam1;   
+end;
 
 function TDspControlBlock.getParam1Control(x,y:integer):integer;
 var  s:string;
     res:integer;
-    sv:TColor;
+    
 Begin
-    if param1=1 then
-     s:=param1prompt else s:='';
-
+  //  if param1=1 then
+  //   s:=param1prompt else s:='';
+    if sv=-1 then
+     sv:=TComboBox(ctrl1).canvas.Font.Color;
+  
      res:=x;
     if not prototype then
     Begin
+      if param1=1 then
+      Begin         
+        TComboBox(ctrl1).canvas.Font.Color:=clRed;
+      End
+      else if sv<>-1 then
+       TComboBox(ctrl1).canvas.Font.Color:=sv;
+
+      
       ctrl1.left:=x; //checkbox position
-      ctrl1.top:=y;
+      ctrl1.top:=y-2;
+      if not ctrl1.Visible then SetCommaText;
+
       ctrl1.visible:=true;
       res:=res+ctrl1.width;
     End
     else ctrl1.Visible:=false;
 
-    sv:=canvas.Font.Color;
-    canvas.Font.Color:=clRed;
-    canvas.TextOut(res,y ,s);
-    canvas.Font.Color:=sv;
-    res:=res+canvas.TextWidth(s);
+  //  sv:=canvas.Font.Color;
+  //  canvas.Font.Color:=clRed;
+  //  canvas.TextOut(res,y ,s);
+  //  canvas.Font.Color:=sv;
+    //res:=res+canvas.TextWidth(s);
 
     result:=res;
 
@@ -489,8 +646,18 @@ End;
 procedure TDspControlBlock.loaded;
 begin
   inherited;
-  if assigned(ctrl1) then
-   TCheckBox(ctrl1).Checked:=param1=1;
+
+  if assigned(ctrl1) and assigned(parent) then
+   //TCheckBox(ctrl1).Checked:=param1=1;
+  Begin
+   SetCommaText;
+   if not IsSimple then
+    fparam1:=fparam1-2;
+
+    TCombobox(ctrl1).ItemIndex:=fparam1;
+  End;
+
+
 end;
 
 
@@ -505,7 +672,7 @@ begin
      blck:=TDspControlElseBlock(Dest);
      blck.Elsebut.font.Assign(font);
      blck.Elsebut.Visible:=true;
-
+     blck.IsSimple:=isSimple;
   End;
 
 end;

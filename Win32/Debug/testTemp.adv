@@ -1,5 +1,5 @@
 [ArduinoDevice]
-TypeId=0
+TypeId=1
 [ActiveDevices]
 Count=1
 [ADev_0]

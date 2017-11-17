@@ -13,7 +13,7 @@ uses  Vcl.Dialogs, CPort, System.Classes,
 
 
 Const ProjectStart='10/10/2017';
-Const Version='0.62 (Άλφα έκδοση 10/11/2017)  - ';
+Const Version='0.7 (Άλφα έκδοση 16/11/2017)  - ';
 Const Programmer='© 2017 Despoinidis Christos';
 Const Progname='Έλεγχος συσκευών Arduino';
 Const Onlybluetooth=FALSE;
@@ -1153,6 +1153,8 @@ begin
  // AddDebug(ComponentClass.ClassName);
 end;
 
+type tcomphack=class(Tcomponent);
+
 procedure LoadComponentFromFile(parent: TComponent; const FileName: TFileName; MyStream:TMemoryStream=Nil);
 var
   FileStream : TFileStream;
@@ -1206,6 +1208,7 @@ begin
 //      component:=MemStream.ReadComponent(nil);
       frmRoboLang.InsertComponent(Component);
       TDspBlock(component).parent:=TWinControl(parent);
+      tcomphack(component).loaded;
     finally
       MemStream.Free;
     end;
@@ -1576,7 +1579,7 @@ Begin
     blck.param2prompt:='pin';
     blck.param1prompt:='δεν';
     blck.TotalParams:=2;
-    blck.param1:=55;
+    blck.param2:=55;
     inc(tp,50);blck.Top:=tp;
     blck.Left:=10;
     blck.MyHint:='for MEGA:A0=pin54 A1=pin55 ... A15=pin69';
@@ -1593,7 +1596,7 @@ Begin
     blck.param2prompt:='pin';
     blck.param1prompt:='δεν';
     blck.TotalParams:=2;
-    blck.param1:=55;
+    blck.param2:=55;
     inc(tp,50);blck.Top:=tp;
     blck.Left:=10;
     blck.MyHint:='for MEGA:A0=pin54 A1=pin55 ... A15=pin69';
@@ -1924,29 +1927,30 @@ Begin
     blck.Color:=col;
     blck.CommandColor:=clWhite;
     blck.CommndID:=141;
-    blck.Commandtext:='%pd → Εάν απόσταση %p1 μεγαλύτερη των %p2 εκατοστών';
+    blck.Commandtext:='%pd → Εάν απόσταση %p1 %p2 εκατοστά';
     TDspControlBlock(blck).EndBlockText:='Τέλος Εάν';
+    TDspControlBlock(blck).IsSimple:=false;
     blck.TotalParams:=2;
-    blck.MyHint:='Ελέγχει εάν υπάρχει αντικείμενο μπροστά σε απόσταση μεγαλύτερη από τον αριθμό σε εκατοστά';
+    blck.MyHint:='Ελέγχει εάν υπάρχει αντικείμενο μπροστά σε απόσταση %p1 τον αριθμό σε εκατοστά';
     inc(tp,50);blck.Top:=tp;
     blck.Left:=10;
     blck.Prototype:=true;
     blck.DeviceOnlyCommandID:=Ord(USONIC);
 
-    blck:=TDspControlElseBlock.Create(Self);
-    blck.Parent:=pnl;
-    blck.Color:=col;
-    blck.CommandColor:=clWhite;
-    blck.CommndID:=142;
-    blck.Commandtext:='%pd →  Εάν απόσταση %p1 μικρότερη των %p2 εκατοστών';
-    TDspControlBlock(blck).EndBlockText:='Τέλος Εάν';
-    blck.TotalParams:=2;
-    blck.param2question:='Δώσε την απόσταση σε εκατοστά';
-    blck.param2prompt:='Απόσταση (εκ.)';
-    inc(tp,50);blck.Top:=tp;
-    blck.Left:=10;
-    blck.Prototype:=true;
-    blck.DeviceOnlyCommandID:=Ord(USONIC);
+//    blck:=TDspControlElseBlock.Create(Self);
+//    blck.Parent:=pnl;
+//    blck.Color:=col;
+//    blck.CommandColor:=clWhite;
+//    blck.CommndID:=142;
+//    blck.Commandtext:='%pd →  Εάν απόσταση %p1 μικρότερη των %p2 εκατοστών';
+//    TDspControlBlock(blck).EndBlockText:='Τέλος Εάν';
+//    blck.TotalParams:=2;
+//    blck.param2question:='Δώσε την απόσταση σε εκατοστά';
+//    blck.param2prompt:='Απόσταση (εκ.)';
+//    inc(tp,50);blck.Top:=tp;
+//    blck.Left:=10;
+//    blck.Prototype:=true;
+//    blck.DeviceOnlyCommandID:=Ord(USONIC);
 
 
     pnl.Height:=blck.Top+blck.Height+40;
@@ -2121,60 +2125,62 @@ Begin
     blck.Color:=col;
     blck.CommandColor:=clWhite;
     blck.CommndID:=171;
-    blck.Commandtext:='%pd → Εάν Θερμοκρασία %p1 μεγαλύτερη από %p2 (°C)';
+    blck.Commandtext:='%pd → Εάν Θερμοκρασία είναι %p1 %p2 (°C)';
     blck.param1prompt:='όχι';
     TDspControlBlock(blck).EndBlockText:='Τέλος Εάν';
+    TDspControlBlock(blck).IsSimple:=false;
     blck.TotalParams:=2;
-    blck.MyHint:='Ελέγχει εάν η θερμοκρασία ξεπέρασε τους βαθμούς °Κελσίου';
+    blck.MyHint:='Ελέγχει εάν η θερμοκρασία είναι %p1 τους βαθμούς °Κελσίου';
     inc(tp,50);blck.Top:=tp;
     blck.Left:=10;
     blck.Prototype:=true;
     blck.DeviceOnlyCommandID:=Ord(TEMP);
 
-    blck:=TDspControlElseBlock.Create(Self);
-    blck.Parent:=pnl;
-    blck.Color:=col;
-    blck.CommandColor:=clWhite;
-    blck.CommndID:=172;
-    blck.Commandtext:='%pd → Εάν Θερμοκρασία %p1 μικρότερη από %p2 (°C)';
-    blck.param1prompt:='όχι';
-    TDspControlBlock(blck).EndBlockText:='Τέλος Εάν';
-    blck.TotalParams:=2;
-    blck.MyHint:='Ελέγχει εάν η θερμοκρασία είναι χαμηλότερη από τους βαθμούς °Κελσίου';
-    inc(tp,50);blck.Top:=tp;
-    blck.Left:=10;
-    blck.Prototype:=true;
-    blck.DeviceOnlyCommandID:=Ord(TEMP);
+//    blck:=TDspControlElseBlock.Create(Self);
+//    blck.Parent:=pnl;
+//    blck.Color:=col;
+//    blck.CommandColor:=clWhite;
+//    blck.CommndID:=172;
+//    blck.Commandtext:='%pd → Εάν Θερμοκρασία %p1 μικρότερη από %p2 (°C)';
+//    blck.param1prompt:='όχι';
+//    TDspControlBlock(blck).EndBlockText:='Τέλος Εάν';
+//    blck.TotalParams:=2;
+//    blck.MyHint:='Ελέγχει εάν η θερμοκρασία είναι χαμηλότερη από τους βαθμούς °Κελσίου';
+//    inc(tp,50);blck.Top:=tp;
+//    blck.Left:=10;
+//    blck.Prototype:=true;
+//    blck.DeviceOnlyCommandID:=Ord(TEMP);
 
     blck:=TDspControlElseBlock.Create(Self);
     blck.Parent:=pnl;
     blck.Color:=col;
     blck.CommandColor:=clWhite;
     blck.CommndID:=173;
-    blck.Commandtext:='%pd → Εάν υγρασία %p1 μεγαλύτερη από %p2 %';
+    blck.Commandtext:='%pd → Εάν υγρασία είναι %p1 %p2 %';
     blck.param1prompt:='όχι';
     TDspControlBlock(blck).EndBlockText:='Τέλος Εάν';
+    TDspControlBlock(blck).IsSimple:=false;
     blck.TotalParams:=2;
-    blck.MyHint:='Ελέγχει εάν η υγρασία είναι μεγαλύτερη από τον αριθμό τοις εκατό (%)';
+    blck.MyHint:='Ελέγχει εάν η υγρασία είναι %p1 τον αριθμό τοις εκατό (%)';
     inc(tp,50);blck.Top:=tp;
     blck.Left:=10;
     blck.Prototype:=true;
     blck.DeviceOnlyCommandID:=Ord(TEMP);
 
-    blck:=TDspControlElseBlock.Create(Self);
-    blck.Parent:=pnl;
-    blck.Color:=col;
-    blck.CommandColor:=clWhite;
-    blck.CommndID:=174;
-    blck.Commandtext:='%pd → Εάν υγρασία %p1 μικρότερη από %p2 %';
-    blck.param1prompt:='όχι';
-    TDspControlBlock(blck).EndBlockText:='Τέλος Εάν';
-    blck.TotalParams:=2;
-    blck.MyHint:='Ελέγχει εάν η υγρασία είναι μικρότερη από τον αριθμό τοις εκατό (%)';
-    inc(tp,50);blck.Top:=tp;
-    blck.Left:=10;
-    blck.Prototype:=true;
-    blck.DeviceOnlyCommandID:=Ord(TEMP);
+//    blck:=TDspControlElseBlock.Create(Self);
+//    blck.Parent:=pnl;
+//    blck.Color:=col;
+//    blck.CommandColor:=clWhite;
+//    blck.CommndID:=174;
+//    blck.Commandtext:='%pd → Εάν υγρασία %p1 μικρότερη από %p2 %';
+//    blck.param1prompt:='όχι';
+//    TDspControlBlock(blck).EndBlockText:='Τέλος Εάν';
+//    blck.TotalParams:=2;
+//    blck.MyHint:='Ελέγχει εάν η υγρασία είναι μικρότερη από τον αριθμό τοις εκατό (%)';
+//    inc(tp,50);blck.Top:=tp;
+//    blck.Left:=10;
+//    blck.Prototype:=true;
+//    blck.DeviceOnlyCommandID:=Ord(TEMP);
 
 
     pnl.Height:=blck.Top+blck.Height+40;
@@ -2281,11 +2287,12 @@ Begin
     blck.Color:=col;
     blck.CommandColor:=clWhite;
     blck.CommndID:=177;
-    blck.Commandtext:='%pd → Εάν Πίεση (Απόλυτη) %p1 είναι μεγαλύτερη από %p2 (mb)';
+    blck.Commandtext:='%pd → Εάν Πίεση (Απόλυτη) είναι %p1  %p2 (mb)';
     blck.param1prompt:='δεν';
     TDspControlBlock(blck).EndBlockText:='Τέλος Εάν';
+    TDspControlBlock(blck).IsSimple:=false;
     blck.TotalParams:=2;
-    blck.MyHint:='Ελέγχει εάν η πίεση είναι μεγαλύτερη από την πίεση σε mb';
+    blck.MyHint:='Ελέγχει εάν η πίεση είναι %p1 την πίεση σε mb';
     inc(tp,50);blck.Top:=tp;
     blck.Left:=10;
     blck.Prototype:=true;
@@ -2296,11 +2303,12 @@ Begin
     blck.Color:=col;
     blck.CommandColor:=clWhite;
     blck.CommndID:=178;
-    blck.Commandtext:='%pd → Εάν Πίεση (Σχετική) %p1 είναι μεγαλύτερη από %p2 (mb)';
+    blck.Commandtext:='%pd → Εάν Πίεση (Σχετική) είναι %p1  %p2 (mb)';
     blck.param1prompt:='δεν';
     TDspControlBlock(blck).EndBlockText:='Τέλος Εάν';
+    TDspControlBlock(blck).IsSimple:=false;
     blck.TotalParams:=2;
-    blck.MyHint:='Ελέγχει εάν η πίεση είναι μεγαλύτερη από την πίεση σε mb';
+    blck.MyHint:='Ελέγχει εάν η πίεση είναι %p1 την πίεση σε mb';
     inc(tp,50);blck.Top:=tp;
     blck.Left:=10;
     blck.Prototype:=true;
@@ -2311,11 +2319,12 @@ Begin
     blck.Color:=col;
     blck.CommandColor:=clWhite;
     blck.CommndID:=179;
-    blck.Commandtext:='%pd → Εάν Θερμοκρασία %p1 μεγαλύτερη από %p2 (°C)';
+    blck.Commandtext:='%pd → Εάν Θερμοκρασία είναι %p1 %p2 (°C)';
     blck.param1prompt:='όχι';
     TDspControlBlock(blck).EndBlockText:='Τέλος Εάν';
+    TDspControlBlock(blck).IsSimple:=false;
     blck.TotalParams:=2;
-    blck.MyHint:='Ελέγχει εάν η θερμοκρασία ξεπέρασε τους βαθμούς °Κελσίου';
+    blck.MyHint:='Ελέγχει εάν η θερμοκρασία είναι %p1 τους βαθμούς °Κελσίου';
     inc(tp,50);blck.Top:=tp;
     blck.Left:=10;
     blck.Prototype:=true;
@@ -2357,31 +2366,32 @@ Begin
     blck.Parent:=pnl;
     blck.Color:=col;
     blck.CommandColor:=clWhite;
-    blck.CommndID:=177;
-    blck.Commandtext:='%pd → Εάν η τιμή της συσκευής %p1 είναι μεγαλύτερη από %p2 ';
+    blck.CommndID:=166;
+    blck.Commandtext:='%pd → Εάν η τιμή της συσκευής είναι %p1 %p2 ';
     blck.param1prompt:='δεν';
     TDspControlBlock(blck).EndBlockText:='Τέλος Εάν';
+    TDspControlBlock(blck).IsSimple:=false;
     blck.TotalParams:=2;
-    blck.MyHint:='Ελέγχει εάν η τιμή της αναλογικής συσκευής είναι μεγαλύτερη από την τιμή ελέγχου';
+    blck.MyHint:='Ελέγχει εάν η τιμή της αναλογικής συσκευής είναι %p1 την τιμή ελέγχου';
     inc(tp,50);blck.Top:=tp;
     blck.Left:=10;
     blck.Prototype:=true;
     blck.DeviceOnlyCommandID:=Ord(ANIN);
 
-    blck:=TDspControlElseBlock.Create(Self);
-    blck.Parent:=pnl;
-    blck.Color:=col;
-    blck.CommandColor:=clWhite;
-    blck.CommndID:=178;
-    blck.Commandtext:='%pd → Εάν η τιμή της  συσκευής %p1 είναι μικρότερη από %p2 ';
-    blck.param1prompt:='δεν';
-    TDspControlBlock(blck).EndBlockText:='Τέλος Εάν';
-    blck.TotalParams:=2;
-    blck.MyHint:='Ελέγχει εάν η τιμή της αναλογικής συσκευής είναι μικρότερη από την τιμή ελέγχου';
-    inc(tp,50);blck.Top:=tp;
-    blck.Left:=10;
-    blck.Prototype:=true;
-    blck.DeviceOnlyCommandID:=Ord(ANIN);
+//    blck:=TDspControlElseBlock.Create(Self);
+//    blck.Parent:=pnl;
+//    blck.Color:=col;
+//    blck.CommandColor:=clWhite;
+//    blck.CommndID:=167;
+//    blck.Commandtext:='%pd → Εάν η τιμή της  συσκευής %p1 είναι μικρότερη από %p2 ';
+//    blck.param1prompt:='δεν';
+//    TDspControlBlock(blck).EndBlockText:='Τέλος Εάν';
+//    blck.TotalParams:=2;
+//    blck.MyHint:='Ελέγχει εάν η τιμή της αναλογικής συσκευής είναι μικρότερη από την τιμή ελέγχου';
+//    inc(tp,50);blck.Top:=tp;
+//    blck.Left:=10;
+//    blck.Prototype:=true;
+//    blck.DeviceOnlyCommandID:=Ord(ANIN);
 
 
 
