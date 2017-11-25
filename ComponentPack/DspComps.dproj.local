@@ -1,0 +1,15 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<BorlandProject>
+	<Transactions>
+    <Transaction>2017/11/17 13:23:27.000.993,=rtl.dcp</Transaction>
+    <Transaction>2017/11/17 13:23:44.000.942,=G:\MyDocuments\Embarcadero\Studio\Projects\Unit1.pas</Transaction>
+    <Transaction>2017/11/17 13:24:39.000.546,G:\_Programming\ControlPlatform\ComponentPack\DspEdit.pas=G:\MyDocuments\Embarcadero\Studio\Projects\Unit1.pas</Transaction>
+    <Transaction>2017/11/17 13:24:49.000.896,G:\_Programming\ControlPlatform\ComponentPack\DspComps.dproj=G:\MyDocuments\Embarcadero\Studio\Projects\Package1.dproj</Transaction>
+    <Transaction>2017/11/17 13:27:33.000.758,=vcl.dcp</Transaction>
+    <Transaction>2017/11/17 14:14:27.000.593,=G:\_Programming\ControlPlatform\ComponentPack\DspUtils.pas</Transaction>
+    <Transaction>2017/11/21 16:59:22.000.000,=G:\_Programming\ControlPlatform\ComponentPack\PopupListEx.pas</Transaction>
+    <Transaction>2017/11/21 17:44:49.000.826,=G:\_Programming\ControlPlatform\ComponentPack\Unit1.pas</Transaction>
+    <Transaction>2017/11/21 17:46:38.000.819,G:\_Programming\ControlPlatform\ComponentPack\DspCombo.pas=G:\_Programming\ControlPlatform\ComponentPack\Unit1.pas</Transaction>
+    <Transaction>2017/11/21 18:25:52.000.422,G:\_Programming\ControlPlatform\ComponentPack\PopupListEx.pas=</Transaction>
+  </Transactions>
+</BorlandProject>

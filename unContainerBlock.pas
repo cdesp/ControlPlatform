@@ -81,6 +81,7 @@ Type
     procedure SetisSimple(const Value: Boolean);
 
   protected
+      procedure setfParam1(const Value: Integer);Override;
       function getParam1Text: String;override;
       function createNewBlock: TDspBlock;override;
       procedure RecalcWidth;override;
@@ -161,7 +162,7 @@ Type
 
 
 implementation
-uses sysutils,forms,dialogs,math;
+uses sysutils,forms,dialogs,math,DspCombo;
 
 
 procedure ComboBox_AutoWidth(const theComboBox: TCombobox);
@@ -456,26 +457,29 @@ End;
 
 procedure TDspControlBlock.CreateCtrl1;
 Begin
-//  ctrl1:=Tcheckbox.create(self);
+//  ctrl1:=TComboHack.Create(self);
 //  ctrl1.parent:=self;
-//  Tcheckbox(ctrl1).Caption:='';
-//  ctrl1.Width:=15;
-//  TCheckBox(ctrl1).Checked:=param1=1;
-//  Tcheckbox(ctrl1).OnClick:=cbclick;
-//  param1prompt:='όχι';
-//  ctrl1.Visible:=false;
-  ctrl1:=TComboHack.Create(self);
+//  TCombobox(ctrl1).OnClick:=cbclick;
+//  TCombobox(ctrl1).Font.Size:=8;
+//  TCombobox(ctrl1).Font.Style:=[fsBold];
+////  TComboHack(ctrl1).BevelWidth:=1;
+//  TComboBox(ctrl1).BevelInner:=bvnone;
+//  TComboBox(ctrl1).BevelOuter:=bvspace;
+//  TComboBox(ctrl1).BevelEdges:=[];
+//  TComboBox(ctrl1).Style:=csDropDown;
+//  TComboBox(ctrl1).Ctl3D:=true;
+//  TCombobox(ctrl1).Height:=16;
+
+  ctrl1:=TDspCombo.Create(self);
   ctrl1.parent:=self;
-  TCombobox(ctrl1).OnClick:=cbclick;
-  TCombobox(ctrl1).Font.Size:=8;
-  TCombobox(ctrl1).Font.Style:=[fsBold];  
-//  TComboHack(ctrl1).BevelWidth:=1;
-  TComboBox(ctrl1).BevelInner:=bvnone;
-  TComboBox(ctrl1).BevelOuter:=bvspace;
-  TComboBox(ctrl1).BevelEdges:=[];
-  TComboBox(ctrl1).Style:=csDropDown;
-  TComboBox(ctrl1).Ctl3D:=true;
-  TCombobox(ctrl1).Height:=16;
+  TDspCombo(ctrl1).OnClick:=cbclick;
+  TDspCombo(ctrl1).Font.Assign(Font);
+//  TDspCombo(ctrl1).Font.Size:=8;
+  TDspCombo(ctrl1).Font.Style:=[fsBold];
+  TDspCombo(ctrl1).Height:=16;
+  TDspCombo(ctrl1).AutoSize:=true;
+
+
   ctrl1.Width:=45;
 End;
 
@@ -487,8 +491,8 @@ End;
 procedure TDspControlBlock.CBClick(Sender: TObject);
 Begin
  // param1:=Integer(Tcheckbox(sender).checked);
- param1:=TCombobox(sender).ItemIndex;
- SetComboWidth;
+ param1:=TDspCombo(sender).ItemIndex;
+ //SetComboWidth;
 End;
 
 procedure TDspControlBlock.edit1Change(Sender: TObject);
@@ -522,6 +526,7 @@ var i,w:integer;
 const
   HORIZONTAL_PADDING = 4;
 begin
+ exit;
   if TCombobox(ctrl1).Text='' then exit;
   w:=45;
   w:=max(w,TCombobox(ctrl1).Canvas.TextWidth(TCombobox(ctrl1).Text));
@@ -536,7 +541,7 @@ end;
 
 function TDspControlBlock.getParam1Text:String;
 Begin
-  Result:=TCombobox(ctrl1).text;
+  Result:=TDspCombo(ctrl1).text;
 End;
 
 procedure TDspControlBlock.SetCommaText;
@@ -545,24 +550,33 @@ Begin
  s:=param1prompt;
  if s='' then
   s:='όχι';
- if not Assigned(Parent) then exit;
+ //if not Assigned(Parent) then exit;
 
  if FisSimple then
-     TCombobox(ctrl1).Items.CommaText:=',"'+s+'"'
+     TDspCombo(ctrl1).Items.CommaText:=',"'+s+'"'
  else
     if IsMale then
-     TCombobox(ctrl1).Items.CommaText:='"μεγαλύτερο από","μικρότερο από","ίσο με","μεγαλύτερο ή ίσο από","μικρότερο ή ίσο από"'
+     TDspCombo(ctrl1).Items.CommaText:='"μεγαλύτερο από","μικρότερο από","ίσο με","μεγαλύτερο ή ίσο από","μικρότερο ή ίσο από"'
     else
-     TCombobox(ctrl1).Items.CommaText:='"μεγαλύτερη από","μικρότερη από","ίση με","μεγαλύτερη ή ίση από","μικρότερη ή ίση από"';
- SetComboWidth;
- ComboBox_AutoWidth(TCombobox(ctrl1));
- if (TCombobox(ctrl1).Text='') or (TCombobox(ctrl1).Text='0') then
+     TDspCombo(ctrl1).Items.CommaText:='"μεγαλύτερη από","μικρότερη από","ίση με","μεγαλύτερη ή ίση από","μικρότερη ή ίση από"';
+ //SetComboWidth;
+// ComboBox_AutoWidth(TCombobox(ctrl1));
+ if (TDspCombo(ctrl1).Text='') or (TDspCombo(ctrl1).Text='0') then
  Begin
-   TCombobox(ctrl1).Itemindex:=0;
+   TDspCombo(ctrl1).Itemindex:=0;
    Myhint:=myhint;
  End;
 
 End;
+
+procedure TDspControlBlock.setfParam1(const Value: Integer);
+begin
+  inherited;
+  if TDspCombo(Ctrl1).ItemCount=0 then
+   SetCommaText;
+  if TdspCombo(Ctrl1).ItemCount>Value then
+    TdspCombo(Ctrl1).Itemindex:=Value;
+end;
 
 procedure TDspControlBlock.SetisMale(const Value: boolean);
 begin
@@ -574,8 +588,11 @@ procedure TDspControlBlock.SetisSimple(const Value: Boolean);
 begin
   FisSimple := Value;
   if Assigned(Parent) then
+  Begin
     SetCommaText;
-  
+    TDspCombo(Ctrl1).Itemindex:=TDspCombo(Ctrl1).Itemindex;//Re Set text
+  End;
+
 end;
 
 procedure TDspControlBlock.SetParent(AParent: TWinControl);
@@ -593,6 +610,8 @@ begin
    Result:=inherited getParam1;   
 end;
 
+Type TDspComboHack=Class(TDspCombo);
+
 function TDspControlBlock.getParam1Control(x,y:integer):integer;
 var  s:string;
     res:integer;
@@ -601,21 +620,21 @@ Begin
   //  if param1=1 then
   //   s:=param1prompt else s:='';
     if sv=-1 then
-     sv:=TComboBox(ctrl1).canvas.Font.Color;
+     sv:=TDspComboHack(ctrl1).canvas.Font.Color;
   
      res:=x;
     if not prototype then
     Begin
       if param1=1 then
       Begin         
-        TComboBox(ctrl1).canvas.Font.Color:=clRed;
+        TDspComboHack(ctrl1).canvas.Font.Color:=clRed;
       End
       else if sv<>-1 then
-       TComboBox(ctrl1).canvas.Font.Color:=sv;
+       TDspComboHack(ctrl1).canvas.Font.Color:=sv;
 
       
-      ctrl1.left:=x; //checkbox position
-      ctrl1.top:=y-2;
+      ctrl1.left:=x; //combobox position
+      ctrl1.top:=y;
       if not ctrl1.Visible then SetCommaText;
 
       ctrl1.visible:=true;
@@ -654,7 +673,7 @@ begin
    if not IsSimple then
     fparam1:=fparam1-2;
 
-    TCombobox(ctrl1).ItemIndex:=fparam1;
+    TDspCombo(ctrl1).ItemIndex:=fparam1;
   End;
 
 
@@ -695,7 +714,7 @@ begin
   Elsebut.Width:=25;
   TCheckBox(Elsebut).Checked:=false;
   Tcheckbox(Elsebut).OnClick:=elseclick;
-  elsebut.Top:=10;
+  elsebut.Top:=12;
   Elsebut.ShowHint:=true;
   Elsebut.Hint:='Ενεργοποίηση "Αλλιώς"';
   elsebut.Visible:=false;

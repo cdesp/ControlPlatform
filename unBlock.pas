@@ -47,7 +47,6 @@ Type
     procedure makenose(var a: TPointArray; nx, ny: integer; isUP: boolean=True);
     procedure ConnectBorders;
     function getFirstBlock: TDspBlock;
-    procedure setfParam1(const Value: Integer);
     procedure SettopNose(const Value: boolean);
     procedure SetBorderColor(const Value: TColor);
     procedure SetCommandColor(const Value: TColor);
@@ -55,7 +54,6 @@ Type
     procedure SetLinkFrom(const Value: TDspBlock);
     procedure Setparam1prompt(const Value: string);
     procedure Setparam1question(const Value: String);
-
     procedure SetbotNose(const Value: boolean);
     procedure SetLinkFromName(const Value: String);
     procedure SetLinkToName(const Value: String);
@@ -89,6 +87,8 @@ Type
     procedure SetVarParam2(const Value: TDspBlock);
     procedure SetVarParam2Name(const Value: String);
     procedure SetParam2Attaching(const Value: Boolean);
+    procedure PaintChildren;
+    procedure InformClientControls;
 
   protected
     FCommandText:String;
@@ -109,8 +109,10 @@ Type
     ctrl2:TWinControl;
     ctrlS:TWinControl;
     ctrlD:TWinControl;
-    updn1:tupdown;
-    updn2:tupdown;
+   // updn1:tupdown;
+   // updn2:tupdown;
+    procedure setfParam1(const Value: Integer);virtual;
+    procedure setfParam2(const Value: Integer);virtual;
     function getParam1Text: String;virtual;
     procedure CheckAttach;virtual;
     procedure Setprototype(const Value: boolean);Virtual;
@@ -124,7 +126,6 @@ Type
     procedure edit2Change(Sender: TObject);virtual;
     procedure edit1Change(Sender: TObject);virtual;
     procedure edit3Change(Sender: TObject);virtual;
-    procedure setfParam2(const Value: Integer);virtual;
     procedure setCommandStyle;
     procedure SetTotalParams(const Value: integer);virtual;
     procedure paintCmd;  Virtual;
@@ -237,7 +238,9 @@ Type
 var  debugging:boolean=false;
 
 implementation
-uses Vcl.Forms,sysutils,dialogs,types,math,unUtils,unCtrlPlatMain;
+uses Vcl.Forms,sysutils,dialogs,types,math,
+DspEdit,DspCombo,
+unUtils,unCtrlPlatMain;
 
 var idcnt:integer=1;
 
@@ -305,13 +308,15 @@ End;
 constructor TDspBlock.Create(AOwner: TComponent);
 begin
   inherited;
-  ControlStyle:=ControlStyle+[ csAcceptsControls];
+  ControlStyle:=ControlStyle+[ csAcceptsControls, csCaptureMouse, csClickEvents];
   Param1Attaching:=false;
   Param2Attaching:=false;
  // ControlStyle := ControlStyle - [csOpaque];
   FDeviceOnlyCommandID:=-1;
-  ctrlcolor1:=htmltocolor('#FFD900') ;
-  ctrlcolor2:=htmltocolor('#003300');
+  ctrlcolor1:=clWhite;//htmltocolor('#FFD900') ;
+  ctrlcolor2:=clWhite;//htmltocolor('#003300');
+  Font.Size:=10;
+  Font.Style:=[fsBold];
   enabled:=true;
   Prototype:=true;
   setUniqueComponentName(Self,'dspBlock_');
@@ -473,6 +478,7 @@ end;
 procedure TDspBlock.SetCommandColor(const Value: TColor);
 begin
   FCommandColor := Value;
+  font.Color:=Value;
   if assigned(ctrld) then
     TComboBox(ctrlD).font.Color:=Value;
 end;
@@ -525,8 +531,8 @@ begin
   begin
     RecalcWidth;
   end;
-  if assigned(ctrl1) and (ctrl1 is TEdit) then
-    Tedit(ctrl1).Text:=inttostr(fparam1);
+  if assigned(ctrl1) and (ctrl1 is TdspEdit) then
+    TDspedit(ctrl1).Text:=inttostr(fparam1);
     MyHint:=fMyhint;
 end;
 
@@ -537,8 +543,8 @@ begin
   begin
     RecalcWidth;
   end;
-  if assigned(ctrl2) and (ctrl2 is TEdit) then
-   Tedit(ctrl2).Text:=inttostr(fparam2);
+  if assigned(ctrl2) and (ctrl2 is TdspEdit) then
+   Tdspedit(ctrl2).Text:=inttostr(fparam2);
 end;
 
 function TDspBlock.getParam1Text:String;
@@ -656,7 +662,7 @@ begin
     RecalcWidth;
   end;
   if assigned(ctrlS) then
-   Tedit(ctrlS).Text:=FParamStr;
+   Tdspedit(ctrlS).Text:=FParamStr;
 
 end;
 
@@ -679,7 +685,17 @@ begin
    Margins.Top:=2;
   End;
 
+  InformClientControls;
 end;
+
+procedure TDspBlock.InformClientControls;
+Var i:integer;
+Begin
+  for i := 0 to Pred(controlcount) do
+   if controls[i] is TDSpEdit then
+     TDSpEdit(Controls[i]).ParentSet;
+
+End;
 
 procedure TDspBlock.SetPDevice(const Value: Integer);
 begin
@@ -721,9 +737,7 @@ begin
    Value.Parent:=Self;
    Value.left:=ctrl1.Left;
    value.Top:=ctrl1.Top-lnw*2;
-  // value.Height:=Value.height-2;
    ctrl1.Visible:=false;
-   if assigned(updn1) then updn1.Visible:=false;
    if value.CommndID>74 then //fix var from a device
    Begin   //todo:don't allow this no fix vars on device blocks
     if (PDevice<>-1) and (PDevice<>Value.PDevice) then raise Exception.Create('Error device has already a device ID');
@@ -739,7 +753,6 @@ begin
    if not assigned(value) then //nil
    Begin
     ctrl1.Visible:=True;
-    if assigned(updn1) then updn1.Visible:=True;
    End;
    if FVarParam1.CommndID>74 then //fix var from a device remove device id
     PDevice:=-1;
@@ -775,7 +788,7 @@ begin
    Value.left:=ctrl2.Left;
    value.Top:=ctrl2.Top-lnw*2;
    ctrl2.Visible:=false;
-   if assigned(updn2) then updn2.Visible:=false;
+//   if assigned(updn2) then updn2.Visible:=false;
    if value.CommndID>74 then //fix var from a device
    Begin           //todo:don't allow this no fix vars on device blocks
     if (PDevice<>-1) and (PDevice<>Value.PDevice) then raise Exception.Create('Error device has already a device ID');
@@ -790,7 +803,7 @@ begin
    if not assigned(value) then //nil
    Begin
     ctrl2.Visible:=True;
-    if assigned(updn2) then updn2.Visible:=True;
+   // if assigned(updn2) then updn2.Visible:=True;
     if FVarParam2.CommndID>74 then //fix var from a device remove device id
      PDevice:=-1;
    End;
@@ -841,6 +854,7 @@ begin
   if (mbLeft = Button) then
   if not prototype then
   Begin
+    setfocus;
      if not cancelMouseDn then
      Begin
        move:=true;
@@ -1385,11 +1399,11 @@ begin
   else
   Begin
     ctrls.Visible:=true;
-    tedit(ctrls).Color:=LightenColor(Color,30);
-    tedit(ctrls).font.Color:= ctrlcolor1;
+//    tdspedit(ctrls).Color:=LightenColor(Color,30);
+    tdspedit(ctrls).font.Color:= ctrlcolor1;
     ctrls.Left:=x;
     ctrls.Top:=y;
-    TEdit(ctrls).text:=paramStr;
+    TdspEdit(ctrls).text:=paramStr;
     ctrls.Width:=Min(Max(30,Canvas.TextWidth(paramStr)),250);
     result:=ctrls.Left+ctrls.Width;
   End;
@@ -1474,15 +1488,11 @@ begin
    if not assigned(VarParam1) then
    Begin
     ctrl1.Visible:=true;
-    updn1.Visible:=true;
-    tedit(ctrl1).Color:=LightenColor(Color,30);
-    tedit(ctrl1).font.Color:= ctrlcolor1;
+    tDspedit(ctrl1).font.Color:= ctrlcolor1;
     ctrl1.Left:=x;
     ctrl1.Top:=y;
-    updn1.left:=x+ctrl1.Width;
-    updn1.top:=y;
-    TEdit(ctrl1).text:=inttostr(param1);
-    result:=ctrl1.Left+ctrl1.Width+updn1.width;
+    TDspEdit(ctrl1).text:=inttostr(param1);
+    result:=ctrl1.Left+ctrl1.Width;
    End
    else
    Begin
@@ -1542,15 +1552,15 @@ begin
    if not assigned(VarParam2) then
    Begin
     ctrl2.Visible:=true;
-    updn2.Visible:=true;
-    tedit(ctrl2).Color:=LightenColor(Color,30);
-    tedit(ctrl2).font.Color:= ctrlcolor2;
+    //dn2.Visible:=true;
+   // tedit(ctrl2).Color:=LightenColor(Color,30);
+    tdspedit(ctrl2).font.Color:= ctrlcolor2;
     ctrl2.Left:=x;
     ctrl2.Top:=y;
-    updn2.left:=x+ctrl2.Width;
-    updn2.top:=y;
-    TEdit(ctrl2).text:=inttostr(param2);
-    result:=ctrl2.Left+ctrl2.Width+updn2.width;
+    //updn2.left:=x+ctrl2.Width;
+    //updn2.top:=y;
+    TdspEdit(ctrl2).text:=inttostr(param2);
+    result:=ctrl2.Left+ctrl2.Width//;+updn2.width;
    End
    else
    Begin
@@ -1579,7 +1589,7 @@ end;
 procedure TDspBlock.Reattach(Sender:TDspBlock);   //follow upper block
 Begin
   //if not assigned(sender) then exit;
-  
+
 
   if (linkfrom<>nil) and not sameattach then
   Begin
@@ -1809,23 +1819,11 @@ Begin
    if Param1Attaching and assigned(ctrl1) then
    Begin
      R:=ctrl1.BoundsRect;
-     if assigned(updn1) then
-     Begin
-       r.Right:=updn1.BoundsRect.Right;
-       r.Bottom:=updn1.BoundsRect.Bottom;
-     End;
-    // SubFromRect(R,3);
      Rectangle(R);
    End;
    if Param2Attaching and assigned(ctrl2) then
    Begin
      R:=ctrl2.BoundsRect;
-     if assigned(updn2) then
-     Begin
-       r.Right:=updn2.BoundsRect.Right;
-       r.Bottom:=updn2.BoundsRect.Bottom;
-     End;
-    // SubFromRect(R,3);
      Rectangle(R);
    End;
 
@@ -1897,7 +1895,16 @@ Begin
   paintborderDn;
   paintborderUp;
   PaintAttach;
+  PaintChildren;
+End;
 
+procedure TDspBlock.PaintChildren;
+var
+  i: Integer;
+Begin
+  for i := 0 to Pred(controlcount) do
+   if controls[i].visible and (controls[i] is TDspEdit) then
+     Controls[i].Invalidate;
 End;
 
 procedure TDspBlock.AttachTo(Blk: TDspBlock; Up: Boolean);
@@ -1949,79 +1956,49 @@ end;
 
 procedure TDspBlock.CreateCtrl1;
 Begin
-
-  ctrl1:=Tedit.create(self);
+  Ctrl1:=TDspEdit.Create(Self);
   ctrl1.Parent:=self;
-  tedit(ctrl1).Font.Size:=10;
-  tedit(ctrl1).Font.Color:=ctrlcolor1;
-  tedit(ctrl1).Font.Style:=[fsbold];
-  tedit(ctrl1).Visible:=false;
-  tedit(ctrl1).Width:=40;
-  tedit(ctrl1).onchange:=edit1Change;
-  tedit(ctrl1).BevelInner:=bvnone;
-  tedit(ctrl1).Bevelkind:=bknone;
-  tedit(ctrl1).BevelOuter:=bvnone;
-  tedit(ctrl1).BorderStyle:=bsNone;
-  tedit(ctrl1).height:=16;
-
-
-  updn1:=tupdown.create(self);
-  with updn1 do
-  begin
-   parent:=self;
-   associate:=ctrl1;
-   visible:=ctrl1.Visible;
-   Max:=32767;
-   Min:=-32768;
-   Thousands:=false;
-  end;
-
+  ctrl1.Visible:=false;
+  TDspEdit(Ctrl1).UseUpDn:=true;
+  TDspEdit(Ctrl1).Font.Assign(font);
+  TDspEdit(Ctrl1).Font.Color:=CtrlColor1;
+  TDspEdit(Ctrl1).onchange:=Edit1Change;
+  TDspEdit(Ctrl1).Height:=16;
+  TDspEdit(Ctrl1).AutoSize:=true;
+  TDspEdit(Ctrl1).Min:=-32767;
+  TDspEdit(Ctrl1).Max:=32768;
 End;
 
 procedure TDspBlock.CreateCtrl2;
 Begin
-
-  ctrl2:=Tedit.create(self);
+  Ctrl2:=TDspEdit.Create(Self);
   ctrl2.Parent:=self;
-  tedit(ctrl2).Font.Size:=10;
-  tedit(ctrl2).Font.Color:=ctrlcolor2;
-  tedit(ctrl2).Font.Style:=[fsbold];
-  tedit(ctrl2).Visible:=false;
-  tedit(ctrl2).Width:=40;
-  tedit(ctrl2).onchange:=edit2Change;
-  tedit(ctrl2).BevelInner:=bvnone;
-  tedit(ctrl2).Bevelkind:=bknone;
-  tedit(ctrl2).BevelOuter:=bvnone;
-  tedit(ctrl2).BorderStyle:=bsNone;
-  tedit(ctrl2).height:=16;
-
-  updn2:=tupdown.create(self);
-  with updn2 do
-  begin
-   parent:=self;
-   associate:=ctrl2;
-   visible:=ctrl2.Visible;
-   Max:=65535;
-   Thousands:=false;
-  end;
+  ctrl2.Visible:=false;
+  TDspEdit(Ctrl2).Font.Assign(font);
+  TDspEdit(Ctrl2).Font.Color:=CtrlColor2;
+  TDspEdit(Ctrl2).onchange:=Edit2Change;
+  TDspEdit(Ctrl2).Height:=16;
+  TDspEdit(Ctrl2).AutoSize:=true;
+  TDspEdit(Ctrl2).Min:=-32767;
+  TDspEdit(Ctrl2).Max:=32768;
 
 End;
 
 procedure TDspBlock.CreateCtrlS;
 begin
-  ctrlS:=Tedit.create(self);
+  ctrlS:=Tdspedit.create(self);
   ctrlS.Parent:=self;
-  tedit(ctrlS).Font.Size:=10;
-  tedit(ctrlS).Font.Color:=ctrlcolor2;
-  tedit(ctrlS).Font.Style:=[fsbold];
-  tedit(ctrlS).Visible:=false;
-  tedit(ctrlS).Width:=40;
-  tedit(ctrlS).onchange:=edit3Change;
-  tedit(ctrlS).BevelInner:=bvnone;
-  tedit(ctrlS).Bevelkind:=bknone;
-  tedit(ctrlS).BevelOuter:=bvnone;
-  tedit(ctrlS).BorderStyle:=bsNone;
-  tedit(ctrlS).height:=16;
+  tdspedit(ctrlS).font.Assign(font);
+  tdspedit(ctrlS).Font.Size:=10;
+  tdspedit(ctrlS).Font.Color:=ctrlcolor2;
+  tdspedit(ctrlS).Font.Style:=[fsbold];
+  tdspedit(ctrlS).Visible:=false;
+  tdspedit(ctrlS).Width:=40;
+  tdspedit(ctrlS).onchange:=edit3Change;
+  tdspedit(ctrlS).height:=16;
+  tdspedit(ctrlS).AutoSize:=true;
+  tdspedit(ctrlS).NumbersOnly:=false;
+
 
 end;
 
@@ -2069,23 +2046,23 @@ End;
 
 procedure TDspBlock.edit1Change(Sender: TObject);
 begin
-  if tedit(ctrl1).Text<>'' then  Begin
-   fParam1:=strtoint(tedit(ctrl1).Text);
-    updn1.Position:=fParam1;
+  if tdspedit(ctrl1).Text<>'' then  Begin
+   fParam1:=strtoint(tdspedit(ctrl1).Text);
+    //updn1.Position:=fParam1;
   End;
 end;
 
 procedure TDspBlock.edit2Change(Sender: TObject);
 begin
-  if tedit(ctrl2).Text<>'' then begin
-    fParam2:=strtoint(tedit(ctrl2).Text);
-    updn2.Position:=fParam2;
+  if tdspedit(ctrl2).Text<>'' then begin
+    fParam2:=strtoint(tdspedit(ctrl2).Text);
+//    updn2.Position:=fParam2;
   end;
 end;
 
 procedure TDspBlock.edit3Change(Sender: TObject);
 begin
-  fParamStr:=tedit(ctrlS).Text;
+  fParamStr:=tdspedit(ctrlS).Text;
   MyHint:=fMyhint;
   RecalcWidth;
 end;
@@ -2147,7 +2124,8 @@ end;
 
 procedure TDspBlock.CMMouseEnter(var Message: TMessage);
 begin
-
+// if not (ctrl1.Focused or ctrl2.Focused or ctrlD.Focused or ctrlS.Focused) then
+//  SetFocus;
 end;
 
 procedure TDspBlock.CMMouseLeave(var Message: TMessage);

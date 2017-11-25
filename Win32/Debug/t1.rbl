@@ -1,0 +1,94 @@
+object dspBlock__1: TDspControlElseBlock
+  Left = 104
+  Top = 249
+  Width = 394
+  Height = 44
+  Hint = 
+    #917#955#941#947#967#949#953' '#949#940#957' '#965#960#940#961#967#949#953' '#945#957#964#953#954#949#943#956#949#957#959' '#956#960#961#959#963#964#940' '#963#949' '#945#960#972#963#964#945#963#951' 2 '#964#959#957' '#945#961#953#952#956#972 +
+    ' '#963#949' '#949#954#945#964#959#963#964#940
+  Color = 3042094
+  Param1Attaching = False
+  Param2Attaching = False
+  CtrlAttachUp = False
+  CtrlAttachDn = False
+  CommandText = '%pd '#8594' '#917#940#957' '#945#960#972#963#964#945#963#951' %p1 %p2 '#949#954#945#964#959#963#964#940
+  NewlyCreated = False
+  CommndID = 141
+  Param1 = 4
+  Param2 = 8
+  ParamD = 'USonic_0'
+  PDevice = 0
+  topNose = True
+  botNose = True
+  LinkTo = frmRoboLang.dspBlock__2
+  TotalParams = 2
+  Id = 1
+  BorderColor = clRed
+  CommandColor = clWhite
+  MyHint = 
+    #917#955#941#947#967#949#953' '#949#940#957' '#965#960#940#961#967#949#953' '#945#957#964#953#954#949#943#956#949#957#959' '#956#960#961#959#963#964#940' '#963#949' '#945#960#972#963#964#945#963#951' %p1 '#964#959#957' '#945#961#953#952 +
+    #956#972' '#963#949' '#949#954#945#964#959#963#964#940
+  prototype = False
+  DeviceOnlyCommandID = 3
+  EndBlock = frmRoboLang.dspBlock__2
+  EndBlockName = 'dspBlock__2'
+  IsSimple = False
+  isMale = False
+  ElseBlock = frmRoboLang.dspBlock__3
+  ElseBlockName = 'dspBlock__3'
+  Elsebutchecked = False
+end
+object dspBlock__2: TDspContainerBlockEnd
+  Left = 104
+  Top = 303
+  Width = 84
+  Height = 44
+  Color = 3042094
+  Param1Attaching = False
+  Param2Attaching = False
+  CtrlAttachUp = False
+  CtrlAttachDn = False
+  CommandText = #932#941#955#959#962' '#917#940#957
+  NewlyCreated = False
+  CommndID = 99
+  Param1 = 0
+  Param2 = 0
+  PDevice = -1
+  topNose = False
+  botNose = True
+  TotalParams = 0
+  Id = 2
+  BorderColor = clRed
+  CommandColor = clWhite
+  prototype = False
+  DeviceOnlyCommandID = -1
+  ContainerBlock = frmRoboLang.dspBlock__1
+  ContainerBlockName = 'dspBlock__1'
+end
+object dspBlock__3: TDspControlBlockELSE
+  Left = 104
+  Top = 303
+  Width = 67
+  Height = 44
+  Color = 3042094
+  Param1Attaching = False
+  Param2Attaching = False
+  CtrlAttachUp = False
+  CtrlAttachDn = False
+  CommandText = #913#955#955#953#974#962
+  NewlyCreated = False
+  CommndID = 100
+  Param1 = 0
+  Param2 = 0
+  PDevice = -1
+  topNose = False
+  botNose = True
+  TotalParams = 0
+  Id = 3
+  BorderColor = clRed
+  CommandColor = clWhite
+  prototype = False
+  DeviceOnlyCommandID = -1
+  ContainerBlock = frmRoboLang.dspBlock__1
+  ContainerBlockName = 'dspBlock__1'
+end
