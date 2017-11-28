@@ -128,6 +128,8 @@ begin
     Delcbox.Top:=Height div 2-10;
     Delcbox.OnClick:=DelCboxClick;
     Delcbox.Caption:='';
+    Delcbox.Hint:='Επέλεξε για διαγραφή';
+    Delcbox.ShowHint:=true;
     Delcbox.Width:=16;
     Delcbox.parent:=self;
     Margins.Left:=Delcbox.Left+Delcbox.width;
