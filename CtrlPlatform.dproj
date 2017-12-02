@@ -5,7 +5,7 @@
         <FrameworkType>VCL</FrameworkType>
         <MainSource>CtrlPlatform.dpr</MainSource>
         <Base>True</Base>
-        <Config Condition="'$(Config)'==''">Release</Config>
+        <Config Condition="'$(Config)'==''">Debug</Config>
         <Platform Condition="'$(Platform)'==''">Win32</Platform>
         <TargetedPlatforms>1</TargetedPlatforms>
         <AppType>Application</AppType>
@@ -115,6 +115,7 @@
         <VerInfo_Locale>1033</VerInfo_Locale>
         <VerInfo_Keys>CompanyName=Despoinidis Christos;FileVersion=1.0.0.0;InternalName=;LegalCopyright=;LegalTrademarks=;OriginalFilename=;ProductVersion=1.0.0.0;Comments=;ProgramID=com.embarcadero.$(MSBuildProjectName);FileDescription=$(MSBuildProjectName);ProductName=$(MSBuildProjectName)</VerInfo_Keys>
         <Icon_MainIcon>CtrlPlatform_Icon.ico</Icon_MainIcon>
+        <BT_BuildType>Debug</BT_BuildType>
     </PropertyGroup>
     <ItemGroup>
         <DelphiCompile Include="$(MainSource)">
@@ -138,7 +139,6 @@
             <FormType>dfm</FormType>
         </DCCReference>
         <DCCReference Include="unHelpForms.pas"/>
-        <DCCReference Include="unUtils.pas"/>
         <DCCReference Include="fSound.pas">
             <Form>frmSound</Form>
             <FormType>dfm</FormType>
@@ -161,6 +161,7 @@
         </DCCReference>
         <DCCReference Include="unVariables.pas"/>
         <DCCReference Include="unBlockVar.pas"/>
+        <DCCReference Include="ComponentPack\DspUtils.pas"/>
         <BuildConfiguration Include="Release">
             <Key>Cfg_2</Key>
             <CfgParent>Base</CfgParent>
@@ -248,6 +249,258 @@
                 </RDP_Source_Files>
             </Delphi.Personality>
             <Deployment Version="3">
+                <DeployFile LocalName="Win32\Debug\Images\Laser_0.png" Configuration="Release" Class="File">
+                    <Platform Name="Win32">
+                        <RemoteName>Laser_0.png</RemoteName>
+                        <Overwrite>true</Overwrite>
+                    </Platform>
+                </DeployFile>
+                <DeployFile LocalName="Win32\Debug\Images\Switch_8.jpg" Configuration="Release" Class="File">
+                    <Platform Name="Win32">
+                        <RemoteName>Switch_8.jpg</RemoteName>
+                        <Overwrite>true</Overwrite>
+                    </Platform>
+                </DeployFile>
+                <DeployFile LocalName="Win32\Debug\Lessons\Βασικά\Άσκηση 1.mht" Configuration="Release" Class="File">
+                    <Platform Name="Win32">
+                        <RemoteName>Άσκηση 1.mht</RemoteName>
+                        <Overwrite>true</Overwrite>
+                    </Platform>
+                </DeployFile>
+                <DeployFile LocalName="Win32\Debug\Images\Arduino uno.png" Configuration="Release" Class="File">
+                    <Platform Name="Win32">
+                        <RemoteName>Arduino uno.png</RemoteName>
+                        <Overwrite>true</Overwrite>
+                    </Platform>
+                </DeployFile>
+                <DeployFile LocalName="Win32\Debug\Images\Switch_3.jpg" Configuration="Release" Class="File">
+                    <Platform Name="Win32">
+                        <RemoteName>Switch_3.jpg</RemoteName>
+                        <Overwrite>true</Overwrite>
+                    </Platform>
+                </DeployFile>
+                <DeployFile LocalName="Win32\Debug\Lessons\Error.mht" Configuration="Release" Class="File">
+                    <Platform Name="Win32">
+                        <RemoteName>Error.mht</RemoteName>
+                        <Overwrite>true</Overwrite>
+                    </Platform>
+                </DeployFile>
+                <DeployFile LocalName="Win32\Debug\Images\DHT11.jpg" Configuration="Release" Class="File">
+                    <Platform Name="Win32">
+                        <RemoteName>DHT11.jpg</RemoteName>
+                        <Overwrite>true</Overwrite>
+                    </Platform>
+                </DeployFile>
+                <DeployFile LocalName="Win32\Debug\Images\Switch_1.jpg" Configuration="Release" Class="File">
+                    <Platform Name="Win32">
+                        <RemoteName>Switch_1.jpg</RemoteName>
+                        <Overwrite>true</Overwrite>
+                    </Platform>
+                </DeployFile>
+                <DeployFile LocalName="Win32\Debug\Images\Switch_4.jpg" Configuration="Release" Class="File">
+                    <Platform Name="Win32">
+                        <RemoteName>Switch_4.jpg</RemoteName>
+                        <Overwrite>true</Overwrite>
+                    </Platform>
+                </DeployFile>
+                <DeployFile LocalName="Win32\Debug\Lessons\Project Απλά\Project 1.mht" Configuration="Release" Class="File">
+                    <Platform Name="Win32">
+                        <RemoteName>Project 1.mht</RemoteName>
+                        <Overwrite>true</Overwrite>
+                    </Platform>
+                </DeployFile>
+                <DeployFile LocalName="Win32\Debug\Images\Switch_0.jpg" Configuration="Release" Class="File">
+                    <Platform Name="Win32">
+                        <RemoteName>Switch_0.jpg</RemoteName>
+                        <Overwrite>true</Overwrite>
+                    </Platform>
+                </DeployFile>
+                <DeployFile LocalName="Win32\Debug\Images\Laser_1.png" Configuration="Release" Class="File">
+                    <Platform Name="Win32">
+                        <RemoteName>Laser_1.png</RemoteName>
+                        <Overwrite>true</Overwrite>
+                    </Platform>
+                </DeployFile>
+                <DeployFile LocalName="Win32\Debug\Lessons\Συσκευές Σύνδεση\LCD Οθόνη.mht" Configuration="Release" Class="File">
+                    <Platform Name="Win32">
+                        <RemoteName>LCD Οθόνη.mht</RemoteName>
+                        <Overwrite>true</Overwrite>
+                    </Platform>
+                </DeployFile>
+                <DeployFile LocalName="Win32\Debug\Images\Arduino Nano pin.png" Configuration="Release" Class="File">
+                    <Platform Name="Win32">
+                        <RemoteName>Arduino Nano pin.png</RemoteName>
+                        <Overwrite>true</Overwrite>
+                    </Platform>
+                </DeployFile>
+                <DeployFile LocalName="Win32\Debug\Lessons\Συσκευές Σύνδεση\Αισθητήρας Φωτός.mht" Configuration="Release" Class="File">
+                    <Platform Name="Win32">
+                        <RemoteName>Αισθητήρας Φωτός.mht</RemoteName>
+                        <Overwrite>true</Overwrite>
+                    </Platform>
+                </DeployFile>
+                <DeployFile LocalName="Win32\Debug\Lessons\Συσκευές Σύνδεση\UltraSonic Απόσταση.mht" Configuration="Release" Class="File">
+                    <Platform Name="Win32">
+                        <RemoteName>UltraSonic Απόσταση.mht</RemoteName>
+                        <Overwrite>true</Overwrite>
+                    </Platform>
+                </DeployFile>
+                <DeployFile LocalName="Win32\Debug\Images\Button.png" Configuration="Release" Class="File">
+                    <Platform Name="Win32">
+                        <RemoteName>Button.png</RemoteName>
+                        <Overwrite>true</Overwrite>
+                    </Platform>
+                </DeployFile>
+                <DeployFile LocalName="Win32\Debug\Images\DHT22.jpg" Configuration="Release" Class="File">
+                    <Platform Name="Win32">
+                        <RemoteName>DHT22.jpg</RemoteName>
+                        <Overwrite>true</Overwrite>
+                    </Platform>
+                </DeployFile>
+                <DeployFile LocalName="Win32\Debug\Images\DHT21.jpg" Configuration="Release" Class="File">
+                    <Platform Name="Win32">
+                        <RemoteName>DHT21.jpg</RemoteName>
+                        <Overwrite>true</Overwrite>
+                    </Platform>
+                </DeployFile>
+                <DeployFile LocalName="Win32\Debug\Images\Switch_2.jpg" Configuration="Release" Class="File">
+                    <Platform Name="Win32">
+                        <RemoteName>Switch_2.jpg</RemoteName>
+                        <Overwrite>true</Overwrite>
+                    </Platform>
+                </DeployFile>
+                <DeployFile LocalName="Win32\Debug\Images\Switch_6.jpg" Configuration="Release" Class="File">
+                    <Platform Name="Win32">
+                        <RemoteName>Switch_6.jpg</RemoteName>
+                        <Overwrite>true</Overwrite>
+                    </Platform>
+                </DeployFile>
+                <DeployFile LocalName="Win32\Debug\Images\Arduino Uno pin.png" Configuration="Release" Class="File">
+                    <Platform Name="Win32">
+                        <RemoteName>Arduino Uno pin.png</RemoteName>
+                        <Overwrite>true</Overwrite>
+                    </Platform>
+                </DeployFile>
+                <DeployFile LocalName="Win32\Debug\Images\Arduino Nano.png" Configuration="Release" Class="File">
+                    <Platform Name="Win32">
+                        <RemoteName>Arduino Nano.png</RemoteName>
+                        <Overwrite>true</Overwrite>
+                    </Platform>
+                </DeployFile>
+                <DeployFile LocalName="Win32\Release\CtrlPlatform.exe" Configuration="Release" Class="ProjectOutput">
+                    <Platform Name="Win32">
+                        <RemoteName>CtrlPlatform.exe</RemoteName>
+                        <Overwrite>true</Overwrite>
+                    </Platform>
+                </DeployFile>
+                <DeployFile LocalName="Win32\Debug\Images\AnalogIn_0.png" Configuration="Release" Class="File">
+                    <Platform Name="Win32">
+                        <RemoteName>AnalogIn_0.png</RemoteName>
+                        <Overwrite>true</Overwrite>
+                    </Platform>
+                </DeployFile>
+                <DeployFile LocalName="Win32\Debug\Images\Switch_7.jpg" Configuration="Release" Class="File">
+                    <Platform Name="Win32">
+                        <RemoteName>Switch_7.jpg</RemoteName>
+                        <Overwrite>true</Overwrite>
+                    </Platform>
+                </DeployFile>
+                <DeployFile LocalName="Win32\Debug\Lessons\Project Απλά\Project 2.mht" Configuration="Release" Class="File">
+                    <Platform Name="Win32">
+                        <RemoteName>Project 2.mht</RemoteName>
+                        <Overwrite>true</Overwrite>
+                    </Platform>
+                </DeployFile>
+                <DeployFile LocalName="Win32\Debug\Lessons\Project Απλά\Project 3.mht" Configuration="Release" Class="File">
+                    <Platform Name="Win32">
+                        <RemoteName>Project 3.mht</RemoteName>
+                        <Overwrite>true</Overwrite>
+                    </Platform>
+                </DeployFile>
+                <DeployFile LocalName="Win32\Debug\Lessons\Βασικά\Άσκηση 2.mht" Configuration="Release" Class="File">
+                    <Platform Name="Win32">
+                        <RemoteName>Άσκηση 2.mht</RemoteName>
+                        <Overwrite>true</Overwrite>
+                    </Platform>
+                </DeployFile>
+                <DeployFile LocalName="Win32\Debug\Lessons\Συσκευές Σύνδεση\Laser.mht" Configuration="Release" Class="File">
+                    <Platform Name="Win32">
+                        <RemoteName>Laser.mht</RemoteName>
+                        <Overwrite>true</Overwrite>
+                    </Platform>
+                </DeployFile>
+                <DeployFile LocalName="Win32\Debug\Lessons\Συσκευές Σύνδεση\Διακόπτης Πλήκτρο.mht" Configuration="Release" Class="File">
+                    <Platform Name="Win32">
+                        <RemoteName>Διακόπτης Πλήκτρο.mht</RemoteName>
+                        <Overwrite>true</Overwrite>
+                    </Platform>
+                </DeployFile>
+                <DeployFile LocalName="Win32\Debug\Lessons\Συσκευές Σύνδεση\Αισθητήρας Θερμοκρασίας - Υγρασίας.mht" Configuration="Release" Class="File">
+                    <Platform Name="Win32">
+                        <RemoteName>Αισθητήρας Θερμοκρασίας - Υγρασίας.mht</RemoteName>
+                        <Overwrite>true</Overwrite>
+                    </Platform>
+                </DeployFile>
+                <DeployFile LocalName="Win32\Debug\Lessons\Συσκευές Σύνδεση\LED Λαμπάκι.mht" Configuration="Release" Class="File">
+                    <Platform Name="Win32">
+                        <RemoteName>LED Λαμπάκι.mht</RemoteName>
+                        <Overwrite>true</Overwrite>
+                    </Platform>
+                </DeployFile>
+                <DeployFile LocalName="Win32\Debug\Images\Switch_9.jpg" Configuration="Release" Class="File">
+                    <Platform Name="Win32">
+                        <RemoteName>Switch_9.jpg</RemoteName>
+                        <Overwrite>true</Overwrite>
+                    </Platform>
+                </DeployFile>
+                <DeployFile LocalName="Win32\Debug\Images\Switch_5.jpg" Configuration="Release" Class="File">
+                    <Platform Name="Win32">
+                        <RemoteName>Switch_5.jpg</RemoteName>
+                        <Overwrite>true</Overwrite>
+                    </Platform>
+                </DeployFile>
+                <DeployFile LocalName="Win32\Debug\Lessons\Βασικά\Άσκηση 3.mht" Configuration="Release" Class="File">
+                    <Platform Name="Win32">
+                        <RemoteName>Άσκηση 3.mht</RemoteName>
+                        <Overwrite>true</Overwrite>
+                    </Platform>
+                </DeployFile>
+                <DeployFile LocalName="Win32\Debug\Images\Arduino Mega.png" Configuration="Release" Class="File">
+                    <Platform Name="Win32">
+                        <RemoteName>Arduino Mega.png</RemoteName>
+                        <Overwrite>true</Overwrite>
+                    </Platform>
+                </DeployFile>
+                <DeployFile LocalName="Win32\Debug\Images\Arduino Zero.png" Configuration="Release" Class="File">
+                    <Platform Name="Win32">
+                        <RemoteName>Arduino Zero.png</RemoteName>
+                        <Overwrite>true</Overwrite>
+                    </Platform>
+                </DeployFile>
+                <DeployFile LocalName="Win32\Debug\Images\Arduino Mega pin.png" Configuration="Release" Class="File">
+                    <Platform Name="Win32">
+                        <RemoteName>Arduino Mega pin.png</RemoteName>
+                        <Overwrite>true</Overwrite>
+                    </Platform>
+                </DeployFile>
+                <DeployFile LocalName="Win32\Debug\Lessons\Βασικά\Άσκηση 5.mht" Configuration="Release" Class="File">
+                    <Platform Name="Win32">
+                        <RemoteName>Άσκηση 5.mht</RemoteName>
+                        <Overwrite>true</Overwrite>
+                    </Platform>
+                </DeployFile>
+                <DeployFile LocalName="Win32\Debug\Images\Switches.png" Configuration="Release" Class="File">
+                    <Platform Name="Win32">
+                        <RemoteName>Switches.png</RemoteName>
+                        <Overwrite>true</Overwrite>
+                    </Platform>
+                </DeployFile>
+                <DeployFile LocalName="Win32\Debug\Lessons\Βασικά\Άσκηση 4.mht" Configuration="Release" Class="File">
+                    <Platform Name="Win32">
+                        <RemoteName>Άσκηση 4.mht</RemoteName>
+                        <Overwrite>true</Overwrite>
+                    </Platform>
+                </DeployFile>
                 <DeployFile LocalName="Win32\Debug\CtrlPlatform.exe" Configuration="Debug" Class="ProjectOutput">
                     <Platform Name="Win32">
                         <RemoteName>CtrlPlatform.exe</RemoteName>

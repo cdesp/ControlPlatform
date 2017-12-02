@@ -13,12 +13,18 @@ uses  Vcl.Dialogs, CPort, System.Classes,
 
 
 Const ProjectStart='10/10/2017';
-Const Version='0.7 (Άλφα έκδοση 16/11/2017)  - ';
+Const Version='0.8 (Βήτα έκδοση 29/11/2017)  - ';
 Const Programmer='© 2017 Despoinidis Christos';
 Const Progname='Έλεγχος συσκευών Arduino';
 Const Onlybluetooth=FALSE;
 const WM_REFRESH_MSG = WM_USER + 1;
 const WM_REFVARS_MSG = WM_USER + 252;
+Const DevBckColor=TColor($00003333);
+Const StartBckColor=clGreen;
+Const MoveBckColor=clBlue;
+Const LoopBckColor=clMaroon;
+Const CtrlBckColor=TColor($00008282);
+Const VarbckColor=TColor($00FF0080);
 
 
 
@@ -158,6 +164,15 @@ type
     Label10: TLabel;
     lblAnalogIn: TLabel;
     AnalogInAdd: TBitBtn;
+    Panel1: TPanel;
+    Button1: TButton;
+    Memo1: TMemo;
+    pnlDcMotor: TPanel;
+    Image11: TImage;
+    Label11: TLabel;
+    lblDcMotor: TLabel;
+    DcMotorAdd: TBitBtn;
+    DcMotorPanel: TCategoryPanel;
     procedure FormCreate(Sender: TObject);
     procedure ListBox1DblClick(Sender: TObject);
     procedure Button1Click(Sender: TObject);
@@ -257,6 +272,10 @@ type
       var Component: TComponent);
     procedure CreateBMP180Commands;
     procedure CreateAnalogInCommands;
+    procedure BurnArduino;
+    function GetArduType: String;
+    procedure ComPortChanged(Sender: tobject);
+    procedure CreateDcMotorCommands;
     { Private declarations }
   public
     { Public declarations }
@@ -285,8 +304,8 @@ var
 
 
 implementation
-uses Registry, system.ioutils,unAbout, inifiles,setupapi,math,  unDevices, unHelpForms,unUtils,unVariables,unBlockVar,
-      fserialLcd,fLaser,fSound,fUSonic,fServo,fSwitch,fTemp,fBMP180,fAnalogIn
+uses Registry, system.ioutils,unAbout, inifiles,setupapi,math,  unDevices, unHelpForms,DspUtils,unVariables,unBlockVar,
+      fserialLcd,fLaser,fSound,fUSonic,fServo,fSwitch,fTemp,fBMP180,fAnalogIn,fDcMotor
     ;
 
 
@@ -439,7 +458,6 @@ var        S, S1: String;
 
 begin
   result :='';
-
   Reg := TRegistry.Create;
   if Reg = nil then begin
     AddDebug( 'Error creating Reg ' );
@@ -1028,10 +1046,12 @@ Begin
                SB_LINEDOWN, 0);
 End;
 
+
+
+
 procedure TfrmRoboLang.Button1Click(Sender: TObject);
 begin
-BTOpen;
- BTPutChar('X'); //Execute Code transfered
+ BurnArduino;
 end;
 
 procedure TfrmRoboLang.acexitExecute(Sender: TObject);
@@ -1370,7 +1390,7 @@ Var col:Tcolor;
  tp:integer;
     pnl:TCategoryPanel;
 Begin
-    col:=clGreen;
+    col:=StartBckColor;//clGreen;
     pnl:=strtPanel;
     tp:=-40;
 
@@ -1380,7 +1400,6 @@ Begin
     blck.topNose:=false;
     blck.Parent:=pnl;
     blck.Color:=col;
-    blck.BorderColor:=clAqua;
     blck.CommandColor:=clWhite;
     blck.CommndID:=1;
     blck.Commandtext:='Έναρξη προγράμματος';
@@ -1393,7 +1412,6 @@ Begin
     blck.botNose:=false;
     blck.Parent:=pnl;
     blck.Color:=col;
-    blck.BorderColor:=clAqua;
     blck.CommandColor:=clWhite;
     blck.CommndID:=2;
     blck.Commandtext:='Τερματισμός προγράμματος';
@@ -1409,7 +1427,9 @@ Var col:Tcolor;
     tp:integer;
     pnl:TCategoryPanel;
 Begin
-    col:=clBlue;
+    MovPanel.Enabled:=false;
+    MovPanel.Collapsed:=true;
+    col:=MoveBckColor;//clBlue;
     pnl:=Movpanel;
     tp:=-40;
 
@@ -1418,7 +1438,6 @@ Begin
     blck:=TDspBlock.Create(Self);
     blck.Parent:=pnl;
     blck.Color:=col;
-    blck.BorderColor:=clGreen;
     blck.CommandColor:=clWhite;
     blck.CommndID:=5;
     blck.Commandtext:='Όρισε βήμα σε %p1 εκατοστά';
@@ -1433,7 +1452,6 @@ Begin
     blck:=TDspBlock.Create(Self);
     blck.Parent:=pnl;
     blck.Color:=col;
-    blck.BorderColor:=clGreen;
     blck.CommandColor:=clWhite;
     blck.CommndID:=10;
     blck.Commandtext:='Μπροστά 1 βήμα';
@@ -1446,7 +1464,6 @@ Begin
     blck:=TDspBlock.Create(Self);
     blck.Parent:=pnl;
     blck.Color:=col;
-    blck.BorderColor:=clGreen;
     blck.CommandColor:=clWhite;
     blck.CommndID:=20;
     blck.Commandtext:='Πίσω 1 βήμα';
@@ -1459,7 +1476,6 @@ Begin
     blck:=TDspBlock.Create(Self);
     blck.Parent:=pnl;
     blck.Color:=col;
-    blck.BorderColor:=clGreen;
     blck.CommandColor:=clWhite;
     blck.CommndID:=30;
     blck.Commandtext:='Στρίψε Δεξιά %p1 μοίρες';
@@ -1474,7 +1490,6 @@ Begin
     blck:=TDspBlock.Create(Self);
     blck.Parent:=pnl;
     blck.Color:=col;
-    blck.BorderColor:=clGreen;
     blck.CommandColor:=clWhite;
     blck.CommndID:=40;
     blck.Commandtext:='Στρίψε Αριστερά %p1 μοίρες';
@@ -1488,7 +1503,6 @@ Begin
     blck:=TDspBlock.Create(Self);
     blck.Parent:=pnl;
     blck.Color:=col;
-    blck.BorderColor:=clGreen;
     blck.CommandColor:=clWhite;
     blck.CommndID:=50;
     blck.Commandtext:='Σταμάτησε';
@@ -1507,7 +1521,7 @@ Var col:Tcolor;
     tp:integer;
     pnl:TCategoryPanel;
 Begin
-    col:=clMaroon;
+    col:=LoopBckColor;//clMaroon;
     pnl:=looppanel;
     tp:=-40;
 
@@ -1550,7 +1564,7 @@ Var col:Tcolor;
     tp:integer;
     pnl:TCategoryPanel;
 Begin
-    col:=StringToColor('$00008282');
+    col:=CtrlBckColor;//StringToColor('$00008282');
     pnl:=ctrlPanel;
     tp:=-40;
 
@@ -1612,7 +1626,7 @@ Var col:Tcolor;
     tp:integer;
     pnl:TCategoryPanel;
 Begin
-    col:=TColor($00FF0080);
+    col:=VarBckColor;//TColor($00FF0080);
     pnl:=variousPanel;
     tp:=-40;
 
@@ -1701,7 +1715,7 @@ Var col:Tcolor;
     tp:integer;
     pnl:TCategoryPanel;
 Begin
-    col:= HTMLtocolor('#0080ff');
+    col:= DevBckColor;
     pnl:=LCDpanel;
     tp:=-40;
 
@@ -1710,7 +1724,6 @@ Begin
 //    blck:=TDspBlock.Create(Self);//to be deleted
 //    blck.Parent:=LCDpanel;
 //    blck.Color:=col;
-//    blck.BorderColor:=clGreen;
 //    blck.CommandColor:=clWhite;
 //    blck.CommndID:=120;  //LCDprint
 //    blck.Commandtext:='setup LCD';
@@ -1804,7 +1817,7 @@ Var col:Tcolor;
     tp:integer;
     pnl:TCategoryPanel;
 Begin
-    col:=TColor($007500CC);
+    col:=DevBckColor;
     pnl:=Laserpanel;
     tp:=-40;
 
@@ -1852,7 +1865,7 @@ Var col:Tcolor;
     tp:integer;
     pnl:TCategoryPanel;
 Begin
-    col:=htmltocolor('#d194a8');
+    col:=DevBckColor;
     pnl:=SoundPanel;
     tp:=-40;
 
@@ -1899,7 +1912,7 @@ Var col:Tcolor;
     tp:integer;
     pnl:TCategoryPanel;
 Begin
-    col:=htmltocolor('#2e6b2e');
+    col:=DevBckColor;
     pnl:=USonicPanel;
     tp:=-40;
 
@@ -1962,7 +1975,7 @@ Var col:Tcolor;
     tp:integer;
     pnl:TCategoryPanel;
 Begin
-    col:=TColor($00003333);//     #333300
+    col:=DevBckColor;//     #333300
     pnl:=Servopanel;
     tp:=-40;
 
@@ -2040,7 +2053,7 @@ Var col:Tcolor;
     tp:integer;
     pnl:TCategoryPanel;
 Begin
-    col:=TColor($00003333);//     #333300
+    col:=DevBckColor;//     #333300
     pnl:=Switchpanel;
     tp:=-40;
 
@@ -2086,7 +2099,7 @@ Var col:Tcolor;
     tp:integer;
     pnl:TCategoryPanel;
 Begin
-    col:=TColor($00003333);//     #333300
+    col:=DevBckColor;//     #333300
     pnl:=Temppanel;
     tp:=-40;
 
@@ -2234,7 +2247,7 @@ Var col:Tcolor;
     tp:integer;
     pnl:TCategoryPanel;
 Begin
-    col:=TColor($00003333);//     #333300
+    col:=DevBckColor;//     #333300
     pnl:=BMPpanel;
     tp:=-40;
 
@@ -2341,7 +2354,7 @@ Var col:Tcolor;
     tp:integer;
     pnl:TCategoryPanel;
 Begin
-    col:=TColor($00003333);//     #333300
+    col:=DevBckColor;//     #333300
     pnl:=AnalogInPanel;
     tp:=-40;
 
@@ -2400,6 +2413,65 @@ Begin
 
 End;
 
+procedure TfrmRoboLang.CreateDcMotorCommands;
+Var col:Tcolor;
+    tp:integer;
+    pnl:TCategoryPanel;
+Begin
+    col:=DevBckColor;//     #333300
+    pnl:=DcMotorPanel;
+    tp:=-40;
+
+    pnl.color:=LightenColor(col,30);
+
+
+    blck:=TDspBlock.Create(Self);
+    blck.Parent:=pnl;
+    blck.Color:=col;
+    blck.CommandColor:=clWhite;
+    blck.CommndID:=61;
+    blck.Commandtext:='%pd → Κινητήρας Μπροστά';
+    blck.MyHint:='Κίνηση προς τα εμπρός';
+    blck.Param1:=1;
+    blck.TotalParams:=1;
+    inc(tp,50);blck.Top:=tp;
+    blck.Left:=10;
+    blck.Prototype:=true;
+    blck.DeviceOnlyCommandID:=Ord(DCMOTOR);
+
+
+    blck:=TDspBlock.Create(Self);
+    blck.Parent:=pnl;
+    blck.Color:=col;
+    blck.CommandColor:=clWhite;
+    blck.CommndID:=61;
+    blck.Commandtext:='%pd → Κινητήρας Πίσω';
+    blck.MyHint:='Κίνηση προς τα πίσω';
+    blck.Param1:=2;
+    blck.TotalParams:=1;
+    inc(tp,50);blck.Top:=tp;
+    blck.Left:=10;
+    blck.Prototype:=true;
+    blck.DeviceOnlyCommandID:=Ord(DCMOTOR);
+
+    blck:=TDspBlock.Create(Self);
+    blck.Parent:=pnl;
+    blck.Color:=col;
+    blck.CommandColor:=clWhite;
+    blck.CommndID:=61;
+    blck.Commandtext:='%pd → Διακοπή Κινητήρα';
+    blck.MyHint:='Χωρίς Κίνηση';
+    blck.Param1:=4;
+    blck.TotalParams:=1;
+    inc(tp,50);blck.Top:=tp;
+    blck.Left:=10;
+    blck.Prototype:=true;
+    blck.DeviceOnlyCommandID:=Ord(DCMOTOR);
+
+    pnl.Height:=blck.Top+blck.Height+40;
+
+End;
+
 
 procedure TfrmRoboLang.CreateCommands;
 Begin
@@ -2418,6 +2490,7 @@ Begin
     CreateVarCommands;
     CreateBMP180Commands;
     CreateAnalogInCommands;
+    CreateDcMotorCommands;
 End;
 
 
@@ -2497,6 +2570,14 @@ begin
   ArduinoDevices[i].DeviceCmdId:=165;
   ArduinoDevices[i].DeviceParamCount:=1;
   ArduinoDevices[i].DeviceMax:=10;
+  i:=i+1;
+
+  ArduinoDevices[i].DeviceName:='DCMOTOR';
+  ArduinoDevices[i].DeviceFormClass:=TfrmDcMotor;
+  ArduinoDevices[i].DevicePanel:=pnlDcMotor;
+  ArduinoDevices[i].DeviceCmdId:=60;
+  ArduinoDevices[i].DeviceParamCount:=2;
+  ArduinoDevices[i].DeviceMax:=5;
   i:=i+1;
 
 
@@ -2788,10 +2869,17 @@ Begin
 
 End;
 
+procedure TfrmRoboLang.ComPortChanged(Sender:tobject);
+Begin
+  BTIndex:=TComboBox(Sender).ItemIndex;
+  SaveBTPort;
+End;
+
 procedure TfrmRoboLang.FormShow(Sender: TObject);
 var i,n:integer;
     t:string;
     ts:Tstringlist;
+    cmb:TComboBox;
 begin
    adddebug(GetComputerName);
 
@@ -2824,17 +2912,36 @@ begin
      BTComList.Add(t);
      btindex:=0;
    End;
-   if (t='') then //and IsServer then
-   Begin
-     ShowMessage('Δεν βρέθηκε ασύρματη σειριακή θύρα Bluetooth!!!'#13#10'Πρέπει να εγκαταστήσετε έναν Bluetooth adaptor και να κάνετε Pair.'#13#10'Αν γνωρίζετε την σειριακή θύρα προσθέστε την στο αρχείο BTPort.ini {ComPort=COMx}');
-     sbar.Panels[0].Text:='BT Port: None';
-   End
-   else
-     LoadBTPort;
-     if BTIndex>=BTComList.count then
+//   if (t='') then //and IsServer then
+//   Begin
+//     ShowMessage('Δεν βρέθηκε ασύρματη σειριακή θύρα Bluetooth!!!'#13#10'Πρέπει να εγκαταστήσετε έναν Bluetooth adaptor και να κάνετε Pair.'#13#10'Αν γνωρίζετε την σειριακή θύρα προσθέστε την στο αρχείο BTPort.ini {ComPort=COMx}');
+//     sbar.Panels[0].Text:='BT Port: None';
+//   End
+//   else
+   LoadBTPort;
+   if BTIndex>=BTComList.count then
        BTIndex:=BTComList.count-1;
-     t:=BTComList[BTIndex];
-     sbar.Panels[0].Text:='BT Port: '+t;
+   if BTIndex=-1 then
+    ShowMessage('Δεν βρέθηκαν σειριακές πόρτες επικοινωνίας. Εγκαταστήστε το Arduino.');
+   try
+    t:=BTComList[BTIndex];
+   Except
+     t:='None';
+   end;
+
+   sbar.Panels[0].Text:='Port: ';
+   sbar.Hint:='Επιλέξτε πόρτα επικοινωνίας με το Arduino.';
+   sbar.ShowHint:=true;
+
+   cmb:=TComboBox.Create(Self);
+   cmb.Parent:=sbar;
+   cmb.Width:=60;
+   cmb.Left:=sbar.canvas.TextWidth(sbar.Panels[0].Text)+7;
+   cmb.Items.Assign(BTComList);
+   BtComList.Free;
+   BTComList:=TStringList(cmb.Items);
+   cmb.Text:=t;
+   cmb.OnClick:=ComPortChanged;
    addDevices;
    DeviceChanged;
    TNBook.PageIndex:=0;
@@ -2938,6 +3045,15 @@ begin
   End;
 end;
 
+function TfrmRoboLang.GetArduType:String;
+Begin
+   case RadioGroup1.itemindex of
+      0:Result:='Uno';
+      1:Result:='Nano';
+      2:Result:='Mega';
+   end;
+End;
+
 procedure TfrmRoboLang.DeviceChanged;
 Var k:integer;
     pth:String;
@@ -3012,6 +3128,50 @@ Function  TfrmRoboLang.GetActiveDeviceParam(DevNo:Integer;PrmNo:Integer):Integer
 Begin
    result:=ActDevs[Devno].ActDevParams[PrmNo];
 End;
+
+procedure TfrmRoboLang.BurnArduino;
+Var CmdS,ParamS:String;
+   pth:String;
+   comport:String;
+   ArduType:String;
+   ts:String;
+Begin
+ if btindex=-1 then Begin ShowMessage('You must have a Com Port selected!!!');Exit;End;
+
+ memo1.Visible:=true;
+ Memo1.Height:=500;
+ try
+  pth:= mainpath+'Arduino\';
+  ComPort:= BTComList[BTindex];
+  ArduType:= GetArduType;
+
+ ts:='%p1CtrlPlatform.ino.%p3.hex';
+ ts:=StringReplace(ts,'%p1',pth,[rfReplaceAll]);
+ ts:=StringReplace(ts,'%p3',ArduType,[rfReplaceAll]);
+ if not FileExists(ts) then
+  Begin
+   ShowMessage('Το αρχείο δεν υπάρχει!!! '#13#10+ts+#13#10'Η διαδικασία ακυρώθηκε.');
+   exit;
+  End;
+
+
+//avrdude -Cavrdude.conf -v -patmega328p -carduino -PCOM8 -b57600 -D -Uflash:w:CtrlPlatform.ino.NANO.hex:i
+  CmdS:='%p1avrdude.exe';
+  CmdS:=StringReplace(CmdS,'%p1',pth,[rfReplaceAll]);
+  ParamS:='-C%p1avrdude.conf -v -patmega328p -carduino -P%p2 -b57600 -D -Uflash:w:%p1CtrlPlatform.ino.%p3.hex:i ';
+  ParamS:=StringReplace(ParamS,'%p1',pth,[rfReplaceAll]);
+  ParamS:=StringReplace(ParamS,'%p2',ComPort,[rfReplaceAll]);
+  ParamS:=StringReplace(ParamS,'%p3',ArduType,[rfReplaceAll]);
+  Adddebug(CmdS+' '+ParamS);
+  memo1.lines.add(CmdS+' '+Params);
+  CaptureConsoleOutput(CmdS,ParamS,Memo1);
+  Adddebug('Burning Complete!!!');
+  ShowMessage('Burning Complete!!!');
+ finally
+  Memo1.Visible:=false;
+ end;
+End;
+
 
 initialization
 mainpath:=Extractfilepath(Application.ExeName);

@@ -690,6 +690,7 @@ object frmUSonic: TfrmUSonic
       ShowHint = True
       TabOrder = 0
       Value = 0
+      OnChange = SpinEdit1Change
     end
     object SpinEdit2: TSpinEdit
       Left = 64

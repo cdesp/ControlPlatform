@@ -240,7 +240,7 @@ var  debugging:boolean=false;
 implementation
 uses Vcl.Forms,sysutils,dialogs,types,math,
 DspEdit,DspCombo,
-unUtils,unCtrlPlatMain;
+DspUtils,unCtrlPlatMain;
 
 var idcnt:integer=1;
 
@@ -313,8 +313,8 @@ begin
   Param2Attaching:=false;
  // ControlStyle := ControlStyle - [csOpaque];
   FDeviceOnlyCommandID:=-1;
-  ctrlcolor1:=clWhite;//htmltocolor('#FFD900') ;
-  ctrlcolor2:=clWhite;//htmltocolor('#003300');
+  ctrlcolor1:=clYellow;//htmltocolor('#FFD900') ;
+  ctrlcolor2:=clYellow;//htmltocolor('#003300');
   Font.Size:=10;
   Font.Style:=[fsBold];
   enabled:=true;
@@ -1400,7 +1400,7 @@ begin
   Begin
     ctrls.Visible:=true;
 //    tdspedit(ctrls).Color:=LightenColor(Color,30);
-    tdspedit(ctrls).font.Color:= ctrlcolor1;
+    tdspedit(ctrls).font.Color:= CommandColor; //ctrlcolor1;
     ctrls.Left:=x;
     ctrls.Top:=y;
     TdspEdit(ctrls).text:=paramStr;
@@ -1488,7 +1488,7 @@ begin
    if not assigned(VarParam1) then
    Begin
     ctrl1.Visible:=true;
-    tDspedit(ctrl1).font.Color:= ctrlcolor1;
+    tDspedit(ctrl1).font.Color:= CommandColor;//ctrlcolor1;
     ctrl1.Left:=x;
     ctrl1.Top:=y;
     TDspEdit(ctrl1).text:=inttostr(param1);
@@ -1554,7 +1554,7 @@ begin
     ctrl2.Visible:=true;
     //dn2.Visible:=true;
    // tedit(ctrl2).Color:=LightenColor(Color,30);
-    tdspedit(ctrl2).font.Color:= ctrlcolor2;
+    tdspedit(ctrl2).font.Color:=CommandColor;// ctrlcolor2;
     ctrl2.Left:=x;
     ctrl2.Top:=y;
     //updn2.left:=x+ctrl2.Width;
@@ -1751,7 +1751,7 @@ begin
       txtw:=txtw+canvas.TextWidth(sp);
       txtw:=GetParamControlById(prm[i],x+txtw,y)-x;
     End;
-
+    canvas.Font.Color:=commandcolor;
     //Rest
     canvas.TextOut(x+txtw,y ,s);
     txtw:=txtw+canvas.TextWidth(s);

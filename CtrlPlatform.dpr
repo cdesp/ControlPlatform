@@ -13,14 +13,14 @@ uses
   unDevices in 'unDevices.pas',
   fAnalogIn in 'fAnalogIn.pas' {frmAnalogIn},
   unHelpForms in 'unHelpForms.pas',
-  unUtils in 'unUtils.pas',
   fSound in 'fSound.pas' {frmSound},
   fUSonic in 'fUSonic.pas' {frmUSonic},
   fServo in 'fServo.pas' {frmServo},
   fSwitch in 'fSwitch.pas' {frmSwitch},
   fTemp in 'fTemp.pas' {frmTemp},
   unVariables in 'unVariables.pas',
-  unBlockVar in 'unBlockVar.pas';
+  unBlockVar in 'unBlockVar.pas',
+  DspUtils in 'ComponentPack\DspUtils.pas';
 
 {$R *.res}
 

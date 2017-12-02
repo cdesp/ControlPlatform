@@ -53,7 +53,7 @@ Type
 
 
 implementation
-uses Types,unVariables,unUtils,Sysutils,vcl.graphics,math;
+uses Types,unVariables,DspUtils,Sysutils,vcl.graphics,math;
 
 { TDspVarBlock }
 
