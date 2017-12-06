@@ -1,0 +1,57 @@
+object dspBlock__1: TDspBlock
+  Left = 232
+  Top = 183
+  Width = 168
+  Height = 44
+  Color = clGreen
+  Param1Attaching = False
+  Param2Attaching = False
+  CtrlAttachUp = False
+  CtrlAttachDn = False
+  CommandText = #904#957#945#961#958#951' '#960#961#959#947#961#940#956#956#945#964#959#962
+  NewlyCreated = False
+  CommndID = 1
+  Param1 = 0
+  Param2 = 0
+  PDevice = -1
+  topNose = False
+  botNose = True
+  LinkTo = frmRoboLang.dspBlock__2
+  TotalParams = 0
+  Id = 1
+  BorderColor = clRed
+  CommandColor = clWhite
+  LinkToName = 'dspBlock__2'
+  prototype = False
+  DeviceOnlyCommandID = -1
+end
+object dspBlock__2: TDspBlock
+  Left = 232
+  Top = 218
+  Width = 241
+  Height = 44
+  Hint = #922#943#957#951#963#951' '#960#961#959#962' '#964#945' '#949#956#960#961#972#962
+  Color = 13107
+  Param1Attaching = False
+  Param2Attaching = False
+  CtrlAttachUp = False
+  CtrlAttachDn = False
+  CommandText = '%pd '#8594' Robot '#924#960#961#959#963#964#940
+  NewlyCreated = False
+  CommndID = 51
+  Param1 = 1
+  Param2 = 0
+  ParamD = 'DCMotor_0'
+  PDevice = 0
+  topNose = True
+  botNose = True
+  LinkFrom = frmRoboLang.dspBlock__1
+  TotalParams = 1
+  Id = 2
+  BorderColor = clRed
+  CommandColor = clWhite
+  LinkFromName = 'dspBlock__1'
+  MyHint = #922#943#957#951#963#951' '#960#961#959#962' '#964#945' '#949#956#960#961#972#962
+  prototype = False
+  DeviceOnlyCommandID = 10
+end

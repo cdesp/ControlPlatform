@@ -3,9 +3,11 @@ unit unDevices;
 interface
 uses Vcl.Forms,Vcl.ExtCtrls,Vcl.Buttons;
 
+Const MaxDevParams=6-1;//zero based
+
 Type
 
-  TDeviceTypes=(LCD,LASER,SOUND,USONIC,SERVO,SWITCH,TEMP,BMP,ANIN,DCMOTOR);
+  TDeviceTypes=(LCD,LASER,SOUND,USONIC,SERVO,SWITCH,TEMP,BMP,ANIN,DCMOTOR,ROBOT);
 
   TDevice=record
     DeviceName:String;
@@ -24,7 +26,7 @@ Type
   TActiveDevice=Record
     DeviceTypeID:Integer; //IDX from TDevices
     ActDevForm:TForm;
-    ActDevParams:array[0..4] of integer;
+    ActDevParams:array[0..MaxDevParams] of integer;
     ActDevParamCount:Integer;
   End;
 
@@ -40,9 +42,15 @@ Procedure SaveActiveDevices(nm:String);
 Procedure LoadActiveDevices(nm:String);
 procedure ClearActiveDevices;
 Procedure DeleteActiveDevice(ActDevId:integer);
+Procedure NewActiveDevice;
 
 implementation
 uses sysutils,classes,inifiles,unCtrlPlatMain,unHelpForms;
+
+Procedure NewActiveDevice;
+Begin
+  inc(ActDevsCount);
+End;
 
 Procedure DeleteActiveDevice(ActDevId:integer);
 Var i,j:Integer;
@@ -53,7 +61,7 @@ Begin
    Begin
      ActDevs[i-1].DeviceTypeID:=ActDevs[i].DeviceTypeID;
      ActDevs[i-1].ActDevForm:=ActDevs[i].ActDevForm;
-     for j := 0 to 4 do
+     for j := 0 to MaxDevParams do
        ActDevs[i-1].ActDevParams[j]:=ActDevs[i].ActDevParams[j];
      ActDevs[i-1].ActDevParamCount:=ActDevs[i].ActDevParamCount;
    End;
@@ -75,7 +83,7 @@ Begin
     Begin
       inif.WriteInteger('ADev_'+inttostr(i),'DeviceTypeID',ActDevs[i].DeviceTypeID);
       inif.WriteInteger('ADev_'+inttostr(i),'ActDevParamCount',ActDevs[i].ActDevParamCount);
-      for j := 0 to 4 do
+      for j := 0 to MaxDevParams do
         inif.WriteInteger('ADev_'+inttostr(i),'ActDevParam'+inttostr(J+1),ActDevs[i].ActDevParams[j]);
     End;
   finally
@@ -91,7 +99,7 @@ Begin
        TDefDevForm(ActDevs[i].ActDevForm).KillDevice;
        ActDevs[i].DeviceTypeID:=0;
        ActDevs[i].ActDevParamCount:=0;
-       for j := 0 to 4 do
+       for j := 0 to MaxDevParams do
          ActDevs[i].ActDevParams[j]:=0;
        ActDevs[i].ActDevForm:=nil;
     End;
@@ -136,7 +144,7 @@ Begin
     Begin
       ActDevs[i].DeviceTypeID:=inif.ReadInteger('ADev_'+inttostr(i),'DeviceTypeID',-1);
       ActDevs[i].ActDevParamCount:=inif.ReadInteger('ADev_'+inttostr(i),'ActDevParamCount',0);
-      for j := 0 to 4 do
+      for j := 0 to MaxDevParams do
         ActDevs[i].ActDevParams[j]:=inif.ReadInteger('ADev_'+inttostr(i),'ActDevParam'+inttostr(J+1),0);
       //Create Page
       p:=getPanelFromDeviceTypeId(ActDevs[i].DeviceTypeID);

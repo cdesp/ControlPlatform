@@ -18,6 +18,8 @@ Type
     Param2SE:TSpinEdit;
     Param3SE:TSpinEdit;
     Param4SE:TSpinEdit;
+    Param5SE:TSpinEdit;
+    Param6SE:TSpinEdit;
     procedure DoCreate; Override;
     procedure DoShow; Override;
   public
@@ -74,6 +76,8 @@ begin
   Param2SE:=nil;
   Param3SE:=nil;
   Param4SE:=nil;
+  Param5SE:=nil;
+  Param6SE:=nil;
 end;
 
 procedure TDefDevForm.DoShow;
@@ -83,6 +87,8 @@ begin
   SetSEfromParam(2,Param2SE);
   SetSEfromParam(3,Param3SE);
   SetSEfromParam(4,Param4SE);
+  SetSEfromParam(5,Param5SE);
+  SetSEfromParam(6,Param6SE);
   RefreshBlockControls;
 end;
 
@@ -159,7 +165,10 @@ begin
    TSpinEdit(Param3Se).MaxValue:=Arduino.MaxPins;
   if assigned(param4SE) then
    TSpinEdit(Param4Se).MaxValue:=Arduino.MaxPins;
-
+  if assigned(param5SE) then
+   TSpinEdit(Param5Se).MaxValue:=Arduino.MaxPins;
+  if assigned(param6SE) then
+   TSpinEdit(Param6Se).MaxValue:=Arduino.MaxPins;
 
 end;
 

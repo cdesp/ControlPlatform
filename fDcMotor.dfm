@@ -39,8 +39,6 @@ object frmDcMotor: TfrmDcMotor
       Font.Name = 'Tahoma'
       Font.Style = [fsBold]
       ParentFont = False
-      ExplicitLeft = 34
-      ExplicitTop = 165
       ExplicitWidth = 82
     end
     object Panel1: TPanel
@@ -51,8 +49,6 @@ object frmDcMotor: TfrmDcMotor
       Align = alClient
       Caption = 'Panel1'
       TabOrder = 0
-      ExplicitWidth = 162
-      ExplicitHeight = 232
       object Image1: TImage
         Left = 0
         Top = 60

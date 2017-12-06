@@ -13,7 +13,7 @@ uses  Vcl.Dialogs, CPort, System.Classes,
 
 
 Const ProjectStart='10/10/2017';
-Const Version='0.8 (Βήτα έκδοση 29/11/2017)  - ';
+Const Version='0.85 (Βήτα έκδοση 06/12/2017)  - ';
 Const Programmer='© 2017 Despoinidis Christos';
 Const Progname='Έλεγχος συσκευών Arduino';
 Const Onlybluetooth=FALSE;
@@ -173,6 +173,12 @@ type
     lblDcMotor: TLabel;
     DcMotorAdd: TBitBtn;
     DcMotorPanel: TCategoryPanel;
+    pnlRobot: TPanel;
+    Image12: TImage;
+    Label12: TLabel;
+    LblRobot: TLabel;
+    RobotAdd: TBitBtn;
+    DcRobotPanel: TCategoryPanel;
     procedure FormCreate(Sender: TObject);
     procedure ListBox1DblClick(Sender: TObject);
     procedure Button1Click(Sender: TObject);
@@ -276,6 +282,7 @@ type
     function GetArduType: String;
     procedure ComPortChanged(Sender: tobject);
     procedure CreateDcMotorCommands;
+    procedure CreateRobotCommands;
     { Private declarations }
   public
     { Public declarations }
@@ -305,7 +312,7 @@ var
 
 implementation
 uses Registry, system.ioutils,unAbout, inifiles,setupapi,math,  unDevices, unHelpForms,DspUtils,unVariables,unBlockVar,
-      fserialLcd,fLaser,fSound,fUSonic,fServo,fSwitch,fTemp,fBMP180,fAnalogIn,fDcMotor
+      fserialLcd,fLaser,fSound,fUSonic,fServo,fSwitch,fTemp,fBMP180,fAnalogIn,fDcMotor,fRobot
     ;
 
 
@@ -2424,7 +2431,6 @@ Begin
 
     pnl.color:=LightenColor(col,30);
 
-
     blck:=TDspBlock.Create(Self);
     blck.Parent:=pnl;
     blck.Color:=col;
@@ -2472,6 +2478,106 @@ Begin
 
 End;
 
+procedure TfrmRoboLang.CreateRobotCommands;
+Var col:Tcolor;
+    tp:integer;
+    pnl:TCategoryPanel;
+Begin
+    col:=DevBckColor;//     #333300
+    pnl:=DcRobotPanel;
+    tp:=-40;
+
+    pnl.color:=LightenColor(col,30);
+
+    blck:=TDspVarBlock.Create(Self);
+    blck.Parent:=pnl;
+    blck.Color:=col;
+    blck.CommandColor:=clWhite;
+    blck.CommndID:=82; //FIX VARS should be 75-90 //signed byte -127..128
+    blck.Commandtext:='%pd → Διαδρομή εκ.';
+    blck.TotalParams:=0;
+    blck.MyHint:='Η τιμή σε εκατοστά που διάνυσε το Robot';
+    inc(tp,50);blck.Top:=tp;
+    blck.Left:=10;
+    blck.param1question:=blck.Commandtext;
+    blck.Prototype:=true;
+    blck.DeviceOnlyCommandID:=Ord(ROBOT);
+
+    blck:=TDspBlock.Create(Self);
+    blck.Parent:=pnl;
+    blck.Color:=col;
+    blck.CommandColor:=clWhite;
+    blck.CommndID:=51;
+    blck.Commandtext:='%pd → Robot Μπροστά';
+    blck.MyHint:='Κίνηση προς τα εμπρός';
+    blck.Param1:=1;
+    blck.TotalParams:=1;
+    inc(tp,50);blck.Top:=tp;
+    blck.Left:=10;
+    blck.Prototype:=true;
+    blck.DeviceOnlyCommandID:=Ord(ROBOT);
+
+
+    blck:=TDspBlock.Create(Self);
+    blck.Parent:=pnl;
+    blck.Color:=col;
+    blck.CommandColor:=clWhite;
+    blck.CommndID:=51;
+    blck.Commandtext:='%pd → Robot Πίσω';
+    blck.MyHint:='Κίνηση προς τα πίσω';
+    blck.Param1:=2;
+    blck.TotalParams:=1;
+    inc(tp,50);blck.Top:=tp;
+    blck.Left:=10;
+    blck.Prototype:=true;
+    blck.DeviceOnlyCommandID:=Ord(ROBOT);
+
+    blck:=TDspBlock.Create(Self);
+    blck.Parent:=pnl;
+    blck.Color:=col;
+    blck.CommandColor:=clWhite;
+    blck.CommndID:=51;
+    blck.Commandtext:='%pd → Robot Σταμάτα';
+    blck.MyHint:='Χωρίς Κίνηση';
+    blck.Param1:=4;
+    blck.TotalParams:=1;
+    inc(tp,50);blck.Top:=tp;
+    blck.Left:=10;
+    blck.Prototype:=true;
+    blck.DeviceOnlyCommandID:=Ord(ROBOT);
+
+    blck:=TDspBlock.Create(Self);
+    blck.Parent:=pnl;
+    blck.Color:=col;
+    blck.CommandColor:=clWhite;
+    blck.CommndID:=52;
+    blck.Commandtext:='%pd → Στροφή Δεξιά 90 μοίρες';
+    blck.MyHint:='Στρίβει Δεξιά 90 μοίρες ';
+    blck.Param1:=5;
+    blck.TotalParams:=1;
+    inc(tp,50);blck.Top:=tp;
+    blck.Left:=10;
+    blck.Prototype:=true;
+    blck.DeviceOnlyCommandID:=Ord(ROBOT);
+
+    blck:=TDspBlock.Create(Self);
+    blck.Parent:=pnl;
+    blck.Color:=col;
+    blck.CommandColor:=clWhite;
+    blck.CommndID:=52;
+    blck.Commandtext:='%pd → Στροφή Αριστερά 90 μοίρες';
+    blck.MyHint:='Στρίβει Αριστερά 90 μοίρες ';
+    blck.Param1:=6;
+    blck.TotalParams:=1;
+    inc(tp,50);blck.Top:=tp;
+    blck.Left:=10;
+    blck.Prototype:=true;
+    blck.DeviceOnlyCommandID:=Ord(ROBOT);
+
+    pnl.Height:=blck.Top+blck.Height+40;
+
+End;
+
 
 procedure TfrmRoboLang.CreateCommands;
 Begin
@@ -2491,6 +2597,7 @@ Begin
     CreateBMP180Commands;
     CreateAnalogInCommands;
     CreateDcMotorCommands;
+    CreateRobotCommands;
 End;
 
 
@@ -2578,6 +2685,14 @@ begin
   ArduinoDevices[i].DeviceCmdId:=60;
   ArduinoDevices[i].DeviceParamCount:=2;
   ArduinoDevices[i].DeviceMax:=5;
+  i:=i+1;
+
+  ArduinoDevices[i].DeviceName:='ROBOT';
+  ArduinoDevices[i].DeviceFormClass:=TfrmRobot;
+  ArduinoDevices[i].DevicePanel:=pnlRobot;
+  ArduinoDevices[i].DeviceCmdId:=50;
+  ArduinoDevices[i].DeviceParamCount:=5;
+  ArduinoDevices[i].DeviceMax:=1;
   i:=i+1;
 
 
@@ -2980,7 +3095,7 @@ begin
  DevBook.Pages.Add(ArduinoDevices[devidx].DeviceName);
  DevBook.PageIndex:=DevBook.Pages.Count-1;
  TabPage:=TTabPage(DevBook.Pages.Objects[DevBook.PageIndex]);
- inc(ActDevsCount);
+ NewActiveDevice;
  ActDevs[ActDevsCount].DeviceTypeID:=devidx;
  ActDevs[ActDevsCount].ActDevParamCount:=ArduinoDevices[devidx].DeviceParamCount;
  ActDevs[ActDevsCount].ActDevForm:=ArduinoDevices[devidx].DeviceFormClass.Create(self) as TDefDevForm;

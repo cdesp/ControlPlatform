@@ -20,7 +20,9 @@ uses
   fTemp in 'fTemp.pas' {frmTemp},
   unVariables in 'unVariables.pas',
   unBlockVar in 'unBlockVar.pas',
-  DspUtils in 'ComponentPack\DspUtils.pas';
+  DspUtils in 'ComponentPack\DspUtils.pas',
+  fDcMotor in 'fDcMotor.pas' {frmDcMotor},
+  fRobot in 'fRobot.pas' {frmRobot};
 
 {$R *.res}
 
