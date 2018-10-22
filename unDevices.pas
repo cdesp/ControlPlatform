@@ -43,6 +43,7 @@ Procedure LoadActiveDevices(nm:String);
 procedure ClearActiveDevices;
 Procedure DeleteActiveDevice(ActDevId:integer);
 Procedure NewActiveDevice;
+function getFirstDeviceOfType(tpid:Integer):integer;
 
 implementation
 uses sysutils,classes,inifiles,unCtrlPlatMain,unHelpForms;
@@ -157,6 +158,20 @@ Begin
   finally
     inif.Free;
   end;
+End;
+
+function getFirstDeviceOfType(tpid:Integer):integer;
+var i:integer;
+Begin
+  result:=-1;
+  for i := 0 to ActDevsCount do
+  Begin
+     if ActDevs[i].DeviceTypeID=tpid then
+     Begin
+       Result:=i;
+       break;
+     End;
+  End;
 End;
 
 

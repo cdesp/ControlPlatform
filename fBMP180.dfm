@@ -3,7 +3,7 @@ object frmBMP: TfrmBMP
   Top = 0
   Align = alClient
   BorderStyle = bsSizeToolWin
-  Caption = #914#945#961#959#956#949#964#961#953#954#942' '#928#943#949#963#951
+  Caption = 'Baro'
   ClientHeight = 501
   ClientWidth = 720
   Color = clWindow

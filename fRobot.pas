@@ -25,12 +25,16 @@ type
     SpinEdit4: TSpinEdit;
     Label6: TLabel;
     SpinEdit5: TSpinEdit;
+    cbGyro: TCheckBox;
+    SpinEdit6: TSpinEdit;
     procedure FormShow(Sender: TObject);
     procedure SpinEdit1Change(Sender: TObject);
     procedure SpinEdit2Change(Sender: TObject);
     procedure SpinEdit3Change(Sender: TObject);
     procedure SpinEdit4Change(Sender: TObject);
     procedure SpinEdit5Change(Sender: TObject);
+    procedure cbGyroExit(Sender: TObject);
+    procedure SpinEdit6Change(Sender: TObject);
   private
     { Private declarations }
   public
@@ -44,6 +48,11 @@ implementation
 uses unDevices;
 
 {$R *.dfm}
+
+procedure TfrmRobot.cbGyroExit(Sender: TObject);
+begin
+   Spinedit6.Value:= integer(cbGyro.Checked);
+end;
 
 procedure TfrmRobot.FormShow(Sender: TObject);
 begin
@@ -59,7 +68,9 @@ begin
   SpinEdit4.MaxValue:=arduino.MaxPins;
   Param5SE:=SpinEdit5;
   SpinEdit5.MaxValue:=arduino.MaxPins;
-
+  Param6SE:=SpinEdit6;
+  SpinEdit6.MaxValue:=arduino.MaxPins;
+  cbGyro.Checked := Param6SE.Value >0;
 end;
 
 procedure TfrmRobot.SpinEdit1Change(Sender: TObject);
@@ -85,6 +96,12 @@ end;
 procedure TfrmRobot.SpinEdit5Change(Sender: TObject);
 begin
   SetParam(5,TSpinEdit(Sender));
+end;
+
+procedure TfrmRobot.SpinEdit6Change(Sender: TObject);
+begin
+  SetParam(6,TSpinEdit(Sender));
+  cbGyro.Checked:=TSpinEdit(Sender).Value>0;
 end;
 
 end.

@@ -7,6 +7,7 @@ function DarkenColor(Color: TColor; Amount: Integer): TColor;
 function LightenColor(Color: TColor; Amount: Integer): TColor;
 function HTMLtocolor(htmColor:String):tColor;
 procedure CaptureConsoleOutput(const ACommand, AParameters: String; AMemo: TMemo);
+procedure ExecuteAndWait(const aCommando: string);
 
 implementation
 uses classes,system.types,sysutils,windows,forms;
@@ -60,8 +61,9 @@ procedure CaptureConsoleOutput(const ACommand, AParameters: String; AMemo: TMemo
    piProcess: TProcessInformation;
    pBuffer: array[0..CReadBuffer] of AnsiChar;
    dRead: DWord;
-   dRunning: DWord;
+   dRunning,dwBytesAvailable: DWord;
  begin
+
    saSecurity.nLength := SizeOf(TSecurityAttributes);
    saSecurity.bInheritHandle := True;
    saSecurity.lpSecurityDescriptor := nil;
@@ -82,15 +84,20 @@ procedure CaptureConsoleOutput(const ACommand, AParameters: String; AMemo: TMemo
      begin
        repeat
          dRunning  := WaitForSingleObject(piProcess.hProcess, 100);
-         Application.ProcessMessages();
+          Application.ProcessMessages();
+         if PeekNamedPipe(hRead, nil, 0, nil, @dwBytesAvailable, nil) then
+         if dwBytesAvailable>0 then
          repeat
            dRead := 0;
+
            ReadFile(hRead, pBuffer[0], CReadBuffer, dRead, nil);
            pBuffer[dRead] := #0;
 
-           OemToAnsi(pBuffer, pBuffer);
+           //OemToAnsi(pBuffer, pBuffer);
            AMemo.Lines.Add(String(pBuffer));
          until (dRead < CReadBuffer);
+
+
        until (dRunning <> WAIT_TIMEOUT);
        CloseHandle(piProcess.hProcess);
        CloseHandle(piProcess.hThread);
@@ -101,4 +108,34 @@ procedure CaptureConsoleOutput(const ACommand, AParameters: String; AMemo: TMemo
    end;
 end;
 
+procedure ExecuteAndWait(const aCommando: string);
+var
+  tmpStartupInfo: TStartupInfo;
+  tmpProcessInformation: TProcessInformation;
+  tmpProgram: String;
+begin
+  tmpProgram := trim(aCommando);
+  FillChar(tmpStartupInfo, SizeOf(tmpStartupInfo), 0);
+  with tmpStartupInfo do
+  begin
+    cb := SizeOf(TStartupInfo);
+    wShowWindow := SW_HIDE;
+  end;
+
+  if CreateProcess(nil, pchar(tmpProgram), nil, nil, true, CREATE_NO_WINDOW,
+    nil, nil, tmpStartupInfo, tmpProcessInformation) then
+  begin
+    // loop every 10 ms
+    while WaitForSingleObject(tmpProcessInformation.hProcess, 10) > 0 do
+    begin
+      Application.ProcessMessages;
+    end;
+    CloseHandle(tmpProcessInformation.hProcess);
+    CloseHandle(tmpProcessInformation.hThread);
+  end
+  else
+  begin
+    RaiseLastOSError;
+  end;
+end;
 end.

@@ -40,6 +40,8 @@ Type
     FVarParam2: TDspBlock;
     FParam1Attaching: Boolean;
     FParam2Attaching: Boolean;
+    FArduCmd:String;
+    FArduCheck:String;
     procedure CalcArea;
     function InCircle(p, Cp: Tpoint): boolean;
     procedure MakeBorderDn;
@@ -89,6 +91,7 @@ Type
     procedure SetParam2Attaching(const Value: Boolean);
     procedure PaintChildren;
     procedure InformClientControls;
+    function getDeviceParam(pn: integer): Integer;
 
   protected
     FCommandText:String;
@@ -109,6 +112,7 @@ Type
     ctrl2:TWinControl;
     ctrlS:TWinControl;
     ctrlD:TWinControl;
+    fArduinoCommand:String;
    // updn1:tupdown;
    // updn2:tupdown;
     procedure setfParam1(const Value: Integer);virtual;
@@ -171,6 +175,7 @@ Type
     FVarParam2Name:String;
     ctrlcolor1:TColor;
     ctrlcolor2:TColor;
+
     constructor Create(AOwner: TComponent); override;
     destructor Destroy; override;
     Function IndexInParent(VControl:Tcontrol):integer;
@@ -190,6 +195,8 @@ Type
     function GetParam2Rect: TRect;virtual;
     function Param1Visible: Boolean;virtual;
     function Param2Visible: Boolean;virtual;
+    function GetArduinoCommand(idnt:integer=1):String;Virtual;
+    function getDeviceName:string;virtual;
     property Height;
   Published
     property Color;
@@ -228,6 +235,8 @@ Type
     Property VarParam1Name:String read GetVarParam1Name write SetVarParam1Name;
     property VarParam2:TDspBlock read FVarParam2 write SetVarParam2;
     Property VarParam2Name:String read GetVarParam2Name write SetVarParam2Name;
+    property ArduCmd:String read FArduCmd write FArduCmd;
+    property ArduCheck:string read fArduCheck write FArduCheck;
   End;
 
   tComboHack=Class(TComboBox)
@@ -240,7 +249,7 @@ var  debugging:boolean=false;
 implementation
 uses Vcl.Forms,sysutils,dialogs,types,math,
 DspEdit,DspCombo,
-DspUtils,unCtrlPlatMain;
+DspUtils,unCtrlPlatMain,unDevices;
 
 var idcnt:integer=1;
 
@@ -394,6 +403,27 @@ begin
    end;
   end;
   inherited;
+end;
+
+function TDspBlock.getDeviceParam(pn:integer):Integer;
+Begin
+  result:=-1;
+  if PDevice<>-1 then
+  Begin
+    result:=ActDevs[PDevice].ActDevParams[pn];
+  End;
+End;
+
+function TDspBlock.getDeviceName: string;
+var dvi:Integer;
+begin
+    result:=Paramd;//%pd has the device id  param1
+    if (result='') and (DeviceOnlyCommandID<>-1) then
+    Begin
+      //get 1st device
+      dvi:=getFirstDeviceOfType(DeviceOnlyCommandID);
+      result:=ActDevs[dvi].ActDevForm.Caption;
+    End;
 end;
 
 procedure TDspBlock.getDspBlockListSize(db:TDspBlock;var res:integer;recurs:boolean=false);
@@ -912,6 +942,7 @@ Begin
      blck.MyHint:=myhint;
      blck.DeviceOnlyCommandID:=DeviceOnlyCommandID;
      blck.enblColor:=enblColor;
+     blck.ArduCmd:=ArduCmd;
     End;
 End;
 
@@ -1464,6 +1495,54 @@ Begin
     if (parent<>nil) and (parent.parent<>nil) then
       SeTComboBoxValue;
 End;
+
+function TDspBlock.GetArduinoCommand(idnt:Integer=1): String;
+Var i:integer;
+    idnts:string;
+begin
+  if fArduinoCommand='' then fArduinoCommand:=ArduCmd;
+
+
+  if pos('%p1',fArduinoCommand)>0 then
+   fArduinoCommand:=stringReplace(fArduinoCommand,'%p1',inttostr(param1),[rfReplaceAll]);
+  if pos('%p2',fArduinoCommand)>0 then
+   fArduinoCommand:=stringReplace(fArduinoCommand,'%p2',inttostr(param2),[rfReplaceAll]);
+  if pos('%ps',fArduinoCommand)>0 then
+   fArduinoCommand:=stringReplace(fArduinoCommand,'%ps',paramStr,[rfReplaceAll]);
+  if pos('%pd',fArduinoCommand)>0 then
+   fArduinoCommand:=stringReplace(fArduinoCommand,'%pd',inttostr(param1),[rfReplaceAll]);
+  if pos('%dn',fArduinoCommand)>0 then
+   fArduinoCommand:=stringReplace(fArduinoCommand,'%dn',getDeviceName,[rfReplaceAll]);
+  if pos('%dp1',fArduinoCommand)>0 then   //Device parameter
+   fArduinoCommand:=stringReplace(fArduinoCommand,'%dp1',inttostr(getDeviceParam(0)),[rfReplaceAll]);
+  if pos('%dp2',fArduinoCommand)>0 then   //Device parameter
+   fArduinoCommand:=stringReplace(fArduinoCommand,'%dp2',inttostr(getDeviceParam(1)),[rfReplaceAll]);
+  if pos('%dp3',fArduinoCommand)>0 then   //Device parameter
+   fArduinoCommand:=stringReplace(fArduinoCommand,'%dp3',inttostr(getDeviceParam(2)),[rfReplaceAll]);
+  if pos('%dp4',fArduinoCommand)>0 then   //Device parameter
+   fArduinoCommand:=stringReplace(fArduinoCommand,'%dp4',inttostr(getDeviceParam(3)),[rfReplaceAll]);
+  if pos('%dp5',fArduinoCommand)>0 then   //Device parameter
+   fArduinoCommand:=stringReplace(fArduinoCommand,'%dp5',inttostr(getDeviceParam(4)),[rfReplaceAll]);
+  if pos('%dp6',fArduinoCommand)>0 then   //Device parameter
+   fArduinoCommand:=stringReplace(fArduinoCommand,'%dp6',inttostr(getDeviceParam(5)),[rfReplaceAll]);
+  if pos('%k',fArduinoCommand)>0 then
+   fArduinoCommand:=stringReplace(fArduinoCommand,'%k','ik'+inttostr(idnt),[rfReplaceAll]);
+  if pos('%nl',fArduinoCommand)>0 then
+  Begin
+   idnts:='';
+   for I := 0 to idnt*3 do
+     idnts:=idnts+' ';
+   fArduinoCommand:=stringReplace(fArduinoCommand,'%nl',#13#10+idnts,[rfReplaceAll]);
+  End;
+  if pos('%not',fArduinoCommand)>0 then
+   if param1=1 then
+    fArduinoCommand:=stringReplace(fArduinoCommand,'%not','!',[rfReplaceAll])
+   else
+     fArduinoCommand:=stringReplace(fArduinoCommand,'%not','',[rfReplaceAll]);
+
+   result:=fArduinoCommand;
+   fArduinoCommand:='';
+end;
 
 function TDspBlock.getParam1: Integer;
 begin

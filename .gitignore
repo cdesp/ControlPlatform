@@ -2,3 +2,4 @@
 *.drc
 __history/
 Win32/CtrlPlatfrom/
+Win32/Debug/Out/

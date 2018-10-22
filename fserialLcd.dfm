@@ -3,7 +3,7 @@ object frmSerialLcd: TfrmSerialLcd
   Top = 0
   Align = alClient
   BorderStyle = bsSizeToolWin
-  Caption = 'Serial LCD'
+  Caption = 'Serial_LCD'
   ClientHeight = 501
   ClientWidth = 720
   Color = clWindow

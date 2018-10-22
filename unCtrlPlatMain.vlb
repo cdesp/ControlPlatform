@@ -109,9 +109,6 @@ Coordinates=108,486,54,36
 [Splitter2]
 Coordinates=116,280,62,36
 
-[MovPanel]
-Coordinates=442,10,72,58
-
 [BalloonHint1]
 Coordinates=668,111,88,36
 
@@ -183,5 +180,5 @@ Coordinates=328,212,66,36
 Visible=True
 
 []
-Coordinates=251,212,67,58
+Coordinates=442,10,72,58
 

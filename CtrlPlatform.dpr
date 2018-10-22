@@ -22,7 +22,9 @@ uses
   unBlockVar in 'unBlockVar.pas',
   DspUtils in 'ComponentPack\DspUtils.pas',
   fDcMotor in 'fDcMotor.pas' {frmDcMotor},
-  fRobot in 'fRobot.pas' {frmRobot};
+  fRobot in 'fRobot.pas' {frmRobot},
+  fLaser in 'fLaser.pas' {frmLaser},
+  fserialLcd in 'fserialLcd.pas' {frmSerialLcd};
 
 {$R *.res}
 
@@ -32,5 +34,7 @@ begin
   Application.Title := 'Έλεγχος συσκευών Arduino';
   Application.CreateForm(TfrmRoboLang, frmRoboLang);
   Application.CreateForm(TfrmAbout, frmAbout);
+  Application.CreateForm(TfrmLaser, frmLaser);
+  Application.CreateForm(TfrmSerialLcd, frmSerialLcd);
   Application.Run;
 end.

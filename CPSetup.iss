@@ -2,7 +2,7 @@
 ; SEE THE DOCUMENTATION FOR DETAILS ON CREATING INNO SETUP SCRIPT FILES!
 
 #define MyAppName "ControlPlatform"
-#define MyAppVersion "1.0"
+#define MyAppVersion "0.86"
 #define MyAppPublisher "Christos Despoinidis"
 #define MyAppExeName "CtrlPlatform.exe"
 
@@ -17,7 +17,7 @@ AppVersion={#MyAppVersion}
 AppPublisher={#MyAppPublisher}
 DefaultDirName={pf}\{#MyAppName}
 DisableProgramGroupPage=yes
-InfoAfterFile=G:\MyDocuments\Arduino\CtrlPlatform\ArduinoUpload.txt
+InfoAfterFile=
 OutputBaseFilename=CPsetup
 Compression=lzma
 SolidCompression=yes
@@ -34,8 +34,7 @@ Name: "quicklaunchicon"; Description: "{cm:CreateQuickLaunchIcon}"; GroupDescrip
 Source: "G:\_Programming\ControlPlatform\Win32\Debug\CtrlPlatform.exe"; DestDir: "{app}"; Flags: ignoreversion
 Source: "G:\_Programming\ControlPlatform\Win32\Debug\Images\*"; DestDir: "{app}\Images"; Flags: ignoreversion recursesubdirs createallsubdirs
 Source: "G:\_Programming\ControlPlatform\Win32\Debug\Lessons\*"; DestDir: "{app}\Lessons"; Flags: ignoreversion recursesubdirs createallsubdirs
-Source: "G:\MyDocuments\Arduino\CtrlPlatform\CtrlPlatform.ino.NANO.hex"; DestDir: "{app}"; Flags: ignoreversion
-Source: "G:\MyDocuments\Arduino\CtrlPlatform\CtrlPlatform.ino.UNO.hex"; DestDir: "{app}"; Flags: ignoreversion
+Source: "G:\_Programming\ControlPlatform\Win32\Debug\Arduino\*"; DestDir: "{app}\Arduino"; Flags: ignoreversion recursesubdirs createallsubdirs
 ; NOTE: Don't use "Flags: ignoreversion" on any shared system files
 
 [Icons]

@@ -132,7 +132,7 @@ Type
       procedure Paint; override;
       procedure SetNewWidth(nw: Integer);override;
       procedure SetBounds( pLeft , pTop , pWidth , pHeight:integer );Override;
-
+      function GetArduinoCommand(idnt:integer=1):String;Override;
 
   published
       property ElseBlock:TDspBlock read FElseBlock write SetElseBlock;
@@ -553,18 +553,27 @@ Begin
  //if not Assigned(Parent) then exit;
 
  if FisSimple then
-     TDspCombo(ctrl1).Items.CommaText:=',"'+s+'"'
+ Begin
+     TDspCombo(ctrl1).Items.CommaText:=',"'+s+'"';
+//     ArduCheck:='==,!=';
+ End
  else
-    if IsMale then
+ Begin
+    if IsMale then       //todo:Add not equal
      TDspCombo(ctrl1).Items.CommaText:='"μεγαλύτερο από","μικρότερο από","ίσο με","μεγαλύτερο ή ίσο από","μικρότερο ή ίσο από"'
     else
      TDspCombo(ctrl1).Items.CommaText:='"μεγαλύτερη από","μικρότερη από","ίση με","μεγαλύτερη ή ίση από","μικρότερη ή ίση από"';
+  //  ArduCheck:='<=,>=,==,<,>';
+
+ End;
+  ArduCheck:='==,!=,>,<,==,>=,<='; //all commands together
  //SetComboWidth;
 // ComboBox_AutoWidth(TCombobox(ctrl1));
  if (TDspCombo(ctrl1).Text='') or (TDspCombo(ctrl1).Text='0') then
  Begin
    TDspCombo(ctrl1).Itemindex:=0;
    Myhint:=myhint;
+   param1:=0;
  End;
 
 End;
@@ -591,6 +600,7 @@ begin
   Begin
     SetCommaText;
     TDspCombo(Ctrl1).Itemindex:=TDspCombo(Ctrl1).Itemindex;//Re Set text
+    Param1:=TDspCombo(Ctrl1).Itemindex;
   End;
 
 end;
@@ -607,7 +617,7 @@ begin
   if not IsSimple then
    Result:=inherited getParam1+2//2 commands of simple is 0 and 1 itemindex of combobox
   else
-   Result:=inherited getParam1;   
+   Result:=inherited getParam1;
 end;
 
 Type TDspComboHack=Class(TDspCombo);
@@ -615,24 +625,24 @@ Type TDspComboHack=Class(TDspCombo);
 function TDspControlBlock.getParam1Control(x,y:integer):integer;
 var  s:string;
     res:integer;
-    
+
 Begin
   //  if param1=1 then
   //   s:=param1prompt else s:='';
     if sv=-1 then
      sv:=TDspComboHack(ctrl1).canvas.Font.Color;
-  
+
      res:=x;
     if not prototype then
     Begin
       if param1=1 then
-      Begin         
+      Begin
         TDspComboHack(ctrl1).canvas.Font.Color:=clRed;
       End
       else if sv<>-1 then
        TDspComboHack(ctrl1).canvas.Font.Color:=sv;
 
-      
+
       ctrl1.left:=x; //combobox position
       ctrl1.top:=y;
       if not ctrl1.Visible then SetCommaText;
@@ -748,6 +758,20 @@ begin
   result:=elsebut.checked;
 end;
 
+function TDspControlElseBlock.GetArduinoCommand(idnt: integer): String;
+var ts:Tstringlist;
+begin
+  if fArduinoCommand='' then fArduinoCommand:=ArduCmd;
+  if pos('%p1',fArduinoCommand)>0 then
+  Begin
+    ts:=Tstringlist.create;
+    ts.CommaText:=ArduCheck;
+    fArduinoCommand:=stringReplace(fArduinoCommand,'%p1',ts[param1],[rfReplaceAll]);
+    ts.Free;
+  End;
+  Result:=inherited GetArduinoCommand(idnt);
+end;
+
 function TDspControlElseBlock.GetElseBlockName: string;
 begin
   if assigned(ElseBlock) then
@@ -766,6 +790,7 @@ begin
     fElseBlock.Parent:=parent;
     fElseBlock.CommndID:=100;//Control Else for all
     fElseBlock.CommandText:='Αλλιώς';
+    fElseBlock.ArduCmd:='else {';
     fElseBlock.Color:=Color;
     fElseBlock.CommandColor:=CommandColor;
     TDspControlBlockElse(fElseBlock).ContainerBlock:=Self;

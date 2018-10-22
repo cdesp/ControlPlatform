@@ -169,6 +169,14 @@
             <Form>frmRobot</Form>
             <FormType>dfm</FormType>
         </DCCReference>
+        <DCCReference Include="fLaser.pas">
+            <Form>frmLaser</Form>
+            <FormType>dfm</FormType>
+        </DCCReference>
+        <DCCReference Include="fserialLcd.pas">
+            <Form>frmSerialLcd</Form>
+            <FormType>dfm</FormType>
+        </DCCReference>
         <BuildConfiguration Include="Release">
             <Key>Cfg_2</Key>
             <CfgParent>Base</CfgParent>
@@ -256,15 +264,15 @@
                 </RDP_Source_Files>
             </Delphi.Personality>
             <Deployment Version="3">
-                <DeployFile LocalName="Win32\Debug\Images\Switches.png" Configuration="Release" Class="File">
+                <DeployFile LocalName="Win32\Debug\Images\Laser_0.png" Configuration="Release" Class="File">
                     <Platform Name="Win32">
-                        <RemoteName>Switches.png</RemoteName>
+                        <RemoteName>Laser_0.png</RemoteName>
                         <Overwrite>true</Overwrite>
                     </Platform>
                 </DeployFile>
-                <DeployFile LocalName="Win32\Debug\Lessons\Βασικά\Άσκηση 4.mht" Configuration="Release" Class="File">
+                <DeployFile LocalName="Win32\Debug\Images\Switch_8.jpg" Configuration="Release" Class="File">
                     <Platform Name="Win32">
-                        <RemoteName>Άσκηση 4.mht</RemoteName>
+                        <RemoteName>Switch_8.jpg</RemoteName>
                         <Overwrite>true</Overwrite>
                     </Platform>
                 </DeployFile>
@@ -280,9 +288,9 @@
                         <Overwrite>true</Overwrite>
                     </Platform>
                 </DeployFile>
-                <DeployFile LocalName="Win32\Debug\CtrlPlatform.exe" Configuration="Debug" Class="ProjectOutput">
+                <DeployFile LocalName="Win32\Debug\Images\Switch_3.jpg" Configuration="Release" Class="File">
                     <Platform Name="Win32">
-                        <RemoteName>CtrlPlatform.exe</RemoteName>
+                        <RemoteName>Switch_3.jpg</RemoteName>
                         <Overwrite>true</Overwrite>
                     </Platform>
                 </DeployFile>
@@ -496,21 +504,21 @@
                         <Overwrite>true</Overwrite>
                     </Platform>
                 </DeployFile>
-                <DeployFile LocalName="Win32\Debug\Images\Laser_0.png" Configuration="Release" Class="File">
+                <DeployFile LocalName="Win32\Debug\Images\Switches.png" Configuration="Release" Class="File">
                     <Platform Name="Win32">
-                        <RemoteName>Laser_0.png</RemoteName>
+                        <RemoteName>Switches.png</RemoteName>
                         <Overwrite>true</Overwrite>
                     </Platform>
                 </DeployFile>
-                <DeployFile LocalName="Win32\Debug\Images\Switch_8.jpg" Configuration="Release" Class="File">
+                <DeployFile LocalName="Win32\Debug\Lessons\Βασικά\Άσκηση 4.mht" Configuration="Release" Class="File">
                     <Platform Name="Win32">
-                        <RemoteName>Switch_8.jpg</RemoteName>
+                        <RemoteName>Άσκηση 4.mht</RemoteName>
                         <Overwrite>true</Overwrite>
                     </Platform>
                 </DeployFile>
-                <DeployFile LocalName="Win32\Debug\Images\Switch_3.jpg" Configuration="Release" Class="File">
+                <DeployFile LocalName="Win32\Debug\CtrlPlatform.exe" Configuration="Debug" Class="ProjectOutput">
                     <Platform Name="Win32">
-                        <RemoteName>Switch_3.jpg</RemoteName>
+                        <RemoteName>CtrlPlatform.exe</RemoteName>
                         <Overwrite>true</Overwrite>
                     </Platform>
                 </DeployFile>
