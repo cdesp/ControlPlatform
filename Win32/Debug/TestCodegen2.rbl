@@ -144,13 +144,13 @@ object dspBlock__5: TDspBlock
   PDevice = 0
   topNose = True
   botNose = True
-  LinkTo = frmRoboLang.dspBlock__10
+  LinkTo = frmRoboLang.dspBlock__13
   LinkFrom = frmRoboLang.dspBlock__8
   TotalParams = 2
   Id = 5
   BorderColor = clRed
   CommandColor = clWhite
-  LinkToName = 'dspBlock__10'
+  LinkToName = 'dspBlock__13'
   LinkFromName = 'dspBlock__8'
   MyHint = #931#964#961#943#946#949#953' '#913#961#953#963#964#949#961#940' '#947#953#945' '#954#940#960#959#953#959' '#967#961#972#957#959' '
   prototype = False
@@ -288,7 +288,7 @@ object dspBlock__9: TDspBlock
 end
 object dspBlock__10: TDspBlock
   Left = 110
-  Top = 455
+  Top = 487
   Width = 440
   Height = 44
   Hint = #963#965#967#957#972#964#951#964#945' '#963#949' hz ('#960'.'#967'. 2000), '#948#953#940#961#954#949#953#945' '#963#949' '#967#953#955'. '#948#949#965#964#949#961#959#955#941#960#964#959#965
@@ -307,13 +307,13 @@ object dspBlock__10: TDspBlock
   topNose = True
   botNose = True
   LinkTo = frmRoboLang.dspBlock__11
-  LinkFrom = frmRoboLang.dspBlock__5
+  LinkFrom = frmRoboLang.dspBlock__13
   TotalParams = 2
   Id = 10
   BorderColor = clRed
   CommandColor = clWhite
   LinkToName = 'dspBlock__11'
-  LinkFromName = 'dspBlock__5'
+  LinkFromName = 'dspBlock__13'
   MyHint = #963#965#967#957#972#964#951#964#945' '#963#949' hz ('#960'.'#967'. 2000), '#948#953#940#961#954#949#953#945' '#963#949' '#967#953#955'. '#948#949#965#964#949#961#959#955#941#960#964#959#965
   prototype = False
   DeviceOnlyCommandID = 2
@@ -321,7 +321,7 @@ object dspBlock__10: TDspBlock
 end
 object dspBlock__11: TDspBlock
   Left = 110
-  Top = 490
+  Top = 522
   Width = 432
   Height = 44
   Hint = #963#965#967#957#972#964#951#964#945' '#963#949' hz ('#960'.'#967'. 2000), '#948#953#940#961#954#949#953#945' '#963#949' '#967#953#955'. '#948#949#965#964#949#961#959#955#941#960#964#959#965
@@ -354,7 +354,7 @@ object dspBlock__11: TDspBlock
 end
 object dspBlock__12: TDspBlock
   Left = 110
-  Top = 525
+  Top = 557
   Width = 440
   Height = 44
   Hint = #963#965#967#957#972#964#951#964#945' '#963#949' hz ('#960'.'#967'. 2000), '#948#953#940#961#954#949#953#945' '#963#949' '#967#953#955'. '#948#949#965#964#949#961#959#955#941#960#964#959#965
@@ -382,4 +382,36 @@ object dspBlock__12: TDspBlock
   prototype = False
   DeviceOnlyCommandID = 2
   ArduCmd = '%dn.PlayTone(%p1,%p2);'
+end
+object dspBlock__13: TDspBlock
+  Left = 110
+  Top = 452
+  Width = 281
+  Height = 44
+  Color = 16711808
+  Param1Attaching = False
+  Param2Attaching = False
+  CtrlAttachUp = False
+  CtrlAttachDn = False
+  CommandText = #928#949#961#943#956#949#957#949' %p1 '#967#953#955#953#959#963#964#940' '#948#949#965#964#949#961#959#955#941#960#964#959#965
+  NewlyCreated = False
+  CommndID = 250
+  Param1 = 1000
+  Param2 = 0
+  PDevice = -1
+  topNose = True
+  botNose = True
+  LinkTo = frmRoboLang.dspBlock__10
+  LinkFrom = frmRoboLang.dspBlock__5
+  TotalParams = 1
+  param1question = #916#974#963#949' '#964#945' '#967#953#955#953#959#963#964#940' '#948#949#965#964#949#961#959#955#941#960#964#959#965' (1000=1 '#948#949#965#964') '
+  param1prompt = #935#953#955#953#959#963#964#940
+  Id = 13
+  BorderColor = clRed
+  CommandColor = clWhite
+  LinkToName = 'dspBlock__10'
+  LinkFromName = 'dspBlock__5'
+  prototype = False
+  DeviceOnlyCommandID = -1
+  ArduCmd = 'delay(%p1);'
 end

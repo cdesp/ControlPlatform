@@ -11,17 +11,20 @@ Type
     VarName:String;
     VarID:Integer;
     VarValue:String;
+    function getCvarname:string;
   End;
 
   TArduVariables=Class(TStringlist)
   private
     function GetNewID: Integer;
+
   Public
      Constructor Create;
      Destructor Destroy;Override;
      Function Newvar(VName:String):TArduVar;
      Function GetVarByID(id:integer):TArduVar;
      Function GetVarByName(nm:String):TArduVar;
+     function GetRealVarName(nm: string): string;
      Procedure DeleteVar(VName:String);
      Procedure SaveVars(fnm:String);
      Procedure LoadVars(fnm:String);
@@ -37,6 +40,38 @@ uses math,sysutils,inifiles,vcl.forms;
 
 
 { TArduVariables }
+
+
+function greeklish(name:string):string;
+Const greek:array[0..65] of string=('á','Ü','¢','Á','â','Â','ã', 'Ã', 'ä','Ä','å','Ý','Å','¸','æ','Æ','ç','Þ','Ç','è','È','é','ß','ú','À','É','º', 'ê','Ê','ë','Ë','ì','Ì','í','Í','î','Î','ï','ü','Ï','¼','ð','Ð','ñ','Ñ','ó','ò', 'Ó','ô','Ô','õ','ý','Õ','¾','ö','Ö','÷','×','ø','Ø','ù','þ','Ù','¿',' ',',');
+  english:array[0..65] of string=('a', 'a','A','A','b','B','g','G','d','D','e','e','E','E','z','Z','i','i','I','th','Th', 'i','i','i','i','I','I','k','K','l','L','m','M','n','N','x','X','o','o','O','O','p','P' ,'r','R','s','s','S','t','T','u','u','Y','Y','f','F','ch','Ch','ps','Ps','o','o','O','O','_','_');
+
+var  i:Integer;
+
+ function Changeletter(l:char):string;
+ var i:integer;
+ Begin
+    result:='';
+    for I := 0 to High(greek) do
+      if greek[i]=l then
+      Begin
+       result:=english[i];
+       break;
+      End;
+    if result='' then result:=l;
+
+ End;
+
+Begin
+   result:='';
+   for I := 1 to Length(name) do
+     result:=result+Changeletter(name[i]);
+
+
+//   result:=StringReplace(name,name)
+ //  $string  = str_replace&#40;$greek, $english, $Name&#41;;
+
+End;
 
 constructor TArduVariables.Create;
 begin
@@ -99,7 +134,14 @@ begin
     else Result:=nil;
 end;
 
-
+function TArduVariables.GetRealVarName(nm:string): string;
+Var t:TArduVar;
+Begin
+  t:=GetVarByName(nm);
+  if t<>nil then
+    result:=greeklish(nm)
+  else result:='NoVAR';
+End;
 
 procedure TArduVariables.LoadVars(fnm: String);
 Var Newnm:String;
@@ -176,6 +218,13 @@ begin
     sl.WriteString(sectnm,'VarValue',TArduVar(Objects[i]).VarValue);
    End;
    sl.Free;
+end;
+
+{ TArduVar }
+
+function TArduVar.getCvarname: string;
+begin
+  result:=greeklish(Varname);
 end;
 
 initialization

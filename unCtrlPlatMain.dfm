@@ -2,7 +2,7 @@ object frmRoboLang: TfrmRoboLang
   Left = 0
   Top = 321
   Caption = #904#955#949#947#967#959#962' '#963#965#963#954#949#965#974#957' Arduino'
-  ClientHeight = 480
+  ClientHeight = 400
   ClientWidth = 960
   Color = clBtnFace
   DoubleBuffered = True
@@ -26,7 +26,7 @@ object frmRoboLang: TfrmRoboLang
   TextHeight = 13
   object Splitter1: TSplitter
     Left = 0
-    Top = 439
+    Top = 359
     Width = 960
     Height = 6
     Cursor = crVSplit
@@ -36,14 +36,13 @@ object frmRoboLang: TfrmRoboLang
   end
   object ListBox1: TListBox
     Left = 0
-    Top = 445
+    Top = 365
     Width = 960
     Height = 16
     Align = alBottom
     ItemHeight = 13
     TabOrder = 0
     OnDblClick = ListBox1DblClick
-    ExplicitTop = 294
   end
   object FlowPanel2: TFlowPanel
     Left = 0
@@ -144,7 +143,7 @@ object frmRoboLang: TfrmRoboLang
   end
   object SBar: TStatusBar
     Left = 0
-    Top = 461
+    Top = 381
     Width = 960
     Height = 19
     Color = clLime
@@ -163,17 +162,16 @@ object frmRoboLang: TfrmRoboLang
         Width = 500
       end>
     UseSystemFont = False
-    ExplicitTop = 310
+    OnDblClick = SBarDblClick
   end
   object TNBook: TTabbedNotebook
     Tag = 990
     Left = 0
     Top = 37
     Width = 960
-    Height = 402
+    Height = 322
     ParentCustomHint = False
     Align = alClient
-    PageIndex = 3
     TabFont.Charset = DEFAULT_CHARSET
     TabFont.Color = clBlack
     TabFont.Height = -16
@@ -183,14 +181,12 @@ object frmRoboLang: TfrmRoboLang
     OnChange = TNBookChange
     object TTabPage
       Left = 4
-      Top = 30
+      Top = 24
       Caption = #928#961#972#947#961#945#956#956#945
-      ExplicitTop = 24
-      ExplicitHeight = 223
       object Splitter2: TSplitter
         Left = 320
         Top = 0
-        Height = 368
+        Height = 294
         ExplicitLeft = 294
         ExplicitTop = 4
         ExplicitHeight = 290
@@ -199,23 +195,21 @@ object frmRoboLang: TfrmRoboLang
         Left = 0
         Top = 0
         Width = 320
-        Height = 368
-        ActivePage = TabSheet1
+        Height = 294
+        ActivePage = TabSheet3
         Align = alLeft
         Constraints.MinWidth = 320
         MultiLine = True
         Style = tsFlatButtons
         TabHeight = 30
         TabOrder = 1
-        ExplicitHeight = 223
         object TabSheet1: TTabSheet
           Caption = #915#949#957#953#954#941#962' '#917#957#964#959#955#941#962
-          ExplicitHeight = 183
           object CategoryPanelGroup1: TCategoryPanelGroup
             Left = 0
             Top = 0
             Width = 312
-            Height = 328
+            Height = 254
             VertScrollBar.Smooth = True
             VertScrollBar.Style = ssHotTrack
             VertScrollBar.Tracking = True
@@ -240,7 +234,6 @@ object frmRoboLang: TfrmRoboLang
             TabOrder = 0
             OnMouseEnter = CategoryPanelGroup1MouseEnter
             OnMouseWheel = CategoryPanelGroup1MouseWheel
-            ExplicitHeight = 183
             object variousPanel: TCategoryPanel
               Top = 600
               Caption = #916#953#940#966#959#961#945
@@ -288,12 +281,11 @@ object frmRoboLang: TfrmRoboLang
         object TabSheet2: TTabSheet
           Caption = #917#957#964#959#955#941#962' '#931#965#963#954#949#965#974#957
           ImageIndex = 1
-          ExplicitHeight = 183
           object CategoryPanelGroup2: TCategoryPanelGroup
             Left = 0
             Top = 0
             Width = 312
-            Height = 328
+            Height = 254
             VertScrollBar.Smooth = True
             VertScrollBar.Tracking = True
             Align = alClient
@@ -314,7 +306,6 @@ object frmRoboLang: TfrmRoboLang
             TabOrder = 0
             OnMouseEnter = CategoryPanelGroup1MouseEnter
             OnMouseWheel = CategoryPanelGroup1MouseWheel
-            ExplicitHeight = 183
             object DcRobotPanel: TCategoryPanel
               Top = 2000
               Caption = #931#973#963#964#951#956#945' Robot'
@@ -375,12 +366,11 @@ object frmRoboLang: TfrmRoboLang
         object TabSheet3: TTabSheet
           Caption = #924#949#964#945#946#955#951#964#941#962
           ImageIndex = 2
-          ExplicitHeight = 183
           object CategoryPanelGroup3: TCategoryPanelGroup
             Left = 0
             Top = 0
             Width = 312
-            Height = 328
+            Height = 254
             VertScrollBar.Tracking = True
             Align = alClient
             GradientBaseColor = 9094655
@@ -393,7 +383,6 @@ object frmRoboLang: TfrmRoboLang
             TabOrder = 0
             OnMouseEnter = CategoryPanelGroup1MouseEnter
             OnMouseWheel = CategoryPanelGroup1MouseWheel
-            ExplicitHeight = 183
             object VarPanel: TCategoryPanel
               Top = 0
               Height = 406
@@ -452,7 +441,7 @@ object frmRoboLang: TfrmRoboLang
         Left = 323
         Top = 0
         Width = 629
-        Height = 368
+        Height = 294
         HorzScrollBar.Smooth = True
         HorzScrollBar.Style = ssHotTrack
         VertScrollBar.Smooth = True
@@ -472,7 +461,6 @@ object frmRoboLang: TfrmRoboLang
         TabOrder = 0
         OnMouseEnter = ScrollBox1MouseEnter
         OnMouseWheel = ScrollBox1MouseWheel
-        ExplicitHeight = 223
         object Image2: TImage
           Tag = -1
           Left = 0
@@ -1406,15 +1394,13 @@ object frmRoboLang: TfrmRoboLang
     end
     object TTabPage
       Left = 4
-      Top = 30
+      Top = 24
       Caption = #931#965#963#954#949#965#941#962
-      ExplicitTop = 24
-      ExplicitHeight = 223
       object ScrollBox2: TScrollBox
         Left = 0
         Top = 0
         Width = 303
-        Height = 368
+        Height = 294
         HorzScrollBar.Visible = False
         VertScrollBar.Position = 19
         Align = alLeft
@@ -1422,7 +1408,6 @@ object frmRoboLang: TfrmRoboLang
         ParentColor = False
         TabOrder = 0
         OnMouseWheel = ScrollBox2MouseWheel
-        ExplicitHeight = 223
         object pnlLCD: TPanel
           Left = 12
           Top = -16
@@ -52460,7 +52445,7 @@ object frmRoboLang: TfrmRoboLang
         Left = 303
         Top = 0
         Width = 649
-        Height = 368
+        Height = 294
         Align = alClient
         TabFont.Charset = DEFAULT_CHARSET
         TabFont.Color = clBtnText
@@ -52469,16 +52454,14 @@ object frmRoboLang: TfrmRoboLang
         TabFont.Style = []
         TabOrder = 1
         OnChange = DevBookChange
-        ExplicitHeight = 223
         object TTabPage
           Left = 4
           Top = 24
           Caption = 'Arduino'
-          ExplicitHeight = 195
           object Splitter3: TSplitter
             Left = 209
             Top = 0
-            Height = 299
+            Height = 225
             ExplicitLeft = 24
             ExplicitTop = 96
             ExplicitHeight = 100
@@ -52487,7 +52470,7 @@ object frmRoboLang: TfrmRoboLang
             Left = 0
             Top = 0
             Width = 209
-            Height = 299
+            Height = 225
             Align = alLeft
             Caption = #917#960#943#955#949#958#949' '#924#959#957#964#941#955#959
             ItemIndex = 0
@@ -52497,16 +52480,14 @@ object frmRoboLang: TfrmRoboLang
               'Arduino MEGA')
             TabOrder = 0
             OnClick = RadioGroup1Click
-            ExplicitHeight = 154
           end
           object ScrollBox3: TScrollBox
             Left = 212
             Top = 0
             Width = 429
-            Height = 299
+            Height = 225
             Align = alClient
             TabOrder = 1
-            ExplicitHeight = 154
             object ArduPinout: TImage
               Left = 4
               Top = 3
@@ -52543,12 +52524,11 @@ object frmRoboLang: TfrmRoboLang
           end
           object Panel1: TPanel
             Left = 0
-            Top = 299
+            Top = 225
             Width = 641
             Height = 41
             Align = alBottom
             TabOrder = 2
-            ExplicitTop = 154
             object Button1: TButton
               Left = 2
               Top = 6
@@ -52564,13 +52544,11 @@ object frmRoboLang: TfrmRoboLang
     end
     object TTabPage
       Left = 4
-      Top = 30
+      Top = 24
       Caption = #924#945#952#942#956#945#964#945
-      ExplicitTop = 24
-      ExplicitHeight = 223
       object Label8: TLabel
         Left = 0
-        Top = 349
+        Top = 275
         Width = 952
         Height = 19
         Align = alBottom
@@ -52581,14 +52559,14 @@ object frmRoboLang: TfrmRoboLang
         Font.Name = 'Tahoma'
         Font.Style = [fsBold]
         ParentFont = False
-        ExplicitTop = 242
+        ExplicitTop = 313
         ExplicitWidth = 54
       end
       object TreeView1: TTreeView
         Left = 0
         Top = 0
         Width = 225
-        Height = 349
+        Height = 275
         Align = alLeft
         Color = 11318653
         Font.Charset = DEFAULT_CHARSET
@@ -52641,29 +52619,27 @@ object frmRoboLang: TfrmRoboLang
           0000000000000000000109500072006F006A0065006300740020003400300000
           000000000000000000FFFFFFFFFFFFFFFF000000000000000000000000010950
           0072006F006A0065006300740020003500}
-        ExplicitHeight = 204
       end
       object Panel2: TPanel
         Left = 225
         Top = 0
         Width = 727
-        Height = 349
+        Height = 275
         Align = alClient
         Caption = 'Panel2'
         Color = clWhite
         ParentBackground = False
         TabOrder = 1
-        ExplicitHeight = 204
         object WebBrowser1: TWebBrowser
           Left = 1
           Top = 1
           Width = 725
-          Height = 347
+          Height = 273
           Align = alClient
           TabOrder = 0
-          ExplicitHeight = 222
+          ExplicitHeight = 293
           ControlData = {
-            4C000000EE4A0000DD2300000000000000000000000000000000000000000000
+            4C000000EE4A0000371C00000000000000000000000000000000000000000000
             000000004C000000000000000000000001000000E0D057007335CF11AE690800
             2B2E126209000000000000004C0000000114020000000000C000000000000046
             8000000000000000000000000000000000000000000000000000000000000000
@@ -52673,17 +52649,13 @@ object frmRoboLang: TfrmRoboLang
     end
     object TTabPage
       Left = 4
-      Top = 30
+      Top = 24
       Caption = 'Arduino '#922#974#948#953#954#945#962
-      ExplicitLeft = 0
-      ExplicitTop = 0
-      ExplicitWidth = 0
-      ExplicitHeight = 0
       object ArduMemo: TMemo
         Left = 0
         Top = 0
         Width = 952
-        Height = 368
+        Height = 294
         Align = alClient
         Font.Charset = GREEK_CHARSET
         Font.Color = clWindowText
@@ -52741,7 +52713,7 @@ object frmRoboLang: TfrmRoboLang
     Left = 785
     Top = 104
     Bitmap = {
-      494C01010E002400BC0110001000FFFFFFFFFF10FFFFFFFFFFFFFFFF424D3600
+      494C01010E002400CC0110001000FFFFFFFFFF10FFFFFFFFFFFFFFFF424D3600
       0000000000003600000028000000400000004000000001002000000000000040
       00000000000000000000000000000000000000000000000000001D0D0A405D23
       0DAF8D330DFF893613FF7F340DDF28120A500000000000000000000000000000

@@ -13,7 +13,7 @@ uses  Vcl.Dialogs, CPort, System.Classes,
 
 
 Const ProjectStart='10/10/2017';
-Const Version='0.90 (Βήτα έκδοση 20/10/2018)  - ';
+Const Version='0.93 (Βήτα έκδοση 26/11/2018)  - ';
 Const Programmer='© 2017-2018 Despoinidis Christos';
 Const Progname='Έλεγχος συσκευών Arduino';
 Const Onlybluetooth=FALSE;
@@ -226,6 +226,7 @@ type
     procedure acgetcodeExecute(Sender: TObject);
     procedure Timer2Timer(Sender: TObject);
   private
+    cmb:TComboBox;
     firstopen:boolean;
     NewVarName:String;
     ComIdle:boolean;
@@ -291,13 +292,15 @@ type
     procedure ComPortChanged(Sender: tobject);
     procedure CreateDcMotorCommands;
     procedure CreateRobotCommands;
-    function getDeviceInclude(DevId: integer): String;
-    procedure AddIncludeForDev(hd: Tstrings; DevId: Integer);
+    function getDeviceInclude(ComID:integer;DevId: integer): String;
+    procedure AddIncludeForDev(hd: Tstrings;ComID, DevId: Integer);
     procedure AddDefinitionForDev(hd: Tstrings;ComID:Integer; DevId: Integer;devnm:string);
     procedure AddSetupForDev(hd: Tstrings;ComID:Integer; DevId: Integer;devnm:string);
     procedure GetCodeFromCommands(hd:Tstrings;blck: TDspBlock;ident:integer=1);
     procedure AddFunctionsForDev(hd: Tstrings;ComID:Integer; DevId: Integer; devnm: string);
     function fix(s: string;Devid:Integer): String;
+    procedure getVars(hd: TStrings);
+    procedure GetComPorts;
     { Private declarations }
   public
     { Public declarations }
@@ -332,7 +335,7 @@ var
 
 implementation
 uses Registry, system.ioutils,unAbout, inifiles,setupapi,math,  unDevices, unHelpForms,DspUtils,unVariables,unBlockVar,
-      fserialLcd,fLaser,fSound,fUSonic,fServo,fSwitch,fTemp,fBMP180,fAnalogIn,fDcMotor,fRobot
+      uUpdate,fserialLcd,fLaser,fSound,fUSonic,fServo,fSwitch,fTemp,fBMP180,fAnalogIn,fDcMotor,fRobot
     ;
 
 
@@ -757,6 +760,7 @@ begin
   else
     cmdName:=NewVarName;
   t.CommandText:=cmdName;
+  t.ArduCmd:=cmdName;
   t.param1question:=cmdName;
   if assigned(sender) then
     avar:=ArduVars.Newvar(cmdName)
@@ -1109,11 +1113,16 @@ begin
   Close;
 end;
 
-function TfrmRoboLang.getDeviceInclude(DevId:integer):String;
+function TfrmRoboLang.getDeviceInclude(ComID:integer;DevId:integer):String;
 Begin
    result:='';
-   case DevID of
-      50:result:='helper_3dmath.h,MPU6050_6Axis_MotionApps20.h,DspGyro.h,CPRobot.h';
+   case ComID of
+      50:Begin
+          // if actdevs[DevId].ActDevParams[5]=1 then
+            result:='helper_3dmath.h,MPU6050_6Axis_MotionApps20.h,DspGyro.h,CPRobot.h'
+          // else
+          //  result:='CPRobot.h';
+         End;
       60:result:='DspMotor.h';
       110:result:='Speaker.h';
       120:result:='I2Cdev.h,Wire.h,LiquidCrystal_I2C.h';
@@ -1122,19 +1131,19 @@ Begin
       145:result:='';//Switch
       150:result:='DspServo.h';//Servo
       170:result:='DHT.h';   //temperature
-      176:result:='SFE_BMP180.h'; //barometer
+      176:result:='DspBMP.h'; //barometer
    end;
 
 End;
 
-procedure TfrmRoboLang.AddIncludeForDev(hd:Tstrings;DevId:Integer);
+procedure TfrmRoboLang.AddIncludeForDev(hd:Tstrings;ComID,DevId:Integer);
 Const Incl='#include "%s"';
 var   ts:tstringlist;
       i:Integer;
 Begin
     ts:=tstringlist.Create;
     ts.Delimiter:=',';
-    ts.CommaText:=getDeviceInclude(DevId);
+    ts.CommaText:=getDeviceInclude(ComId,DevId);
     for i := 0 to ts.Count-1 do
      hd.add(Stringreplace(Incl,'%s',ts[i],[]));
 
@@ -1173,7 +1182,7 @@ Begin
     170://DHT
        hd.Add('DHT '+devnm+fix('(%dp1,%dp2);',DevId));
     176:  //Barometer
-       hd.Add('SFE_BMP180 '+devnm+';');
+       hd.Add('Dsp_BMP '+devnm+';');
 
 
   end;
@@ -1237,7 +1246,7 @@ Begin
       hd.Add('  '+devnm+'.begin();');
     End;
     176:Begin   //bmp
-      hd.Add('  '+devnm+'.begin();');
+    //  hd.Add('  '+devnm+'.begin();');
     End;
 
   end;
@@ -1327,10 +1336,18 @@ Begin
 
 End;
 
+procedure TfrmRoboLang.getVars(hd:TStrings);
+var i:integer;
+Begin
+   for i := 0 to ArduVars.Count-1 do
+   Begin
+     hd.Add('int '+ArduVars.GetRealVarName(ArduVars.GetArduVar(i).VarName)+';');
+   End;
 
+End;
 
 procedure TfrmRoboLang.acgetcodeExecute(Sender: TObject);
-Var Header,Debug,Declaration,Setup,Code,Funcs,Make:TStringlist;
+Var Header,Debug,Declaration,Setup,Code,Funcs,Make,Vars:TStringlist;
     strt:TDspBlock;
 
     cnt:Integer;
@@ -1342,6 +1359,9 @@ Var Header,Debug,Declaration,Setup,Code,Funcs,Make:TStringlist;
   CommandLine: string;
   BoardType: string;
   ParamS: string;
+  IniFile:TInifile;
+  dirc:TDirectory;
+  btp: string;
 begin
  FMotors:=0;
  TNBook.PageIndex:=3;
@@ -1354,6 +1374,7 @@ begin
  Code:=TStringlist.create;
  Code.Add('void loop() {');
  Funcs:=TStringlist.create;
+ Vars:=TStringlist.create;
 
 
  Header.Add('#include "Arduino.h"');
@@ -1394,7 +1415,7 @@ begin
      adddebug('------------------------');
      devnm:=ActDevs[i].ActDevForm.Caption;
      Debug.Add(devnm);
-     AddIncludeForDev(Header,CommndID);
+     AddIncludeForDev(Header,CommndID,devid);
      AddDefinitionForDev(Declaration ,CommndID,devid,devnm);
      AddSetupForDev(Setup,CommndID,devid,devnm);
      AddFunctionsForDev(Funcs,CommndID,devid,devnm);
@@ -1409,6 +1430,7 @@ begin
 
   End;
 
+  GetVars(Vars);
   GetCodeFromCommands(Code,strt);
 
   Debug.Add('============================');
@@ -1422,11 +1444,13 @@ begin
     Setup.Add('');
     Code.Add('}');//End Code
     Code.Add('');
+    Vars.Add('');
 
 
     Ardumemo.Lines.Assign(header);
     Ardumemo.Lines.AddStrings(Declaration);
     Ardumemo.Lines.AddStrings(Funcs);
+    Ardumemo.Lines.AddStrings(Vars);
     Ardumemo.Lines.AddStrings(Setup);
     Ardumemo.Lines.AddStrings(Code);
   //  Ardumemo.Lines.AddStrings(Debug);
@@ -1440,10 +1464,20 @@ begin
     Ardumemo.SelectAll;
     Ardumemo.CopyToClipboard;
 
+    if messagedlg('Να σταλεί στο Arduino;',mtConfirmation, mbYesNo, 0)=mrNo then
+     exit;
     DirName:=extractfilepath(Application.ExeName);
     Newdir:=DirName+'\Out';
     if not Directoryexists(Newdir) then
-          CreateDir(NewDir);
+          CreateDir(NewDir)
+    else
+    Begin //clear dir
+
+       if Directoryexists(Newdir+'\build') then
+              dirc.Delete (Newdir+'\build\',True);
+   //    if messagedlg('Να σταλεί στο Arduino;',mtConfirmation, mbYesNo, 0)=mrNo then
+    //    exit;
+    End;
 
 
 //    for i := 0 to 1000 do
@@ -1458,10 +1492,20 @@ begin
     NewFile:=NewDir+'\Output.ino';
     Ardumemo.Lines.SaveToFile(Newfile);
 
-    ArduinoPath:='G:\NewApps\Arduino\';
-    BoardType:='arduino:avr:uno';
+
+    IniFile:=TInifile.Create(DirName+'\Options.ini');
+    ArduinoPath:=IniFile.ReadString('Arduino','Path','G:\NewApps\Arduino\');
+    IniFile.Free;
+
+    case Arduino.Id of
+      0:btp:='uno';
+      1:btp:='uno';
+      2:btp:='mega';
+    end;
+    BoardType:='arduino:avr:'+btp;
     CommandLine:=ArduinoPath+'arduino_debug.exe';
-    ParamS:='  --board '+boardtype+' --port '+BTComList[BTIndex]+' --pref build.path='+NewDir+'\build --upload '+NewFile;
+    //ParamS:='  --board '+boardtype+' --port '+BTComList[BTIndex]+' --pref build.path='+NewDir+'\build --upload '+NewFile;
+    ParamS:='  --board '+boardtype+' --port '+BTComList[BTIndex]+' --upload '+NewFile;
     Ardumemo.Lines.Add('');
     Ardumemo.Lines.Add(Commandline+' '+ParamS);
     Ardumemo.Lines.Add('Compiling and uploading... Please Wait!!!');
@@ -2367,6 +2411,7 @@ Begin
     blck.CommandColor:=clWhite;
     blck.CommndID:=77; //FIX VARS should be 75-90 //signed byte -127..128
     blck.Commandtext:='%pd → Απόσταση';
+    blck.ArduCmd:='%dn.distanceFront()';
     blck.TotalParams:=0;
     blck.MyHint:='Η απόσταση από το εμπόδιο';
     inc(tp,50);blck.Top:=tp;
@@ -2384,7 +2429,8 @@ Begin
     blck.CommandColor:=clWhite;
     blck.CommndID:=141;
     blck.Commandtext:='%pd → Εάν απόσταση %p1 %p2 εκατοστά';
-    blck.ArduCmd:='%dn.checkStatus();%nl if (%dn.distanceFront() %p1 %p2 ) {';
+    //blck.ArduCmd:='%dn.checkStatus();%nl if (%dn.distanceFront() %p1 %p2 ) {';
+    blck.ArduCmd:='if (%dn.distanceFront() %p1 %p2 ) {';
     TDspControlBlock(blck).EndBlockText:='Τέλος Εάν';
     TDspControlBlock(blck).IsSimple:=false;
     blck.TotalParams:=2;
@@ -2561,6 +2607,7 @@ Begin
     blck.CommandColor:=clWhite;
     blck.CommndID:=75; //FIX VARS should be 75-90 //signed byte -127..128
     blck.Commandtext:='%pd → Θερμοκρασία';
+    blck.ArduCmd:='%dn.readTemperature()';
     blck.TotalParams:=0;
     blck.MyHint:='Η τιμή της θερμοκρασίας της Συσκευής';
     inc(tp,50);blck.Top:=tp;
@@ -2575,6 +2622,7 @@ Begin
     blck.CommandColor:=clWhite;
     blck.CommndID:=76; //FIX VARS should be 75-90
     blck.Commandtext:='%pd → Υγρασία';
+    blck.ArduCmd:='%dn.readHumidity()';
     blck.TotalParams:=0;
     blck.MyHint:='Η τιμή της υγρασίας της Συσκευής';
     inc(tp,50);blck.Top:=tp;
@@ -2589,6 +2637,7 @@ Begin
     blck.CommandColor:=clWhite;
     blck.CommndID:=171;
     blck.Commandtext:='%pd → Εάν Θερμοκρασία είναι %p1 %p2 (°C)';
+    blck.ArduCmd:='if (%dn.readTemperature() %p1 %p2) {  ';
     blck.param1prompt:='όχι';
     TDspControlBlock(blck).EndBlockText:='Τέλος Εάν';
     TDspControlBlock(blck).IsSimple:=false;
@@ -2620,6 +2669,7 @@ Begin
     blck.CommandColor:=clWhite;
     blck.CommndID:=173;
     blck.Commandtext:='%pd → Εάν υγρασία είναι %p1 %p2 %';
+    blck.ArduCmd:='if (%dn.readHumidity() %p1 %p2) {  ';
     blck.param1prompt:='όχι';
     TDspControlBlock(blck).EndBlockText:='Τέλος Εάν';
     TDspControlBlock(blck).IsSimple:=false;
@@ -2668,6 +2718,7 @@ Begin
     blck.CommandColor:=clWhite;
     blck.CommndID:=230;
     blck.Commandtext:='Βάλε τιμή %p1 στην Μεταβλητή %p2';
+    blck.ArduCmd:='%v2=%p1;';
     blck.TotalParams:=2;
     blck.MyHint:='Θέτει μια τιμή ή μεταβλητή στην μεταβλητή που επιλέγουμε';
     inc(tp,50);blck.Top:=tp;
@@ -2680,6 +2731,7 @@ Begin
     blck.CommandColor:=clWhite;
     blck.CommndID:=231;
     blck.Commandtext:='Άλλαξε κατά %p1 την Μεταβλητή %p2';
+    blck.ArduCmd:='%v2+=%p1;';
     blck.TotalParams:=2;
     blck.MyHint:='Αλλάζει κατά τιμή ή μεταβλητή την μεταβλητή που επιλέγουμε';
     inc(tp,50);blck.Top:=tp;
@@ -2709,6 +2761,7 @@ Begin
     blck.CommandColor:=clWhite;
     blck.CommndID:=78; //FIX VARS should be 75-90 //signed byte -127..128
     blck.Commandtext:='%pd → Πίεση (Απόλυτη)';
+    blck.ArduCmd:='%dn.getPressure()';
     blck.TotalParams:=0;
     blck.MyHint:='Η τιμή της Πίεσης στο ύψος που βρισκόμαστε';
     inc(tp,50);blck.Top:=tp;
@@ -2723,6 +2776,7 @@ Begin
     blck.CommandColor:=clWhite;
     blck.CommndID:=79; //FIX VARS should be 75-90
     blck.Commandtext:='%pd → Πίεση (σχετική)';
+    blck.ArduCmd:='%dn.getRelPressure()';
     blck.TotalParams:=0;
     blck.MyHint:='Η τιμή της Πίεσης στο επίπεδο της θάλασσας';
     inc(tp,50);blck.Top:=tp;
@@ -2737,6 +2791,7 @@ Begin
     blck.CommandColor:=clWhite;
     blck.CommndID:=80; //FIX VARS should be 75-90
     blck.Commandtext:='%pd → Θερμοκρασία';
+    blck.ArduCmd:='%dn.getTemperature()';
     blck.TotalParams:=0;
     blck.MyHint:='Η τιμή της θερμοκρασίας στο περιβάλλον';
     inc(tp,50);blck.Top:=tp;
@@ -2751,6 +2806,7 @@ Begin
     blck.CommandColor:=clWhite;
     blck.CommndID:=177;
     blck.Commandtext:='%pd → Εάν Πίεση (Απόλυτη) είναι %p1  %p2 (mb)';
+    blck.ArduCmd:='if (%dn.getPressure() %p1 %p2){';
     blck.param1prompt:='δεν';
     TDspControlBlock(blck).EndBlockText:='Τέλος Εάν';
     TDspControlBlock(blck).IsSimple:=false;
@@ -2767,6 +2823,7 @@ Begin
     blck.CommandColor:=clWhite;
     blck.CommndID:=178;
     blck.Commandtext:='%pd → Εάν Πίεση (Σχετική) είναι %p1  %p2 (mb)';
+    blck.ArduCmd:='if (%dn.getRelPressure() %p1 %p2){';
     blck.param1prompt:='δεν';
     TDspControlBlock(blck).EndBlockText:='Τέλος Εάν';
     TDspControlBlock(blck).IsSimple:=false;
@@ -2783,6 +2840,7 @@ Begin
     blck.CommandColor:=clWhite;
     blck.CommndID:=179;
     blck.Commandtext:='%pd → Εάν Θερμοκρασία είναι %p1 %p2 (°C)';
+    blck.ArduCmd:='if (%dn.getTemperature() %p1 %p2){';
     blck.param1prompt:='όχι';
     TDspControlBlock(blck).EndBlockText:='Τέλος Εάν';
     TDspControlBlock(blck).IsSimple:=false;
@@ -2816,7 +2874,7 @@ Begin
     blck.CommandColor:=clWhite;
     blck.CommndID:=78; //FIX VARS should be 75-90 //signed byte -127..128
     blck.Commandtext:='%pd → Τιμή Αναλογικής Συσκευής';
-    blck.ArduCmd:='';
+    blck.ArduCmd:='analogRead(%dp1)';
     blck.TotalParams:=0;
     blck.MyHint:='Η τιμή της Αναλογικής Συσκευής (0-1024)';
     inc(tp,50);blck.Top:=tp;
@@ -2943,7 +3001,7 @@ Begin
     blck.CommandColor:=clWhite;
     blck.CommndID:=82; //FIX VARS should be 75-90 //signed byte -127..128
     blck.Commandtext:='%pd → Διαδρομή εκ.';
-
+    blck.ArduCmd:='%dn.getDistance()';
     blck.TotalParams:=0;
     blck.MyHint:='Η τιμή σε εκατοστά που διάνυσε το Robot';
     inc(tp,50);blck.Top:=tp;
@@ -3080,11 +3138,11 @@ Begin
     blck.Color:=col;
     blck.CommandColor:=clWhite;
     blck.CommndID:=54;
-    blck.Commandtext:='%pd → Στροφή Δεξιά για %p2 δευτερόλεπτα';
-    blck.ArduCmd:='%dn.goRight();%nl delay(%p2*1000);%nl %dn.run(4);';
-    blck.MyHint:='Στρίβει Δεξιά για κάποιο χρόνο ';
+    blck.Commandtext:='%pd → Στροφή Δεξιά για %p2 χιλ. δευτερολέπτου';
+    blck.ArduCmd:='%dn.goRight();%nl delay(%p2);%nl %dn.run(4);';
+    blck.MyHint:='Στρίβει Δεξιά για κάποιο χρόνο σε χιλιοστά του δευτερολέπτου ';
     blck.Param1:=5;
-    blck.Param2:=3;
+    blck.Param2:=300;
     blck.TotalParams:=2;
     inc(tp,50);blck.Top:=tp;
     blck.Left:=10;
@@ -3096,11 +3154,11 @@ Begin
     blck.Color:=col;
     blck.CommandColor:=clWhite;
     blck.CommndID:=54;
-    blck.Commandtext:='%pd → Στροφή Αριστερά για %p2 δευτερόλεπτα';
-    blck.ArduCmd:='%dn.goLeft();%nl delay(%p2*1000);%nl %dn.run(4);';
-    blck.MyHint:='Στρίβει Αριστερά για κάποιο χρόνο ';
+    blck.Commandtext:='%pd → Στροφή Αριστερά για %p2 χιλ. δευτερολέπτου';
+    blck.ArduCmd:='%dn.goLeft();%nl delay(%p2);%nl %dn.run(4);';
+    blck.MyHint:='Στρίβει Αριστερά για κάποιο χρόνο σε χιλιοστά του δευτερολέπτου';
     blck.Param1:=6;
-    blck.Param2:=3;
+    blck.Param2:=300;
     blck.TotalParams:=2;
     inc(tp,50);blck.Top:=tp;
     blck.Left:=10;
@@ -3319,6 +3377,7 @@ procedure TfrmRoboLang.FormCreate(Sender: TObject);
 var str:TStringlist;
     reg:TRegistry;
 begin
+    cmb:=nil;
     firstopen:=true;
     frmLoadPos:=false;
      srvCodeRec:=false;
@@ -3345,7 +3404,6 @@ begin
      reg.Free;
    end;
    MySetCaption ;
-
 end;
 
 procedure TfrmRoboLang.emptycomps;
@@ -3396,7 +3454,7 @@ procedure TfrmRoboLang.SaveFormPos;
 var  reg:TRegistry;
 Begin
    if frmLoadPos then exit;
-   
+
    reg:=TRegistry.Create;
    try
      reg.OpenKey('Software\Despsoft\RoboLang\MainForm\',True);
@@ -3404,7 +3462,7 @@ Begin
      reg.WriteInteger('Top',Top);
      reg.WriteInteger('Width',Width);
      reg.WriteInteger('Height',Height);
-
+     reg.WriteInteger('wstate',Integer(windowstate));
    finally
      reg.Free;
    end;
@@ -3460,11 +3518,14 @@ end;
 
 procedure TfrmRoboLang.SBarDblClick(Sender: TObject);
 begin
-  SelectNextPort;
+  //refresh ports
+   GetComPorts;
+//  SelectNextPort;
 end;
 
 function TfrmRoboLang.LoadFormPos:boolean;
 var  reg:TRegistry;
+     t:integer;
 Begin
    result:=true;
    reg:=TRegistry.Create;
@@ -3472,10 +3533,13 @@ Begin
    try
      reg.OpenKey('Software\Despsoft\RoboLang\MainForm\',True);
     try
+     t:=reg.ReadInteger('Left');
      Left:=reg.ReadInteger('Left');
      Top:=reg.ReadInteger('Top');
      Width:=reg.ReadInteger('Width');
      Height:=reg.ReadInteger('Height');
+     windowstate:=TWindowState(reg.ReadInteger('wstate'));
+
     except
      result:= false;
     end;
@@ -3524,21 +3588,15 @@ Begin
   SaveBTPort;
 End;
 
-procedure TfrmRoboLang.FormShow(Sender: TObject);
+procedure TfrmRoboLang.GetComPorts;
 var i,n:integer;
     t:string;
     ts:Tstringlist;
-    cmb:TComboBox;
-begin
-   adddebug(GetComputerName);
-
+Begin
    BTComList:=TStringlist.Create;
+   BTComList.Clear;
    BTComList.Sorted := True;
    BTComList.Duplicates := dupIgnore;
-
-   for i := 0 to Pred(ControlCount) do
-    if Controls[i] is TSpeedButton then
-      TSpeedButton(Controls[i]).Caption := '';
    t:=GetBTPortFromFile;
    if t='' then
    Begin
@@ -3561,12 +3619,6 @@ begin
      BTComList.Add(t);
      btindex:=0;
    End;
-//   if (t='') then //and IsServer then
-//   Begin
-//     ShowMessage('Δεν βρέθηκε ασύρματη σειριακή θύρα Bluetooth!!!'#13#10'Πρέπει να εγκαταστήσετε έναν Bluetooth adaptor και να κάνετε Pair.'#13#10'Αν γνωρίζετε την σειριακή θύρα προσθέστε την στο αρχείο BTPort.ini {ComPort=COMx}');
-//     sbar.Panels[0].Text:='BT Port: None';
-//   End
-//   else
    LoadBTPort;
    if BTIndex>=BTComList.count then
        BTIndex:=BTComList.count-1;
@@ -3579,13 +3631,14 @@ begin
    end;
 
    sbar.Panels[0].Text:='Port: ';
-   sbar.Hint:='Επιλέξτε πόρτα επικοινωνίας με το Arduino.';
+   sbar.Hint:='Επιλέξτε πόρτα επικοινωνίας με το Arduino.'#13#10'Διπλό κλικ για ανανέωση';
    sbar.ShowHint:=true;
-
-   cmb:=TComboBox.Create(Self);
+   if cmb=nil then
+    cmb:=TComboBox.Create(Self);
    cmb.Parent:=sbar;
    cmb.Width:=70;
    cmb.Left:=sbar.canvas.TextWidth(sbar.Panels[0].Text)+7;
+
    cmb.Items.Assign(BTComList);
    BtComList.Free;
    BTComList:=TStringList(cmb.Items);
@@ -3593,6 +3646,39 @@ begin
    cmb.OnClick:=ComPortChanged;
    addDevices;
    DeviceChanged;
+
+End;
+
+procedure TfrmRoboLang.FormShow(Sender: TObject);
+var i,n:integer;
+    t:string;
+    ts:Tstringlist;
+
+begin
+
+  try
+    frmUpdate:= TfrmUpdate.Create(self);
+    frmUpdate.Show;
+  except
+
+  end;
+
+   adddebug(GetComputerName);
+
+
+
+    GetComPorts;
+
+   for i := 0 to Pred(ControlCount) do
+    if Controls[i] is TSpeedButton then
+      TSpeedButton(Controls[i]).Caption := '';
+//   if (t='') then //and IsServer then
+//   Begin
+//     ShowMessage('Δεν βρέθηκε ασύρματη σειριακή θύρα Bluetooth!!!'#13#10'Πρέπει να εγκαταστήσετε έναν Bluetooth adaptor και να κάνετε Pair.'#13#10'Αν γνωρίζετε την σειριακή θύρα προσθέστε την στο αρχείο BTPort.ini {ComPort=COMx}');
+//     sbar.Panels[0].Text:='BT Port: None';
+//   End
+//   else
+
    TNBook.PageIndex:=0;
    PageControl1.TabIndex:=0;
 end;

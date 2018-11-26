@@ -24,7 +24,8 @@ uses
   fDcMotor in 'fDcMotor.pas' {frmDcMotor},
   fRobot in 'fRobot.pas' {frmRobot},
   fLaser in 'fLaser.pas' {frmLaser},
-  fserialLcd in 'fserialLcd.pas' {frmSerialLcd};
+  fserialLcd in 'fserialLcd.pas' {frmSerialLcd},
+  uUpdate in 'uUpdate.pas' {frmUpdate};
 
 {$R *.res}
 
@@ -36,5 +37,6 @@ begin
   Application.CreateForm(TfrmAbout, frmAbout);
   Application.CreateForm(TfrmLaser, frmLaser);
   Application.CreateForm(TfrmSerialLcd, frmSerialLcd);
+  Application.CreateForm(TfrmUpdate, frmUpdate);
   Application.Run;
 end.

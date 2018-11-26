@@ -9,11 +9,11 @@ Type
 
 
      TDspVarBlock=Class(TDspBlock)
-
      private
        DelCbox:TCheckBox;
        function GetToDelete: Boolean;
        procedure SetToDelete(const Value: Boolean);
+
      protected
          procedure Setprototype(const Value: boolean);Override;
          function createNewBlock: TDspBlock;override;
@@ -26,13 +26,14 @@ Type
        Procedure DelCboxClick(Sender:TObject);
        procedure SetBounds( pLeft , pTop , pWidth , pHeight:integer );Override;
        Property ToDelete:Boolean read GetToDelete write SetToDelete;
-
+       function GetArduinoCommand(idnt: Integer=1): String;Override;
      End;
 
      TDspCommandVarBlock=Class(TDspBlock)
      private
         procedure OnComboChange(Sender: tObject);
         procedure OnRefVarRequest(var Msg: TMessage); message WM_REFVARS_MSG;
+
      protected
        procedure SetParent(AParent: TWinControl); override;
        function getParam2: Integer;override;
@@ -46,7 +47,8 @@ Type
        function Param2Visible: Boolean;Override;
 
      Public
-      Function varCombo:TComboBox;
+       Function varCombo:TComboBox;
+       function GetArduinoCommand(idnt: Integer=1): String;Override;
      End;
 
 
@@ -196,6 +198,13 @@ begin
   End;
 end;
 
+function TDspVarBlock.GetArduinoCommand(idnt:Integer=1): String;
+Begin
+  if DeviceOnlyCommandID=-1 then
+    result:= ArduVars.GetRealVarName(ArduCmd)  //simple vars
+  else
+    result:= inherited GetArduinoCommand(idnt); //fixed vars device vars
+End;
 
 
 
@@ -205,6 +214,23 @@ begin
 end;
 
 { TDspCommandVarBlock }
+
+function TDspCommandVarBlock.GetArduinoCommand(idnt:Integer=1): String;
+
+  function getVarName(p1:integer):string;
+  Begin
+    result:=ArduVars.GetRealVarName(ArduVars.GetVarByID(p1).VarName);
+  End;
+
+Begin
+  if fArduinoCommand='' then fArduinoCommand:=ArduCmd;
+  if pos('%v1',fArduinoCommand)>0 then
+   fArduinoCommand:=stringReplace(fArduinoCommand,'%v1',getVarName(param1),[rfReplaceAll]);
+  if pos('%v2',fArduinoCommand)>0 then
+   fArduinoCommand:=stringReplace(fArduinoCommand,'%v2',getVarName(param2),[rfReplaceAll]);
+
+  result:= inherited GetArduinoCommand(idnt);
+End;
 
 procedure TDspCommandVarBlock.AssignTo(Dest: TPersistent);
 begin

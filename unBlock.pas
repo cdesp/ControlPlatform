@@ -249,7 +249,7 @@ var  debugging:boolean=false;
 implementation
 uses Vcl.Forms,sysutils,dialogs,types,math,
 DspEdit,DspCombo,
-DspUtils,unCtrlPlatMain,unDevices;
+DspUtils,unCtrlPlatMain,unDevices,unVariables;
 
 var idcnt:integer=1;
 
@@ -1504,9 +1504,15 @@ begin
 
 
   if pos('%p1',fArduinoCommand)>0 then
-   fArduinoCommand:=stringReplace(fArduinoCommand,'%p1',inttostr(param1),[rfReplaceAll]);
+   if VarParam1<>nil then
+    fArduinoCommand:=stringReplace(fArduinoCommand,'%p1',VarParam1.GetArduinoCommand,[rfReplaceAll])
+   else
+     fArduinoCommand:=stringReplace(fArduinoCommand,'%p1',inttostr(param1),[rfReplaceAll]);
   if pos('%p2',fArduinoCommand)>0 then
-   fArduinoCommand:=stringReplace(fArduinoCommand,'%p2',inttostr(param2),[rfReplaceAll]);
+   if VarParam2<>nil then
+    fArduinoCommand:=stringReplace(fArduinoCommand,'%p2',VarParam2.GetArduinoCommand,[rfReplaceAll])
+   else
+    fArduinoCommand:=stringReplace(fArduinoCommand,'%p2',inttostr(param2),[rfReplaceAll]);
   if pos('%ps',fArduinoCommand)>0 then
    fArduinoCommand:=stringReplace(fArduinoCommand,'%ps',paramStr,[rfReplaceAll]);
   if pos('%pd',fArduinoCommand)>0 then
