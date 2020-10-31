@@ -58,6 +58,7 @@ type
     procedure IdHTTP1WorkEnd(ASender: TObject; AWorkMode: TWorkMode);
     procedure IdHTTP1Work(ASender: TObject; AWorkMode: TWorkMode;
       AWorkCount: Int64);
+    procedure FormClose(Sender: TObject; var Action: TCloseAction);
   private
     newupdate:boolean;
     FBytesToTransfer:integer;
@@ -138,6 +139,11 @@ Begin
   application.ProcessMessages;
 End;
 
+procedure TfrmUpdate.FormClose(Sender: TObject; var Action: TCloseAction);
+begin
+ ModalResult:=MRok;
+end;
+
 procedure TfrmUpdate.FormShow(Sender: TObject);
 begin
   timer1.enabled:=true;
@@ -194,19 +200,23 @@ Var fn:String;
 begin
 // ConnectToSite;
 // if listbox1.Items.Count>0 then
-  if CheckVersion then
-    DownloadUpdate;
+  if CheckVersion and (messagedlg('Υπάρχει νέα έκδοση.'#13#10'Πάτα OK για αναβάθμιση.',mtConfirmation,mbOKCancel,0)=mrOK) then
+    DownloadUpdate
+  else newupdate:=false;
  if newupdate then
  Begin
-   Showmessage('A new version has been downloaded.'#13#10'Click OK to Update.');
-   fn:=ExtractFilePath(Application.exename)+'CPSetup.exe';
-   ShellExecute(0,'OPEN',Pchar(fn),nil,Pchar(ExtractFilepath(fn)),SW_SHOW);
-   Application.Terminate;
+   if true then
+   Begin
+    fn:=ExtractFilePath(Application.exename)+'CPSetup.exe';
+    ShellExecute(0,'OPEN',Pchar(fn),nil,Pchar(ExtractFilepath(fn)),SW_SHOW);
+    Application.Terminate;
+   End
+   else close;
  End
   Else
   Begin
    // ShowMessage('You have the latest version.');
-    Hide;
+    Close;
   End;
 end;
 

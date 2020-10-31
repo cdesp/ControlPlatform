@@ -1,9 +1,10 @@
 object frmUpdate: TfrmUpdate
   Left = 0
   Top = 0
+  BorderStyle = bsDialog
   Caption = 'Check New Version'
-  ClientHeight = 199
-  ClientWidth = 519
+  ClientHeight = 209
+  ClientWidth = 529
   Color = clBtnFace
   Font.Charset = DEFAULT_CHARSET
   Font.Color = clWindowText
@@ -13,7 +14,8 @@ object frmUpdate: TfrmUpdate
   FormStyle = fsStayOnTop
   GlassFrame.Enabled = True
   OldCreateOrder = False
-  Position = poMainFormCenter
+  Position = poScreenCenter
+  OnClose = FormClose
   OnShow = FormShow
   PixelsPerInch = 96
   TextHeight = 13

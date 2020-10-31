@@ -13,8 +13,8 @@ uses  Vcl.Dialogs, CPort, System.Classes,
 
 
 Const ProjectStart='10/10/2017';
-Const Version='0.93 (Βήτα έκδοση 26/11/2018)  - ';
-Const Programmer='© 2017-2018 Despoinidis Christos';
+Const Version='0.94 (Βήτα έκδοση 12/05/2019)  - ';
+Const Programmer='© 2017-2019 Despoinidis Christos';
 Const Progname='Έλεγχος συσκευών Arduino';
 Const Onlybluetooth=FALSE;
 const WM_REFRESH_MSG = WM_USER + 1;
@@ -181,6 +181,8 @@ type
     ArduMemo: TMemo;
     acgetcode: TAction;
     Timer2: TTimer;
+    acOptions: TAction;
+    N11: TMenuItem;
     procedure FormCreate(Sender: TObject);
     procedure ListBox1DblClick(Sender: TObject);
     procedure Button1Click(Sender: TObject);
@@ -225,6 +227,7 @@ type
       var AllowChange: Boolean);
     procedure acgetcodeExecute(Sender: TObject);
     procedure Timer2Timer(Sender: TObject);
+    procedure acOptionsExecute(Sender: TObject);
   private
     cmb:TComboBox;
     firstopen:boolean;
@@ -301,6 +304,7 @@ type
     function fix(s: string;Devid:Integer): String;
     procedure getVars(hd: TStrings);
     procedure GetComPorts;
+    procedure showMyHint;
     { Private declarations }
   public
     { Public declarations }
@@ -336,7 +340,7 @@ var
 implementation
 uses Registry, system.ioutils,unAbout, inifiles,setupapi,math,  unDevices, unHelpForms,DspUtils,unVariables,unBlockVar,
       uUpdate,fserialLcd,fLaser,fSound,fUSonic,fServo,fSwitch,fTemp,fBMP180,fAnalogIn,fDcMotor,fRobot
-    ;
+    , fOptions;
 
 
 {$R *.dfm}
@@ -1235,12 +1239,18 @@ Begin
       hd.Add('  '+devnm+'.setBacklight(HIGH);');
       hd.Add('  '+devnm+'.print(F("LCD OK...."));');
     End;
+    130:Begin  //Defines for Led Laser
+            hd.Add(fix('  pinMode(%dp1,OUTPUT);',DevID));
+    End;
     140:Begin
        hd.Add(fix('  '+devnm+'.setSonicParams(5,400,%dp1,%dp2);//min distance 5cm, check every 400ms',DevId));
        hd.Add('   '+devnm+'.init();');
     End;
     150:Begin//Servo
       hd.Add('  '+devnm+fix('.init(%dp1);',devid));
+    End;
+    165:Begin  //Defines for AnIn Analog In
+            hd.Add(fix('  pinMode(%dp1,INPUT);',DevID));
     End;
     170:Begin   //dht
       hd.Add('  '+devnm+'.begin();');
@@ -1781,6 +1791,11 @@ begin
 end;
 
 
+
+procedure TfrmRoboLang.acOptionsExecute(Sender: TObject);
+begin
+  frmoptions.ShowModal;
+end;
 
 procedure TfrmRoboLang.acsaveasExecute(Sender: TObject);
 begin
@@ -3404,6 +3419,9 @@ begin
      reg.Free;
    end;
    MySetCaption ;
+
+
+
 end;
 
 procedure TfrmRoboLang.emptycomps;
@@ -3649,6 +3667,18 @@ Begin
 
 End;
 
+Procedure TfrmRoboLang.showMyHint;
+var t:tpoint;
+Begin
+
+balloonhint1.Description:=Sbar.Hint+#13#10'-----------------';
+balloonhint1.Title:='ΠΡΟΣΟΧΗ!!!';
+
+t:=ClientToScreen(sbar.BoundsRect.Topleft);
+balloonhint1.ShowHint(RECT(60,t.Y ,160,t.y+280));
+
+End;
+
 procedure TfrmRoboLang.FormShow(Sender: TObject);
 var i,n:integer;
     t:string;
@@ -3656,9 +3686,11 @@ var i,n:integer;
 
 begin
 
+
+
   try
     frmUpdate:= TfrmUpdate.Create(self);
-    frmUpdate.Show;
+    frmUpdate.ShowModal;
   except
 
   end;
@@ -3681,6 +3713,19 @@ begin
 
    TNBook.PageIndex:=0;
    PageControl1.TabIndex:=0;
+   Application.ProcessMessages;
+    frmOptions.FormShow(nil);
+   try
+    frmOptions.chkArduinoPathValid;
+   except
+     if frmOptions.ShowModal=mrCancel then
+     Begin
+      Showmessage('Θα πρέπει να εγκαταστήσετε το Arduino IDE και τις απαραίτητες βιβλιοθήκες'#13#10'Για οδηγίες πηγαίνετε στην ιστοσελίδα users.sch.gr/cdesp.');
+      application.Terminate;
+     End;
+   end;
+
+  showMyHint;
 end;
 
 function TfrmRoboLang.getPanelAddButton(pnl: TPanel): TBitBtn;

@@ -3,11 +3,11 @@ object frmAbout: TfrmAbout
   Top = 0
   AlphaBlend = True
   AlphaBlendValue = 230
-  BorderStyle = bsSizeToolWin
+  BorderStyle = bsToolWindow
   BorderWidth = 5
   Caption = #931#967#949#964#953#954#940' '#956#949' '#964#951#957' '#949#966#945#961#956#959#947#942
-  ClientHeight = 426
-  ClientWidth = 578
+  ClientHeight = 436
+  ClientWidth = 633
   Color = clBtnFace
   Font.Charset = DEFAULT_CHARSET
   Font.Color = clWindowText
@@ -26,7 +26,7 @@ object frmAbout: TfrmAbout
   object Label1: TLabel
     Left = 24
     Top = 16
-    Width = 521
+    Width = 585
     Height = 23
     Alignment = taCenter
     AutoSize = False
@@ -59,9 +59,9 @@ object frmAbout: TfrmAbout
     OnClick = FormClick
   end
   object Label3: TLabel
-    Left = 72
+    Left = 24
     Top = 88
-    Width = 417
+    Width = 585
     Height = 321
     AutoSize = False
     Caption = 'Label3'

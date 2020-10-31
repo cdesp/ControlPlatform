@@ -2,7 +2,7 @@
 ; SEE THE DOCUMENTATION FOR DETAILS ON CREATING INNO SETUP SCRIPT FILES!
 
 #define MyAppName "ControlPlatform"
-#define MyAppVersion "0.93"
+#define MyAppVersion "0.94"
 #define MyAppPublisher "Christos Despoinidis"
 #define MyAppExeName "CtrlPlatform.exe"
 
@@ -32,7 +32,7 @@ Name: "quicklaunchicon"; Description: "{cm:CreateQuickLaunchIcon}"; GroupDescrip
 
 [Files]
 Source: "G:\_Programming\ControlPlatform\Win32\Release\CtrlPlatform.exe"; DestDir: "{app}"; Flags: ignoreversion
-Source: "G:\_Programming\ControlPlatform\Win32\Debug\Options.ini"; DestDir: "{app}"; Flags: ignoreversion onlyifdoesntexist 
+;Source: "G:\_Programming\ControlPlatform\Win32\Debug\Options.ini"; DestDir: "{app}"; Flags: ignoreversion onlyifdoesntexist 
 Source: "G:\_Programming\ControlPlatform\Win32\Debug\Images\*"; DestDir: "{app}\Images"; Flags: ignoreversion recursesubdirs createallsubdirs
 Source: "G:\_Programming\ControlPlatform\Win32\Debug\Lessons\*"; DestDir: "{app}\Lessons"; Flags: ignoreversion recursesubdirs createallsubdirs
 Source: "G:\_Programming\ControlPlatform\Win32\Debug\Arduino\*"; DestDir: "{app}\Arduino"; Flags: ignoreversion recursesubdirs createallsubdirs
