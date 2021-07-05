@@ -60,6 +60,8 @@ procedure CaptureConsoleOutput(const ACommand, AParameters: String; AMemo: TMemo
    suiStartup: TStartupInfo;
    piProcess: TProcessInformation;
    pBuffer: array[0..CReadBuffer] of AnsiChar;
+   s:string;
+   s2:TCharArray;
    dRead: DWord;
    dRunning,dwBytesAvailable: DWord;
  begin
@@ -93,8 +95,11 @@ procedure CaptureConsoleOutput(const ACommand, AParameters: String; AMemo: TMemo
            ReadFile(hRead, pBuffer[0], CReadBuffer, dRead, nil);
            pBuffer[dRead] := #0;
 
+
            //OemToAnsi(pBuffer, pBuffer);
-           AMemo.Lines.Add(String(pBuffer));
+//           s:=AnsiToUtf8(String(pBuffer));
+           s:=Utf8ToAnsi(String(pBuffer));
+           AMemo.Lines.Add(s);
          until (dRead < CReadBuffer);
 
 

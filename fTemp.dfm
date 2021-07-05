@@ -536,7 +536,7 @@ object frmTemp: TfrmTemp
     object Label2: TLabel
       Left = 1
       Top = 232
-      Width = 343
+      Width = 287
       Height = 19
       Align = alBottom
       Alignment = taCenter
@@ -547,8 +547,6 @@ object frmTemp: TfrmTemp
       Font.Name = 'Tahoma'
       Font.Style = [fsBold]
       ParentFont = False
-      ExplicitTop = 230
-      ExplicitWidth = 287
     end
   end
   object RichEdit1: TRichEdit

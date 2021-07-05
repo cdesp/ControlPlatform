@@ -2,7 +2,7 @@
 ; SEE THE DOCUMENTATION FOR DETAILS ON CREATING INNO SETUP SCRIPT FILES!
 
 #define MyAppName "ControlPlatform"
-#define MyAppVersion "0.94"
+#define MyAppVersion "0.95"
 #define MyAppPublisher "Christos Despoinidis"
 #define MyAppExeName "CtrlPlatform.exe"
 
@@ -15,12 +15,15 @@ AppName={#MyAppName}
 AppVersion={#MyAppVersion}
 ;AppVerName={#MyAppName} {#MyAppVersion}
 AppPublisher={#MyAppPublisher}
-DefaultDirName={pf}\{#MyAppName}
+DefaultDirName={sd}\{#MyAppName}
 DisableProgramGroupPage=yes
 InfoAfterFile=
 OutputBaseFilename=CPsetup
 Compression=lzma
 SolidCompression=yes
+WizardStyle=modern
+DisableDirPage=no
+DisableWelcomePage=no
 
 [Languages]
 Name: "english"; MessagesFile: "compiler:Default.isl"
@@ -31,11 +34,11 @@ Name: "desktopicon"; Description: "{cm:CreateDesktopIcon}"; GroupDescription: "{
 Name: "quicklaunchicon"; Description: "{cm:CreateQuickLaunchIcon}"; GroupDescription: "{cm:AdditionalIcons}"; Flags: unchecked; OnlyBelowVersion: 0,6.1
 
 [Files]
-Source: "G:\_Programming\ControlPlatform\Win32\Release\CtrlPlatform.exe"; DestDir: "{app}"; Flags: ignoreversion
+Source: "G:\_Programming\ControlPlatform\Win32\CtrlPlatfrom\CtrlPlatform.exe"; DestDir: "{app}"; Flags: ignoreversion
 ;Source: "G:\_Programming\ControlPlatform\Win32\Debug\Options.ini"; DestDir: "{app}"; Flags: ignoreversion onlyifdoesntexist 
 Source: "G:\_Programming\ControlPlatform\Win32\Debug\Images\*"; DestDir: "{app}\Images"; Flags: ignoreversion recursesubdirs createallsubdirs
 Source: "G:\_Programming\ControlPlatform\Win32\Debug\Lessons\*"; DestDir: "{app}\Lessons"; Flags: ignoreversion recursesubdirs createallsubdirs
-Source: "G:\_Programming\ControlPlatform\Win32\Debug\Arduino\*"; DestDir: "{app}\Arduino"; Flags: ignoreversion recursesubdirs createallsubdirs
+Source: "G:\_Programming\ControlPlatform\Win32\Release\Arduino\*"; DestDir: "{app}\Arduino"; Flags: ignoreversion recursesubdirs createallsubdirs
 ; NOTE: Don't use "Flags: ignoreversion" on any shared system files
 
 [Icons]

@@ -8,13 +8,13 @@ uses  Vcl.Dialogs, CPort, System.Classes,
   Vcl.Menus, Vcl.ComCtrls, Vcl.Imaging.pngimage, Vcl.Forms, Vcl.StdCtrls,
   Vcl.Buttons,Winapi.Windows,unBlock,Winapi.Messages,System.SysUtils, System.Variants,
   unContainerBlock,Vcl.Graphics, Vcl.TabNotBk, Vcl.ExtCtrls, Vcl.WinXCtrls,
-  Vcl.Imaging.jpeg, VCLTee.TeCanvas, Vcl.ToolWin, Vcl.Samples.Spin,
+  Vcl.Imaging.jpeg,  Vcl.ToolWin, Vcl.Samples.Spin,
   Vcl.OleCtrls, SHDocVw;
 
 
 Const ProjectStart='10/10/2017';
-Const Version='0.94 (Βήτα έκδοση 12/05/2019)  - ';
-Const Programmer='© 2017-2019 Despoinidis Christos';
+Const Version='0.95 (Βήτα έκδοση 22/06/2021)  - ';
+Const Programmer='© 2017-2021 Despoinidis Christos';
 Const Progname='Έλεγχος συσκευών Arduino';
 Const Onlybluetooth=FALSE;
 const WM_REFRESH_MSG = WM_USER + 1;
@@ -1513,9 +1513,9 @@ begin
       2:btp:='mega';
     end;
     BoardType:='arduino:avr:'+btp;
-    CommandLine:=ArduinoPath+'arduino_debug.exe';
+    CommandLine:='"'+ArduinoPath+'\arduino_debug.exe"';
     //ParamS:='  --board '+boardtype+' --port '+BTComList[BTIndex]+' --pref build.path='+NewDir+'\build --upload '+NewFile;
-    ParamS:='  --board '+boardtype+' --port '+BTComList[BTIndex]+' --upload '+NewFile;
+    ParamS:='  --board '+boardtype+' --port '+BTComList[BTIndex]+' --upload "'+NewFile+'"';
     Ardumemo.Lines.Add('');
     Ardumemo.Lines.Add(Commandline+' '+ParamS);
     Ardumemo.Lines.Add('Compiling and uploading... Please Wait!!!');
@@ -3938,7 +3938,7 @@ Begin
 //avrdude -Cavrdude.conf -v -patmega328p -carduino -PCOM8 -b57600 -D -Uflash:w:CtrlPlatform.ino.NANO.hex:i
   CmdS:='"%p1avrdude.exe"';
   CmdS:=StringReplace(CmdS,'%p1',pth,[rfReplaceAll]);
-  ParamS:='-C"%p1avrdude.conf" -v -patmega328p -carduino -P%p2 -b115200 -D -Uflash:w:"%p1CtrlPlatform.ino.%p3.hex":i ';
+  ParamS:='-C"%p1avrdude.conf" -v -patmega328p -cwiring -P%p2 -b115200 -D -Uflash:w:"%p1CtrlPlatform.ino.%p3.hex":i ';
   ParamS:=StringReplace(ParamS,'%p1',pth,[rfReplaceAll]);
   ParamS:=StringReplace(ParamS,'%p2',ComPort,[rfReplaceAll]);
   ParamS:=StringReplace(ParamS,'%p3',ArduType,[rfReplaceAll]);
