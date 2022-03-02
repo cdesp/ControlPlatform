@@ -9,12 +9,12 @@ uses  Vcl.Dialogs, CPort, System.Classes,
   Vcl.Buttons,Winapi.Windows,unBlock,Winapi.Messages,System.SysUtils, System.Variants,
   unContainerBlock,Vcl.Graphics, Vcl.TabNotBk, Vcl.ExtCtrls, Vcl.WinXCtrls,
   Vcl.Imaging.jpeg,  Vcl.ToolWin, Vcl.Samples.Spin,
-  Vcl.OleCtrls, SHDocVw;
+  Vcl.OleCtrls, SHDocVw, MahUSB;
 
 
 Const ProjectStart='10/10/2017';
-Const Version='0.95 (Βήτα έκδοση 22/06/2021)  - ';
-Const Programmer='© 2017-2021 Despoinidis Christos';
+Const Version='0.96 (Βήτα έκδοση 27/02/2022)  - ';
+Const Programmer='© 2017-2022 Despoinidis Christos';
 Const Progname='Έλεγχος συσκευών Arduino';
 Const Onlybluetooth=FALSE;
 const WM_REFRESH_MSG = WM_USER + 1;
@@ -237,6 +237,7 @@ type
     srvCodeRec:boolean;
     frmLoadPos:Boolean;
     FMotors: Integer;
+    UsbClass:TUsbClass;
     procedure OnRefVarRequest(var Msg: TMessage); message WM_REFVARS_MSG;
     function GetStartBlock: TDspBlock;
     function BTgetChar: Char;
@@ -305,6 +306,11 @@ type
     procedure getVars(hd: TStrings);
     procedure GetComPorts;
     procedure showMyHint;
+    procedure checkArduino;
+    function getArduinoPath: String;
+    procedure VolumeEvent(const bInserted : boolean; const sDrive : string);
+    procedure ChangeEvent(const bInserted : boolean;
+        const ADevType,ADriverName, AFriendlyName : string);
     { Private declarations }
   public
     { Public declarations }
@@ -887,6 +893,12 @@ begin
    LoadNode(Node);
 end;
 
+procedure TfrmRoboLang.VolumeEvent(const bInserted: boolean;
+  const sDrive: string);
+begin
+   //
+end;
+
 procedure TfrmRoboLang.BTSendInteger(k:integer);
 var b1,b2:char;
 Begin
@@ -1222,12 +1234,13 @@ procedure TfrmRoboLang.AddSetupForDev(hd:Tstrings;ComID:Integer;DevId:Integer;de
 Begin
   case Comid of
     50:Begin //defines for ROBOT
-       hd.Add(fix('  '+devnm+'.init(%dp1,%dp2,%dp3,%dp4,%dp5,%dp6);',DevId));
+       hd.Add(fix('  '+devnm+'.init(%dp1,%dp2,%dp3,%dp4,%dp5,%dp6,%dp7);',DevId));
        if ActDevs[DevId].ActDevParams[4]>0 then //dp5
        Begin
-         hd.Add(fix('    pinMode (%dp5, INPUT) ;',DevId));
-         hd.Add(fix('    attachInterrupt(digitalPinToInterrupt(%dp5), speedencint, CHANGE);',DevId));
+         hd.Add(fix('  pinMode (%dp5, INPUT) ;',DevId));
+         hd.Add(fix('  attachInterrupt(digitalPinToInterrupt(%dp5), speedencint, CHANGE);',DevId));
        end;
+       hd.Add(fix('  pinMode (%dp7, OUTPUT) ;',DevId));
     End;
     60:Begin
        hd.Add(fix('  '+devnm+'.init( '+inttostr(FMotors)+' ,%dp1,%dp2);',DevId));
@@ -1356,13 +1369,21 @@ Begin
 
 End;
 
+function TfrmRoboLang.getArduinoPath:String;
+var IniFile:TInifile;
+Begin
+ IniFile:=TInifile.Create(extractfilepath(Application.ExeName)+'\Options.ini');
+    Result:=IniFile.ReadString('Arduino','Path','G:\NewApps\Arduino\');
+    IniFile.Free;
+End;
+
 procedure TfrmRoboLang.acgetcodeExecute(Sender: TObject);
 Var Header,Debug,Declaration,Setup,Code,Funcs,Make,Vars:TStringlist;
     strt:TDspBlock;
 
     cnt:Integer;
     i,k:Integer;
-    CommndID,devid,param1,param2,param3,param4,param5,param6:integer;
+    CommndID,devid,param1,param2,param3,param4,param5,param6,param7,param8:integer;
     devnm:string;
     DirName,NewDir,NewFile:String;
   ArduinoPath: string;
@@ -1412,6 +1433,7 @@ begin
      Param4:=ActDevs[i].ActDevParams[k+3];
      Param5:=ActDevs[i].ActDevParams[k+4];
      Param6:=ActDevs[i].ActDevParams[k+5];
+     Param7:=ActDevs[i].ActDevParams[k+6];
 
      adddebug('------------------------');
      adddebug('Setup Cmd:'+inttostr(CommndID));
@@ -1422,6 +1444,7 @@ begin
      adddebug('Param 4  :'+inttostr(Param4));
      adddebug('Param 5  :'+inttostr(Param5));
      adddebug('Param 6  :'+inttostr(Param6));
+     adddebug('Param 7  :'+inttostr(Param7));
      adddebug('------------------------');
      devnm:=ActDevs[i].ActDevForm.Caption;
      Debug.Add(devnm);
@@ -1503,9 +1526,7 @@ begin
     Ardumemo.Lines.SaveToFile(Newfile);
 
 
-    IniFile:=TInifile.Create(DirName+'\Options.ini');
-    ArduinoPath:=IniFile.ReadString('Arduino','Path','G:\NewApps\Arduino\');
-    IniFile.Free;
+    ArduinoPath:=getArduinoPath;
 
     case Arduino.Id of
       0:btp:='uno';
@@ -1795,6 +1816,7 @@ end;
 procedure TfrmRoboLang.acOptionsExecute(Sender: TObject);
 begin
   frmoptions.ShowModal;
+  checkArduino;
 end;
 
 procedure TfrmRoboLang.acsaveasExecute(Sender: TObject);
@@ -3025,6 +3047,21 @@ Begin
     blck.Prototype:=true;
     blck.DeviceOnlyCommandID:=Ord(ROBOT);
 
+    blck:=TDspBlock.Create(Self);
+    blck.Parent:=pnl;
+    blck.Color:=col;
+    blck.CommandColor:=clWhite;
+    blck.CommndID:=56;
+    blck.Commandtext:='%pd → Ταχύτητα (0..255) %p1 ';
+    blck.ArduCmd:='%dn.setSpeed(%p1);';
+    blck.MyHint:='Θέτει την ταχύτητα του οχήματος (255=μέγιστη ταχύτητα) ';
+    blck.Param1:=255;
+    blck.TotalParams:=1;
+    inc(tp,50);blck.Top:=tp;
+    blck.Left:=10;
+    blck.Prototype:=true;
+    blck.DeviceOnlyCommandID:=Ord(ROBOT);
+
 
     blck:=TDspBlock.Create(Self);
     blck.Parent:=pnl;
@@ -3061,7 +3098,7 @@ Begin
     blck.Color:=col;
     blck.CommandColor:=clWhite;
     blck.CommndID:=55;
-    blck.Commandtext:='Όρισε βήμα σε %p1 εκατοστά';
+    blck.Commandtext:='%pd → Όρισε βήμα σε %p1 εκατοστά';
     blck.ArduCmd:='%dn.setStepTicks(%p1);';
     blck.Param1:=10;
     blck.TotalParams:=1;
@@ -3297,7 +3334,7 @@ begin
   ArduinoDevices[i].DeviceFormClass:=TfrmRobot;
   ArduinoDevices[i].DevicePanel:=pnlRobot;
   ArduinoDevices[i].DeviceCmdId:=50;
-  ArduinoDevices[i].DeviceParamCount:=5;
+  ArduinoDevices[i].DeviceParamCount:=7;
   ArduinoDevices[i].DeviceMax:=1;
   i:=i+1;
 
@@ -3335,6 +3372,24 @@ begin
     finally
       TCategoryPanelGroup(Sender).Perform(WM_VSCROLL, SB_ENDSCROLL, 0);
     end;
+end;
+
+procedure TfrmRoboLang.ChangeEvent(const bInserted: boolean; const ADevType,
+  ADriverName, AFriendlyName: string);
+begin
+    if bInserted and (pos('CH340',ADevType)>0) then
+    Begin
+       GetComPorts;
+       sbar.Hint:='Συνδέθηκε συσκευή Arduino';
+       showMyHint;
+    End
+    else
+      if not bInserted and (pos('CH340',ADevType)>0) then
+      Begin
+       sbar.Hint:='Αποσυνδέθηκε συσκευή Arduino';
+       showMyHint;
+      End;
+
 end;
 
 Var ln:string='';
@@ -3420,9 +3475,33 @@ begin
    end;
    MySetCaption ;
 
+   checkArduino;
 
+   UsbClass:=TUsbClass.Create;
+   UsbClass.OnUsbChange:= ChangeEvent;
+   UsbClass.OnDevVolume:= VolumeEvent;
 
 end;
+
+procedure TfrmRoboLang.checkArduino;
+var fn:String;
+Begin
+   fn:=getArduinoPath+'arduino_debug.l4j.ini';
+   if not fileexists(fn) then
+     exit;
+   with TStringList.Create do
+    try
+      LoadFromFile(fn);
+      if values['-DDebug']='' then
+      Begin
+       values['-DDebug']:='false';
+       savetofile(fn);
+      End;
+    finally
+      Free;
+    end;
+
+End;
 
 procedure TfrmRoboLang.emptycomps;
 var i:integer;
@@ -3721,7 +3800,6 @@ begin
      if frmOptions.ShowModal=mrCancel then
      Begin
       Showmessage('Θα πρέπει να εγκαταστήσετε το Arduino IDE και τις απαραίτητες βιβλιοθήκες'#13#10'Για οδηγίες πηγαίνετε στην ιστοσελίδα users.sch.gr/cdesp.');
-      application.Terminate;
      End;
    end;
 
@@ -3839,8 +3917,6 @@ Var k:integer;
     pth:String;
     nm,nmpin:String;
 Begin
-   //TODO:Take it from the executables dir
-  // pth:='G:\_Programming\ControlPlatform';
    pth:=MainPath;
    k:=RadioGroup1.ItemIndex;
    Arduino.Id:=k;

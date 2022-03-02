@@ -49,8 +49,6 @@ object frmSwitch: TfrmSwitch
       Font.Name = 'Tahoma'
       Font.Style = [fsBold]
       ParentFont = False
-      ExplicitLeft = 34
-      ExplicitTop = 165
       ExplicitWidth = 149
     end
     object RadioGroup1: TRadioGroup
@@ -73,7 +71,6 @@ object frmSwitch: TfrmSwitch
         #913#957#953#967#957#949#965#964#942#962' '#924#945#973#961#959#965)
       TabOrder = 0
       OnClick = RadioGroup1Click
-      ExplicitHeight = 365
     end
   end
   object RichEdit1: TRichEdit

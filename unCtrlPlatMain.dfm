@@ -141,7 +141,7 @@ object frmRoboLang: TfrmRoboLang
       Height = 34
       Hint = #928#945#961#940#947#949#953' '#922#974#948#953#954#945' '#947#953#945' '#964#959' Arduino '#954#945#953' '#964#959' '#945#960#959#963#964#941#955#955#949#953
       Action = acgetcode
-      Caption = #922#974#948#953#954#945#962' Arduino && '#913#960#959#963#964#959#955#942
+      Caption = #913#960#959#963#964#959#955#942' '#963#964#959' Arduino'
     end
   end
   object SBar: TStatusBar
@@ -1417,7 +1417,6 @@ object frmRoboLang: TfrmRoboLang
         Width = 303
         Height = 341
         HorzScrollBar.Visible = False
-        VertScrollBar.Position = 19
         Align = alLeft
         Color = clHighlight
         ParentColor = False
@@ -1426,7 +1425,7 @@ object frmRoboLang: TfrmRoboLang
         ExplicitHeight = 347
         object pnlLCD: TPanel
           Left = 12
-          Top = -16
+          Top = 3
           Width = 265
           Height = 137
           Color = clSkyBlue
@@ -8964,7 +8963,7 @@ object frmRoboLang: TfrmRoboLang
         end
         object pnlLaser: TPanel
           Left = 12
-          Top = 131
+          Top = 150
           Width = 265
           Height = 180
           Color = clSkyBlue
@@ -10354,7 +10353,7 @@ object frmRoboLang: TfrmRoboLang
         end
         object pnlSound: TPanel
           Left = 12
-          Top = 323
+          Top = 342
           Width = 265
           Height = 180
           Color = clSkyBlue
@@ -14895,7 +14894,7 @@ object frmRoboLang: TfrmRoboLang
         end
         object pnlUSonic: TPanel
           Left = 12
-          Top = 516
+          Top = 535
           Width = 265
           Height = 180
           Color = clSkyBlue
@@ -15529,7 +15528,7 @@ object frmRoboLang: TfrmRoboLang
         end
         object pnlServo: TPanel
           Left = 12
-          Top = 711
+          Top = 730
           Width = 265
           Height = 180
           Color = clSkyBlue
@@ -26003,7 +26002,7 @@ object frmRoboLang: TfrmRoboLang
         end
         object pnlSwitch: TPanel
           Left = 12
-          Top = 907
+          Top = 926
           Width = 265
           Height = 180
           Color = clSkyBlue
@@ -41938,7 +41937,7 @@ object frmRoboLang: TfrmRoboLang
         end
         object pnlTemp: TPanel
           Left = 12
-          Top = 1103
+          Top = 1122
           Width = 265
           Height = 180
           Color = clSkyBlue
@@ -42499,7 +42498,7 @@ object frmRoboLang: TfrmRoboLang
         end
         object pnlBMP: TPanel
           Left = 10
-          Top = 1301
+          Top = 1320
           Width = 265
           Height = 180
           Color = clSkyBlue
@@ -45136,7 +45135,7 @@ object frmRoboLang: TfrmRoboLang
         end
         object pnlAnalogIn: TPanel
           Left = 10
-          Top = 1499
+          Top = 1518
           Width = 265
           Height = 180
           Color = clSkyBlue
@@ -45498,7 +45497,7 @@ object frmRoboLang: TfrmRoboLang
         end
         object pnlDcMotor: TPanel
           Left = 10
-          Top = 1697
+          Top = 1716
           Width = 265
           Height = 180
           Color = clSkyBlue
@@ -47380,7 +47379,7 @@ object frmRoboLang: TfrmRoboLang
         end
         object pnlRobot: TPanel
           Left = 10
-          Top = 1895
+          Top = 1914
           Width = 265
           Height = 180
           Color = clSkyBlue
@@ -52696,6 +52695,7 @@ object frmRoboLang: TfrmRoboLang
         ParentFont = False
         ScrollBars = ssVertical
         TabOrder = 0
+        ExplicitHeight = 347
       end
     end
   end

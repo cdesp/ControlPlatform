@@ -20,6 +20,7 @@ Type
     Param4SE:TSpinEdit;
     Param5SE:TSpinEdit;
     Param6SE:TSpinEdit;
+    Param7SE:TSpinEdit;
     procedure DoCreate; Override;
     procedure DoShow; Override;
   public
@@ -65,11 +66,11 @@ end;
 class constructor TDefDevForm.Create;
 begin
   inherited;
-
 end;
 
 procedure TDefDevForm.DoCreate;
 begin
+  ActiveDeviceId:=ActDevsCount;
   inherited;
   OnCloseQuery:=FormCloseQuery;
   Param1SE:=nil;
@@ -78,6 +79,8 @@ begin
   Param4SE:=nil;
   Param5SE:=nil;
   Param6SE:=nil;
+  Param7SE:=nil;
+
 end;
 
 procedure TDefDevForm.DoShow;
@@ -89,6 +92,7 @@ begin
   SetSEfromParam(4,Param4SE);
   SetSEfromParam(5,Param5SE);
   SetSEfromParam(6,Param6SE);
+  SetSEfromParam(7,Param7SE);
   RefreshBlockControls;
 end;
 
@@ -169,7 +173,8 @@ begin
    TSpinEdit(Param5Se).MaxValue:=Arduino.MaxPins;
   if assigned(param6SE) then
    TSpinEdit(Param6Se).MaxValue:=Arduino.MaxPins;
-
+  if assigned(param7SE) then
+   TSpinEdit(Param7Se).MaxValue:=Arduino.MaxPins;
 end;
 
 procedure TDefDevForm.SetParam(Pno: integer; SE: TSpinedit);

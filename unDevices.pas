@@ -3,7 +3,7 @@ unit unDevices;
 interface
 uses Vcl.Forms,Vcl.ExtCtrls,Vcl.Buttons;
 
-Const MaxDevParams=6-1;//zero based
+Const MaxDevParams=7-1;//zero based
 
 Type
 

@@ -2861,7 +2861,6 @@ object frmAnalogIn: TfrmAnalogIn
       Font.Name = 'Tahoma'
       Font.Style = [fsBold]
       ParentFont = False
-      ExplicitTop = 167
       ExplicitWidth = 98
     end
     object RadioGroup1: TRadioGroup
@@ -2872,10 +2871,10 @@ object frmAnalogIn: TfrmAnalogIn
       Align = alLeft
       Caption = #917#960#953#955#941#958#964#949' '#931#965#963#954#949#965#942
       Items.Strings = (
-        #913#953#963#952#951#964#942#961#945#962' '#933#947#961#945#963#943#945#962' '#917#948#940#966#959#965#962)
+        #913#953#963#952#951#964#942#961#945#962' '#933#947#961#945#963#943#945#962' '#917#948#940#966#959#965#962
+        #913#953#963#952#951#964#942#961#945#962' '#924#945#973#961#959'/'#902#963#960#961#959)
       TabOrder = 0
       OnClick = RadioGroup1Click
-      ExplicitHeight = 166
     end
   end
   object RichEdit1: TRichEdit

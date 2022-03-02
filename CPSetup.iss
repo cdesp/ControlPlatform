@@ -2,7 +2,7 @@
 ; SEE THE DOCUMENTATION FOR DETAILS ON CREATING INNO SETUP SCRIPT FILES!
 
 #define MyAppName "ControlPlatform"
-#define MyAppVersion "0.95"
+#define MyAppVersion "0.96"
 #define MyAppPublisher "Christos Despoinidis"
 #define MyAppExeName "CtrlPlatform.exe"
 
@@ -39,6 +39,8 @@ Source: "G:\_Programming\ControlPlatform\Win32\CtrlPlatfrom\CtrlPlatform.exe"; D
 Source: "G:\_Programming\ControlPlatform\Win32\Debug\Images\*"; DestDir: "{app}\Images"; Flags: ignoreversion recursesubdirs createallsubdirs
 Source: "G:\_Programming\ControlPlatform\Win32\Debug\Lessons\*"; DestDir: "{app}\Lessons"; Flags: ignoreversion recursesubdirs createallsubdirs
 Source: "G:\_Programming\ControlPlatform\Win32\Release\Arduino\*"; DestDir: "{app}\Arduino"; Flags: ignoreversion recursesubdirs createallsubdirs
+; Add new file for library
+Source: "G:\_Programming\ControlPlatform\Win32\CtrlPlatfrom\Arduino\libraries\CPRobot\*"; DestDir: "{app}\Arduino\libraries\CPRobot"; Flags: ignoreversion recursesubdirs createallsubdirs
 ; NOTE: Don't use "Flags: ignoreversion" on any shared system files
 
 [Icons]
